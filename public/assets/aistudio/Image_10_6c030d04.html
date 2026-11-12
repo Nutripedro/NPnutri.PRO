@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: 'class', theme: { extend: { colors: { 'inverse-surface': '#213145', 'on-primary': '#ffffff', 'on-tertiary-fixed': '#3b0900', 'surface-variant': '#d3e4fe', 'background': '#f8f9ff', 'on-tertiary-fixed-variant': '#872000', 'error': '#ba1a1a', 'tertiary-container': '#a63411', 'secondary-container': '#dae2fd', 'surface-dim': '#cbdbf5', 'primary-container': '#046a38', 'on-surface': '#0b1c30', 'on-secondary-fixed-variant': '#3f465c', 'secondary': '#565e74', 'primary': '#046a38', 'on-primary-fixed-variant': '#00522a', 'surface-container-highest': '#d3e4fe', 'on-secondary': '#ffffff', 'surface-container-lowest': '#ffffff', 'on-error': '#ffffff', 'surface-container-low': '#eff4ff', 'surface-container': '#e5eeff', 'error-container': '#ffdad6', 'on-primary-fixed': '#00210d', 'on-tertiary-container': '#ffc8b9', 'primary-fixed': '#9ef6b6', 'outline-variant': '#bec9be', 'on-background': '#0b1c30', 'inverse-on-surface': '#eaf1ff', 'secondary-fixed-dim': '#bec6e0', 'on-tertiary': '#ffffff', 'surface': '#f8f9ff', 'on-secondary-fixed': '#131b2e', 'inverse-primary': '#83d99b', 'surface-tint': '#0a6d3a', 'surface-container-high': '#dce9ff', 'tertiary-fixed': '#ffdbd1', 'surface-bright': '#f8f9ff', 'on-error-container': '#93000a', 'secondary-fixed': '#dae2fd', 'tertiary': '#831f00', 'tertiary-fixed-dim': '#ffb5a0', 'on-primary-container': '#90e7a8', 'primary-fixed-dim': '#83d99b', 'outline': '#6f7a6f', 'on-secondary-container': '#5c647a', 'on-surface-variant': '#3f4940' }, borderRadius: { 'DEFAULT': '0.25rem', 'lg': '0.5rem', 'xl': '0.75rem', 'full': '9999px' }, spacing: { 'pad-md': '1rem', 'pad-sm': '0.75rem', 'pad-xl': '1.5rem', 'pad-xs': '0.5rem', 'gutter-desktop': '1.25rem', 'gutter-mobile': '0.75rem', 'pad-2xs': '0.25rem', 'touch-min': '2.75rem', 'margin-tablet': '1.5rem', 'margin-mobile': '1rem', 'pad-2xl': '2rem', 'pad-lg': '1.25rem' }, fontFamily: { 'label-numeric-lg': ['Inter'], 'label-md': ['Inter'], 'label-sm': ['Inter'], 'headline-sm': ['Plus Jakarta Sans'], 'headline-lg': ['Plus Jakarta Sans'], 'body-lg': ['Plus Jakarta Sans'], 'body-sm': ['Plus Jakarta Sans'], 'label-numeric-md': ['Inter'], 'body-md': ['Plus Jakarta Sans'], 'display-lg': ['Plus Jakarta Sans'], 'headline-md': ['Plus Jakarta Sans'], 'headline-lg-mobile': ['Plus Jakarta Sans'] }, fontSize: { 'label-numeric-lg': ['24px', { lineHeight: '28px', letterSpacing: '-0.01em', fontWeight: '600' }], 'label-md': ['13px', { lineHeight: '16px', letterSpacing: '0.01em', fontWeight: '500' }], 'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.04em', fontWeight: '600' }], 'headline-sm': ['16px', { lineHeight: '22px', fontWeight: '600' }], 'headline-lg': ['28px', { lineHeight: '36px', letterSpacing: '-0.015em', fontWeight: '700' }], 'body-lg': ['16px', { lineHeight: '24px', fontWeight: '400' }], 'body-sm': ['12px', { lineHeight: '16px', fontWeight: '400' }], 'label-numeric-md': ['18px', { lineHeight: '24px', fontWeight: '600' }], 'body-md': ['14px', { lineHeight: '20px', fontWeight: '400' }], 'display-lg': ['36px', { lineHeight: '44px', letterSpacing: '-0.02em', fontWeight: '700' }], 'headline-md': ['20px', { lineHeight: '26px', fontWeight: '600' }], 'headline-lg-mobile': ['22px', { lineHeight: '28px', letterSpacing: '-0.01em', fontWeight: '700' }] } } } };</script><style>@layer base { html, body { width: 100vw; margin: 0; padding: 0; } body { overscroll-behavior-y: none; -webkit-tap-highlight-color: transparent; } .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); } .pt-safe { padding-top: env(safe-area-inset-top, 0px); } } ::-webkit-scrollbar { display: none; }</style></head><body class="bg-background font-body-md text-on-surface flex flex-col antialiased"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-28 px-margin-mobile flex flex-col justify-center gap-pad-xs"><div class="flex items-center justify-between"><div class="flex items-center gap-pad-xs"><button aria-label="Voltar" class="w-touch-min h-touch-min -ml-pad-xs rounded-full flex items-center justify-center text-on-surface hover:bg-surface-container active:bg-surface-container-high transition-colors" onclick="history.back()" type="button"><span class="material-symbols-outlined text-[24px]">arrow_back</span></button><h1 class="font-headline-sm text-headline-sm text-on-surface tracking-tight truncate">Calculadora De Dobras</h1></div><div class="flex items-center gap-pad-2xs"><button aria-label="Histórico de medições" class="w-touch-min h-touch-min rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">history</span></button><button aria-label="Informações do protocolo" class="w-touch-min h-touch-min rounded-full flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">info</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center ml-pad-2xs shadow-sm"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div><div class="flex items-center justify-between bg-surface-container-low px-pad-sm py-pad-2xs rounded-lg"><div class="flex items-center gap-pad-xs min-w-0"><span class="w-2 h-2 rounded-full bg-primary shrink-0"></span><span class="font-headline-sm text-label-md text-on-surface truncate font-semibold">Mariana Costa</span><span class="font-body-sm text-body-sm text-secondary shrink-0">34a</span></div><div class="flex items-center gap-pad-sm shrink-0"><span class="font-label-sm text-label-sm text-on-surface-variant">64.5kg</span><span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-high px-pad-xs py-0.5 rounded">IMC 23.7</span></div></div></div></header><main class="flex flex-col relative w-full pt-28 pb-32 bg-surface min-h-screen"><div class="flex flex-col w-full">
+<!-- Top Progress & Protocol Status Tracker -->
+<div class="px-margin-mobile py-pad-sm bg-surface-container-lowest shadow-sm flex flex-col gap-pad-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-pad-xs">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-headline-sm text-label-md text-on-surface font-semibold">Protocolo de Jackson-Pollock 7 Dobras</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-bold bg-primary-fixed/30 px-pad-xs py-0.5 rounded-full">Padrão Ouro</span>
+</div>
+<!-- Progress Bar -->
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full transition-all duration-300 ease-out" style="width: 100%;"></div>
+</div>
+<div class="flex items-center justify-between text-secondary">
+<span class="font-body-sm text-body-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+        7 de 7 dobras registradas
+      </span>
+<span class="font-label-numeric-md text-label-sm text-on-surface font-semibold">Σ 94.8 mm</span>
+</div>
+</div>
+<div class="px-margin-mobile py-pad-md flex flex-col gap-pad-md">
+<!-- 1. Patient Context & Calliper Instrumentation -->
+<div class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm flex flex-col gap-pad-sm">
+<div class="flex items-start justify-between">
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-pad-xs">
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold truncate">Mariana Costa</h2>
+<span class="font-label-sm text-label-sm px-pad-xs py-0.5 rounded bg-surface-container-high text-secondary font-medium">Avaliação #4</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary mt-0.5">34 anos • 64.5 kg • 165 cm • IMC 23.7 (Eutrofia)</p>
+</div>
+<button class="h-8 px-pad-sm rounded-lg bg-surface-container-low text-primary font-label-md text-label-sm flex items-center gap-1 hover:bg-surface-container transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">history</span>
+<span>Histórico (3)</span>
+</button>
+</div>
+<div class="flex items-center justify-between pt-pad-xs border-t-0 bg-surface-container-low/70 px-pad-sm py-pad-2xs rounded-lg">
+<div class="flex items-center gap-pad-xs min-w-0">
+<span class="material-symbols-outlined text-[16px] text-primary">straighten</span>
+<span class="font-body-sm text-body-sm text-on-surface font-medium truncate">Harpenden Científico 0.1mm (10g/mm²)</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary shrink-0">Hoje, 09:40</span>
+</div>
+</div>
+<!-- 2. Protocol Switchers & Formula Toggle -->
+<div class="flex flex-col gap-pad-xs">
+<div class="flex items-center justify-between px-pad-2xs">
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider font-semibold">Protocolo de Dobras</span>
+<span class="font-label-sm text-label-sm text-primary font-medium flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[14px]">tune</span> Personalizado
+        </span>
+</div>
+<!-- Protocol Selection Chips -->
+<div class="flex items-center gap-pad-xs overflow-x-auto pb-1 scrollbar-none">
+<button class="h-9 px-pad-md rounded-full bg-primary text-on-primary font-label-md text-label-md shrink-0 shadow-sm flex items-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">check</span>
+<span>Jackson-Pollock 7</span>
+</button>
+<button class="h-9 px-pad-md rounded-full bg-surface-container-lowest text-secondary font-label-md text-label-md shrink-0 hover:bg-surface-container-high transition-colors" type="button">
+          JP 3 Dobras
+        </button>
+<button class="h-9 px-pad-md rounded-full bg-surface-container-lowest text-secondary font-label-md text-label-md shrink-0 hover:bg-surface-container-high transition-colors" type="button">
+          Durnin-Womersley 4
+        </button>
+<button class="h-9 px-pad-md rounded-full bg-surface-container-lowest text-secondary font-label-md text-label-md shrink-0 hover:bg-surface-container-high transition-colors" type="button">
+          Faulkner 4
+        </button>
+</div>
+<!-- Density Equation Toggle -->
+<div class="bg-surface-container-low p-pad-2xs rounded-lg flex items-center mt-1">
+<button class="flex-1 py-1.5 rounded-md bg-surface-container-lowest text-primary shadow-xs font-label-md text-label-sm font-semibold flex items-center justify-center gap-1" type="button">
+<span class="material-symbols-outlined text-[14px]">science</span>
+<span>Siri (1961) [%G]</span>
+</button>
+<button class="flex-1 py-1.5 rounded-md text-secondary hover:text-on-surface font-label-md text-label-sm font-medium flex items-center justify-center gap-1" type="button">
+<span>Brozek (1963)</span>
+</button>
+</div>
+</div>
+<!-- 3. ISAK Photographic Atlas Reference Card (Collapsible) -->
+<details class="group bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden" open="">
+<summary class="list-none p-pad-md flex items-center justify-between cursor-pointer select-none">
+<div class="flex items-center gap-pad-sm">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">photo_library</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">Guia Fotográfico ISAK</span>
+<span class="font-body-sm text-body-sm text-secondary">Localização e pinçamento anatômico padronizado</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[20px] text-secondary group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="px-pad-md pb-pad-md flex flex-col gap-pad-sm">
+<div class="w-full rounded-lg overflow-hidden bg-surface-container-low shadow-inner">
+<img alt="Guia fotográfico de marcações das dobras cutâneas ISAK" class="w-full h-auto object-cover object-center" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvy_cdA1KxABvqlieEE24dNKCAuymiY8BSS-MGT-W1yd4kDt1cAyy0kKGCe4WA5C6LJea6CrSPKU8dluJ3rrEYU3ERhakzLwQSQNSoNeZAI1k8hmubh2KouxhKbTQVExm63oGOjF6pUnrrExp_Jr8GT3wJYySe0t8yih_h7F6OlgVYJizkyEBMtF8JCvEnWb-gvMqaLHfmeU7qoV5BkWCAc79gqizJP8b_J3t_8FnuyJA6TrWYti1SaW2iISJ6MIBo"/>
+</div>
+<div class="flex items-center justify-between bg-surface-container-low p-pad-xs rounded-lg text-secondary">
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+<span class="font-label-sm text-label-sm font-semibold">Tolerância Triplicatas ≤ 5%</span>
+</div>
+<span class="font-label-sm text-label-sm bg-primary/10 text-primary px-pad-xs py-0.5 rounded font-bold">100% Conforme</span>
+</div>
+</div>
+</details>
+<!-- 4. Real-time Body Composition Floating Metric Panel -->
+<div class="bg-primary text-on-primary rounded-xl p-pad-md shadow-md flex flex-col gap-pad-sm relative overflow-hidden">
+<!-- Background subtle decorative pattern -->
+<div class="absolute -right-6 -bottom-6 w-32 h-32 rounded-full bg-on-primary/5 pointer-events-none"></div>
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-primary/80 uppercase tracking-wider font-semibold">Composição Corporal Estimada</span>
+<span class="font-label-sm text-label-sm px-pad-xs py-0.5 rounded-full bg-on-primary/20 text-on-primary font-bold">
+          Saudável (Pollock &amp; Wilmore)
+        </span>
+</div>
+<div class="flex items-baseline justify-between mt-1">
+<div class="flex items-baseline gap-pad-2xs">
+<span class="font-display-lg text-display-lg font-bold tracking-tight text-on-primary">20.0</span>
+<span class="font-headline-md text-headline-md font-semibold text-on-primary/80">%G</span>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-numeric-md text-label-numeric-md font-semibold text-on-primary">1.0531</span>
+<span class="font-body-sm text-body-sm text-on-primary/70">DC (g/cm³)</span>
+</div>
+</div>
+<!-- Risk Range Thermometer Bar -->
+<div class="flex flex-col gap-1 mt-1">
+<div class="flex justify-between font-label-sm text-label-sm text-on-primary/80">
+<span>Atleta (&lt;16%)</span>
+<span class="font-bold text-on-primary">Alvo (20–24%)</span>
+<span>Moderado (&gt;28%)</span>
+</div>
+<div class="relative w-full h-2 rounded-full bg-on-primary/20 overflow-visible">
+<!-- Indicator pinpoint -->
+<div class="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-on-primary shadow-md border-2 border-primary" style="left: 42%;"></div>
+<!-- Target band -->
+<div class="absolute top-0 bottom-0 bg-on-primary/40 rounded-full" style="left: 35%; width: 30%;"></div>
+</div>
+</div>
+<!-- Session Variance Pills -->
+<div class="flex items-center gap-pad-xs mt-1">
+<span class="font-label-sm text-label-sm px-pad-xs py-1 rounded bg-on-primary/15 text-on-primary font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">trending_down</span> -1.8% Gordura
+        </span>
+<span class="font-label-sm text-label-sm px-pad-xs py-1 rounded bg-on-primary/15 text-on-primary font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">trending_up</span> +0.9 kg Magra
+        </span>
+</div>
+<!-- Compartment Split Cards -->
+<div class="grid grid-cols-2 gap-pad-xs pt-pad-xs border-t-0 bg-on-primary/10 -mx-pad-md -mb-pad-md p-pad-sm">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm text-on-primary/80">Massa Gorda (MG)</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-label-numeric-md text-label-numeric-md font-bold text-on-primary">12.9</span>
+<span class="font-body-sm text-body-sm text-on-primary/80">kg</span>
+<span class="font-label-sm text-label-sm text-on-primary/70 ml-1">(20.0%)</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm text-on-primary/80">Massa Livre de Gordura</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-label-numeric-md text-label-numeric-md font-bold text-on-primary">51.6</span>
+<span class="font-body-sm text-body-sm text-on-primary/80">kg</span>
+<span class="font-label-sm text-label-sm text-on-primary/70 ml-1">(80.0%)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 5. Skinfold Triplicate Collection List (High-Contrast Touch Cards) -->
+<div class="flex flex-col gap-pad-sm">
+<div class="flex items-center justify-between px-pad-2xs">
+<div class="flex items-center gap-pad-xs">
+<span class="material-symbols-outlined text-[18px] text-primary">checklist</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Medições em Triplicata ISAK</h3>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-medium">Unidade: milímetros (mm)</span>
+</div>
+<!-- Fold 01: Subescapular -->
+<div class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm flex flex-col gap-pad-xs transition-shadow hover:shadow-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-pad-xs">
+<span class="w-6 h-6 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm font-bold flex items-center justify-center shrink-0">01</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold leading-tight">Subescapular (SE)</span>
+<span class="font-body-sm text-body-sm text-secondary">Oblíqua 45° • 2 cm abaixo do ângulo inferior</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-sm text-label-sm text-secondary">Média Final</span>
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold">12.5 <span class="font-body-sm text-body-sm text-secondary font-normal">mm</span></span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-pad-xs mt-pad-xs">
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Medida 1</label>
+<input class="h-11 w-full text-center bg-surface-container-low rounded-lg font-label-numeric-md text-label-numeric-md text-on-surface font-semibold focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary shadow-xs" step="0.1" type="number" value="12.4"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Medida 2</label>
+<input class="h-11 w-full text-center bg-surface-container-low rounded-lg font-label-numeric-md text-label-numeric-md text-on-surface font-semibold focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary shadow-xs" step="0.1" type="number" value="12.6"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Medida 3</label>
+<input class="h-11 w-full text-center bg-surface-container-low rounded-lg font-label-numeric-md text-label-numeric-md text-on-surface font-semibold focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary shadow-xs" step="0.1" type="number" value="12.5"/>
+</div>
+</div>
+</div>
+<!-- Fold 02: Tricipital -->
+<div class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm flex flex-col gap-pad-xs transition-shadow hover:shadow-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-pad-xs">
+<span class="w-6 h-6 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm font-bold flex items-center justify-center shrink-0">02</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold leading-tight">Tricipital (TR)</span>
+<span class="font-body-sm text-body-sm text-secondary">Vertical • Ponto médio acrômio-radial posterior</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-sm text-label-sm text-secondary">Média Final</span>
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold">16.0 <span class="font-body-sm text-body-sm text-secondary font-normal">mm</span></span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-pad-xs mt-pad-xs">
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Medida 1</label>
+<input class="h-11 w-full text-center bg-surface-container-low rounded-lg font-label-numeric-md text-label-numeric-md text-on-surface font-semibold focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary shadow-xs" step="0.1" type="number" value="16.0"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Medida 2</label>
+<input class="h-11 w-full text-center bg-surface-container-low rounded-lg font-label-numeric-md text-label-numeric-md text-on-surface font-semibold focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary shadow-xs" step="0.1" type="number" value="16.2"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Medida 3</label>
+<input class="h-11 w-full text-center bg-surface-container-low rounded-lg font-label-numeric-md text-label-numeric-md text-on-surface font-semibold focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary shadow-xs" step="0.1" type="number" value="15.8"/>
+</div>
+</div>
+</div>
+<!-- Fold 03: Torácica / Peitoral -->
+<div class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm flex flex-col gap-pad-xs transition-shadow hover:shadow-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-pad-xs">
+<span class="w-6 h-6 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm font-bold flex items-center justify-center shrink-0">03</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold leading-tight">Torácica / Peitoral (PE)</span>
+<span class="font-body-sm text-body-sm text-secondary">Diagonal • 1/3 anterior axila-mamilo (Feminino)</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-sm text-label-sm text-secondary">Média Final</span>
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold">7.9 <span class="font-body-sm text-body-sm text-secondary font-normal">mm</span></span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-pad-xs mt-pad-xs">
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Medida 1</label>
+<input class="h-11 w-full text-center bg-surface-container-low rounded-lg font-label-numeric-md text-label-numeric-md text-on-surface font-semibold focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary shadow-xs" step="0.1" type="number" value="7.8"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Medida 2</label>
+<input class="h-11 w-full text-center bg-surface-container-low rounded-lg font-label-numeric-md text-label-numeric-md text-on-surface font-semibold focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary shadow-xs" step="0.1" type="number" value="8.0"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Medida 3</label>
+<input class="h-11 w-full text-center bg-surface-container-low rounded-lg font-label-numeric-md text-label-numeric-md text-on-surface font-semibold focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary shadow-xs" step="0.1" type="number" value="7.9"/>
+</div>
+</div>
+</div>
+<!-- Fold 04: Axilar Média -->
+<div class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm flex flex-col gap-pad-xs transition-shadow hover:shadow-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-pad-xs">
+<span class="w-6 h-6 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm font-bold flex items-center justify-center shrink-0">04</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold leading-tight">Axilar Média (AM)</span>
+<span class="font-body-sm text-body-sm text-secondary">Horizontal • Linha axilar média na altura do apêndice xifoide</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-sm text-label-sm text-secondary">Média Final</span>
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold">10.3 <span class="font-body-sm text-body-sm text-secondary font-normal">mm</span></span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-pad-xs mt-pad-xs">
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Medida 1</label>
+<input class="h-11 w-full text-center bg-surface-container-low rounded-lg font-label-numeric-md text-label-numeric-md text-on-surface font-semibold focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary shadow-xs" step="0.1" type="number" value="10.2"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Medida 2</label>
+<input class="h-11 w-full text-center bg-surface-container-low rounded-lg font-label-numeric-md text-label-numeric-md text-on-surface font-semibold focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary shadow-xs" step="0.1" type="number" value="10.4"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Medida 3</label>
+<input class="h-11 w-full text-center bg-surface-container-low rounded-lg font-label-numeric-md text-label-numeric-md text-on-surface font-semibold focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary shadow-xs" step="0.1" type="number" value="10.3"/>
+</div>
+</div>
+</div>
+<!-- Fold 05: Supra-ilíaca -->
+<div class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm flex flex-col gap-pad-xs transition-shadow hover:shadow-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-pad-xs">
+<span class="w-6 h-6 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm font-bold flex items-center justify-center shrink-0">05</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold leading-tight">Supra-ilíaca (SI)</span>
+<span class="font-body-sm text-body-sm text-secondary">Oblíqua anterior • Imediatamente acima da crista ilíaca</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-sm text-label-sm text-secondary">Média Final</span>
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold">14.2 <span class="font-body-sm text-body-sm text-secondary font-normal">mm</span></span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-pad-xs mt-pad-xs">
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Medida 1</label>
+<input class="h-11 w-full text-center bg-surface-container-low rounded-lg font-label-numeric-md text-label-numeric-md text-on-surface font-semibold focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary shadow-xs" step="0.1" type="number" value="14.1"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Medida 2</label>
+<input class="h-11 w-full text-center bg-surface-container-low rounded-lg font-label-numeric-md text-label-numeric-md text-on-surface font-semibold focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary shadow-xs" step="0.1" type="number" value="14.3"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Medida 3</label>
+<input class="h-11 w-full text-center bg-surface-container-low rounded-lg font-label-numeric-md text-label-numeric-md text-on-surface font-semibold focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary shadow-xs" step="0.1" type="number" value="14.2"/>
+</div>
+</div>
+</div>
+<!-- Fold 06: Abdominal -->
+<div class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm flex flex-col gap-pad-xs transition-shadow hover:shadow-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-pad-xs">
+<span class="w-6 h-6 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm font-bold flex items-center justify-center shrink-0">06</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold leading-tight">Abdominal (AB)</span>
+<span class="font-body-sm text-body-sm text-secondary">Vertical • 2 cm lateralmente à cicatriz umbilical</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-sm text-label-sm text-secondary">Média Final</span>
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold">15.9 <span class="font-body-sm text-body-sm text-secondary font-normal">mm</span></span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-pad-xs mt-pad-xs">
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Medida 1</label>
+<input class="h-11 w-full text-center bg-surface-container-low rounded-lg font-label-numeric-md text-label-numeric-md text-on-surface font-semibold focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary shadow-xs" step="0.1" type="number" value="15.8"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Medida 2</label>
+<input class="h-11 w-full text-center bg-surface-container-low rounded-lg font-label-numeric-md text-label-numeric-md text-on-surface font-semibold focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary shadow-xs" step="0.1" type="number" value="16.0"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Medida 3</label>
+<input class="h-11 w-full text-center bg-surface-container-low rounded-lg font-label-numeric-md text-label-numeric-md text-on-surface font-semibold focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary shadow-xs" step="0.1" type="number" value="15.9"/>
+</div>
+</div>
+</div>
+<!-- Fold 07: Coxa Medial -->
+<div class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm flex flex-col gap-pad-xs transition-shadow hover:shadow-md">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-pad-xs">
+<span class="w-6 h-6 rounded-full bg-surface-container-high text-on-surface font-label-sm text-label-sm font-bold flex items-center justify-center shrink-0">07</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold leading-tight">Coxa Medial (CX)</span>
+<span class="font-body-sm text-body-sm text-secondary">Vertical • Ponto médio entre dobra inguinal e bordo superior da patela</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-sm text-label-sm text-secondary">Média Final</span>
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold">18.0 <span class="font-body-sm text-body-sm text-secondary font-normal">mm</span></span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-pad-xs mt-pad-xs">
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Medida 1</label>
+<input class="h-11 w-full text-center bg-surface-container-low rounded-lg font-label-numeric-md text-label-numeric-md text-on-surface font-semibold focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary shadow-xs" step="0.1" type="number" value="18.0"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Medida 2</label>
+<input class="h-11 w-full text-center bg-surface-container-low rounded-lg font-label-numeric-md text-label-numeric-md text-on-surface font-semibold focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary shadow-xs" step="0.1" type="number" value="18.2"/>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-label-sm text-label-sm text-secondary">Medida 3</label>
+<input class="h-11 w-full text-center bg-surface-container-low rounded-lg font-label-numeric-md text-label-numeric-md text-on-surface font-semibold focus:bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary shadow-xs" step="0.1" type="number" value="17.8"/>
+</div>
+</div>
+</div>
+</div>
+<!-- 6. Goal & Target Weight Simulator -->
+<div class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm flex flex-col gap-pad-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-pad-xs">
+<span class="material-symbols-outlined text-[20px] text-primary">target</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Simulador de Meta &amp; Peso Alvo</h3>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-medium">Manutenção Magra</span>
+</div>
+<div class="flex flex-col gap-pad-xs bg-surface-container-low p-pad-sm rounded-lg">
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-secondary">% Gordura Alvo:</span>
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold" id="targetFatDisplay">18.0%</span>
+</div>
+<input class="w-full accent-primary h-2 bg-surface-container rounded-lg cursor-pointer" id="targetFatSlider" max="26" min="14" step="0.5" type="range" value="18"/>
+<div class="flex justify-between font-label-sm text-label-sm text-secondary">
+<span>14% (Competitivo)</span>
+<span>18% (Alvo Atleta)</span>
+<span>26% (Limite Eutrofia)</span>
+</div>
+</div>
+<!-- Projection Results -->
+<div class="grid grid-cols-2 gap-pad-xs">
+<div class="bg-surface-container-low p-pad-sm rounded-lg flex flex-col">
+<span class="font-body-sm text-body-sm text-secondary">Peso Projetado</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface font-bold" id="targetWeightVal">62.9</span>
+<span class="font-body-sm text-body-sm text-secondary">kg</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-semibold mt-1">IMC 23.1</span>
+</div>
+<div class="bg-surface-container-low p-pad-sm rounded-lg flex flex-col">
+<span class="font-body-sm text-body-sm text-secondary">Gordura a Perder</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold" id="fatLossVal">-2.7</span>
+<span class="font-body-sm text-body-sm text-secondary">kg</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary mt-1">Déficit: ~300 kcal/dia</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-secondary bg-surface-container-low/50 p-pad-xs rounded text-justify">
+        Ritmo sugerido de 8 a 10 semanas de reeducação nutricional e periodização hipertrófica para assegurar 100% de preservação da massa livre de gordura (MLG).
+      </p>
+</div>
+<!-- 7. Anthropometric Diagnostic Synthesis & Expert Opinion -->
+<div class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm flex flex-col gap-pad-sm">
+<div class="flex items-center gap-pad-xs">
+<span class="material-symbols-outlined text-[20px] text-primary">assignment</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Síntese Diagnóstica Antropométrica</h3>
+</div>
+<!-- Clinical Badges -->
+<div class="flex flex-wrap gap-pad-xs">
+<span class="font-label-sm text-label-sm px-pad-xs py-1 rounded bg-secondary-container text-on-secondary-container font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">female</span> Ginóide / Eutrófica
+        </span>
+<span class="font-label-sm text-label-sm px-pad-xs py-1 rounded bg-surface-container-high text-on-surface font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">workspace_premium</span> ISAK Nível 1 Certificado
+        </span>
+<span class="font-label-sm text-label-sm px-pad-xs py-1 rounded bg-primary-fixed/40 text-on-primary-fixed-variant font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">functions</span> Equação Siri Ativa
+        </span>
+</div>
+<!-- Parecer Clínico -->
+<div class="bg-surface-container-low p-pad-sm rounded-lg">
+<p class="font-body-md text-body-md text-on-surface leading-relaxed text-justify">
+          Paciente do sexo feminino, 34 anos, exibe excelente taxa de massa magra (80.0%) e nível adiposo em faixa eutrófica saudável (20.0%). Identifica-se discreta predominância troncular com maior reserva adiposa nas regiões supra-ilíaca e abdominal (Σ 30.1 mm), apresentando rápida resposta aos ajustes prévios do plano de treino e suporte proteico.
+        </p>
+</div>
+<!-- Secondary Clinical Actions -->
+<div class="grid grid-cols-2 gap-pad-xs pt-pad-xs">
+<button class="h-11 px-pad-sm rounded-lg bg-surface-container-low text-on-surface hover:bg-surface-container font-label-md text-label-md flex items-center justify-center gap-pad-xs transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">chat</span>
+<span class="truncate">Resumo WhatsApp</span>
+</button>
+<button class="h-11 px-pad-sm rounded-lg bg-surface-container-low text-on-surface hover:bg-surface-container font-label-md text-label-md flex items-center justify-center gap-pad-xs transition-colors" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">compare_arrows</span>
+<span class="truncate">Comparar com BIA</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Interactive Target Weight Simulator Micro-Interaction Script -->
+<script>
+    (function() {
+      const slider = document.getElementById('targetFatSlider');
+      const fatDisplay = document.getElementById('targetFatDisplay');
+      const weightDisplay = document.getElementById('targetWeightVal');
+      const fatLossDisplay = document.getElementById('fatLossVal');
+
+      if (!slider || !fatDisplay || !weightDisplay || !fatLossDisplay) return;
+
+      const leanMass = 51.6; // kg
+      const currentWeight = 64.5; // kg
+      const currentFat = 12.9; // kg
+
+      slider.addEventListener('input', function(e) {
+        const targetPercent = parseFloat(e.target.value);
+        fatDisplay.textContent = targetPercent.toFixed(1) + '%';
+        
+        // Target weight formula: MLG / (1 - (target % / 100))
+        const targetWeight = leanMass / (1 - (targetPercent / 100));
+        const fatLoss = currentWeight - targetWeight;
+        
+        weightDisplay.textContent = targetWeight.toFixed(1);
+        fatLossDisplay.textContent = '-' + (fatLoss > 0 ? fatLoss.toFixed(1) : '0.0');
+      });
+    })();
+  </script>
+</div></main><footer class="fixed bottom-0 w-full z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-4px_16px_rgba(0,0,0,0.04)]"><div class="px-margin-mobile py-pad-sm flex items-center gap-pad-sm"><button class="h-12 px-pad-md rounded-lg bg-surface-container-lowest text-secondary font-headline-sm text-body-md flex items-center justify-center gap-pad-xs shadow-sm hover:bg-surface-container active:bg-surface-container-high transition-all flex-1 min-w-[120px]" type="button"><span class="material-symbols-outlined text-[20px]">picture_as_pdf</span><span class="truncate">Exportar PDF</span></button><button class="h-12 px-pad-lg rounded-lg bg-primary text-on-primary font-headline-sm text-body-md flex items-center justify-center gap-pad-xs shadow-md hover:bg-primary-container active:opacity-95 transition-all flex-[1.4]" type="button"><span class="material-symbols-outlined text-[20px]">save</span><span class="truncate font-semibold">Salvar no Prontuário</span></button></div></footer></body></html>

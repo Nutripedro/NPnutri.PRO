@@ -1,0 +1,716 @@
+<!DOCTYPE html><html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+<title>Avaliação RCQ - Relação Cintura-Quadril</title>
+<!-- Tailwind CSS v3 CDN with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Plus Jakarta Sans & Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+<script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              dark: '#0a0f1d',
+              card: '#131b2e',
+              surface: '#1e293b',
+              border: '#2a374f',
+              emerald: '#046a38',
+              accentGreen: '#10b981',
+              accentCyan: '#06b6d4',
+              accentRose: '#f43f5e',
+              accentPink: '#ec4899',
+              amber: '#f59e0b',
+              red: '#ef4444'
+            }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+<!-- BEGIN: Custom Styles -->
+<style data-purpose="base-styling">
+    body {
+      background-color: #0a0f1d;
+      color: #f1f5f9;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      height: 22px;
+      width: 22px;
+      border-radius: 50%;
+      background: #06b6d4;
+      cursor: pointer;
+      -webkit-appearance: none;
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.6);
+      border: 2px solid #ffffff;
+    }
+    .gender-female input[type=range]::-webkit-slider-thumb {
+      background: #ec4899;
+      box-shadow: 0 0 10px rgba(236, 72, 153, 0.6);
+    }
+  </style>
+<style data-purpose="animations-and-highlights">
+    @keyframes pulseGlow {
+      0%, 100% {
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+      }
+      50% {
+        box-shadow: 0 0 14px 2px rgba(16, 185, 129, 0.85);
+      }
+    }
+    .active-row-highlight {
+      position: relative;
+      animation: pulseGlow 2.5s infinite;
+      outline: 2px solid #10b981 !important;
+      outline-offset: -2px;
+    }
+    .active-cell-badge {
+      position: relative;
+    }
+    .active-cell-badge::after {
+      content: '● SEU SCORE';
+      position: absolute;
+      top: -10px;
+      right: 50%;
+      transform: translateX(50%);
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      background: #0f172a;
+      color: #34d399;
+      padding: 1px 5px;
+      border-radius: 9999px;
+      border: 1px solid #10b981;
+      white-space: nowrap;
+      z-index: 10;
+    }
+  </style>
+<!-- END: Custom Styles -->
+</head>
+<body class="min-h-screen flex flex-col justify-between pb-28 antialiased selection:bg-cyan-500 selection:text-white">
+<!-- BEGIN: MainHeader -->
+<header class="sticky top-0 z-40 bg-[#0c1324]/90 backdrop-blur-md border-b border-brand-border px-4 py-3 sm:px-6">
+<div class="max-w-3xl mx-auto flex items-center justify-between">
+<div class="flex items-center space-x-3">
+<button aria-label="Voltar ou fechar" class="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-800/80 border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-700 transition" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<div>
+<div class="flex items-center gap-2">
+<h1 class="text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-1.5">
+              Avaliação RCQ
+              <span class="text-xs px-2 py-0.5 rounded-full font-semibold bg-emerald-950/80 text-emerald-400 border border-emerald-800/50">Cintura-Quadril</span>
+</h1>
+</div>
+<p class="text-[11px] text-slate-400">Risco Coronariano &amp; Padrão de Adiposidade</p>
+</div>
+</div>
+<!-- Badges de Protocolo -->
+<div class="hidden sm:flex flex-col items-end text-[10px] text-slate-400 font-mono">
+<span class="bg-slate-800 text-cyan-300 px-2 py-0.5 rounded border border-cyan-900/60 font-semibold">ISAK Standard</span>
+<span class="text-slate-500 mt-0.5">Human Kinetics 1996</span>
+</div>
+</div>
+</header>
+<!-- END: MainHeader -->
+<!-- BEGIN: MainContent -->
+<main class="max-w-3xl mx-auto w-full px-3 sm:px-6 pt-4 space-y-5">
+<!-- BEGIN: ReferenceCitationBanner -->
+<div class="flex items-center justify-between bg-gradient-to-r from-slate-900 to-brand-card p-3 rounded-xl border border-brand-border/70 text-xs">
+<div class="flex items-center space-x-2 text-slate-300">
+<span class="flex h-2 w-2 relative">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+</span>
+<span class="text-slate-300 font-medium">Tabela Normativa Oficial</span>
+</div>
+<span class="text-[11px] text-slate-400 italic">Applied Body Composition, pág. 82</span>
+</div>
+<!-- END: ReferenceCitationBanner -->
+<!-- BEGIN: GenderSelector -->
+<section aria-label="Seletor de Modelo Anatômico" class="bg-brand-card p-1.5 rounded-2xl border border-brand-border shadow-lg">
+<div class="grid grid-cols-2 gap-2" role="tablist">
+<!-- Botão Masculino -->
+<button aria-selected="true" class="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-md shadow-cyan-900/30 border border-cyan-400/40" id="btn-male" role="tab" type="button">
+<svg class="w-4 h-4 text-cyan-200" fill="currentColor" viewBox="0 0 20 20">
+<path d="M10 2a5 5 0 00-5 5v1a5 5 0 0010 0V7a5 5 0 00-5-5zm-5 13a3 3 0 013-3h4a3 3 0 013 3v2H5v-2z"></path>
+</svg>
+<span class="">♂ Modelo Masculino</span>
+<span class="text-[10px] px-1.5 py-0.2 bg-black/30 rounded text-cyan-200 font-mono">Androide</span>
+</button>
+<!-- Botão Feminino -->
+<button aria-selected="false" class="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 bg-slate-800/80 text-slate-400 hover:text-slate-200 border border-transparent" id="btn-female" role="tab" type="button">
+<svg class="w-4 h-4 text-pink-400" fill="currentColor" viewBox="0 0 20 20">
+<path d="M10 2a5 5 0 00-5 5v1a5 5 0 0010 0V7a5 5 0 00-5-5zm-4 13a3 3 0 013-3h2a3 3 0 013 3v2H6v-2z"></path>
+</svg>
+<span class="">♀ Modelo Feminino</span>
+<span class="text-[10px] px-1.5 py-0.2 bg-black/30 rounded text-pink-300 font-mono">Ginoide</span>
+</button>
+</div>
+</section>
+<!-- END: GenderSelector -->
+<!-- BEGIN: CalculatorAndVisualCard -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+<!-- Painel de Inputs Numéricos -->
+<div class="md:col-span-7 bg-brand-card p-4 sm:p-5 rounded-2xl border border-brand-border space-y-4">
+<div class="flex items-center justify-between border-b border-slate-800 pb-3">
+<h2 class="text-sm font-bold text-slate-200 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-cyan-400"></span>
+            Dados Antropométricos (ISAK)
+          </h2>
+<span class="text-[11px] font-mono text-cyan-400/90 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800/40">Cálculo Ativo</span>
+</div>
+<!-- Seletor de Idade -->
+<div class="space-y-1.5">
+<div class="flex justify-between items-center text-xs">
+<label class="text-slate-300 font-medium" for="age-input">Idade do Paciente</label>
+<span class="font-mono text-cyan-400 bg-slate-800 px-2 py-0.5 rounded text-[11px] font-bold" id="age-badge">Faixa: 30 a 39 anos</span>
+</div>
+<div class="grid grid-cols-5 gap-1 pt-1" id="age-presets">
+<button class="age-btn text-xs py-1.5 rounded-lg border border-slate-700 bg-slate-800/60 hover:border-cyan-500 font-medium text-slate-300" data-age-range="20-29" type="button">20-29</button>
+<button class="age-btn text-xs py-1.5 rounded-lg border border-cyan-400 bg-cyan-950/70 text-cyan-300 font-bold active-age" data-age-range="30-39" type="button">30-39</button>
+<button class="age-btn text-xs py-1.5 rounded-lg border border-slate-700 bg-slate-800/60 hover:border-cyan-500 font-medium text-slate-300" data-age-range="40-49" type="button">40-49</button>
+<button class="age-btn text-xs py-1.5 rounded-lg border border-slate-700 bg-slate-800/60 hover:border-cyan-500 font-medium text-slate-300" data-age-range="50-59" type="button">50-59</button>
+<button class="age-btn text-xs py-1.5 rounded-lg border border-slate-700 bg-slate-800/60 hover:border-cyan-500 font-medium text-slate-300" data-age-range="60-69" type="button">60-69</button>
+</div>
+<div class="flex items-center gap-3 pt-1">
+<input class="w-full accent-cyan-500 h-1.5 bg-slate-700 rounded-lg cursor-pointer" id="age-range" max="69" min="20" type="range" value="32">
+<span class="text-xs font-mono font-bold text-white bg-slate-800 px-2 py-1 rounded min-w-[52px] text-center border border-slate-700" id="age-val-display">32 a</span>
+</div>
+</div>
+<!-- Perímetro da Cintura -->
+<div class="space-y-1.5 pt-2 border-t border-slate-800/80">
+<div class="flex justify-between items-center text-xs">
+<div>
+<span class="text-slate-200 font-semibold">1. Perímetro da Cintura</span>
+<p class="text-[10px] text-slate-400 leading-tight">Ponto mais estreito entre última costela e crista ilíaca</p>
+</div>
+<div class="flex items-baseline space-x-1">
+<input class="w-20 bg-slate-900 border border-slate-700 rounded-lg py-1 px-2 text-right font-mono font-bold text-sm text-cyan-300 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400" id="waist-input" max="160" min="40" step="0.5" type="number" value="82.0">
+<span class="text-xs text-slate-400">cm</span>
+</div>
+</div>
+<input class="w-full accent-cyan-500 h-1.5 bg-slate-700 rounded-lg cursor-pointer" id="waist-slider" max="140" min="50" step="0.5" type="range" value="82.0">
+</div>
+<!-- Perímetro do Quadril -->
+<div class="space-y-1.5 pt-2 border-t border-slate-800/80">
+<div class="flex justify-between items-center text-xs">
+<div>
+<span class="text-slate-200 font-semibold">2. Perímetro do Quadril</span>
+<p class="text-[10px] text-slate-400 leading-tight">Plano horizontal no nível de maior protuberância glútea</p>
+</div>
+<div class="flex items-baseline space-x-1">
+<input class="w-20 bg-slate-900 border border-slate-700 rounded-lg py-1 px-2 text-right font-mono font-bold text-sm text-cyan-300 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400" id="hip-input" max="170" min="50" step="0.5" type="number" value="98.0">
+<span class="text-xs text-slate-400">cm</span>
+</div>
+</div>
+<input class="w-full accent-cyan-500 h-1.5 bg-slate-700 rounded-lg cursor-pointer" id="hip-slider" max="150" min="60" step="0.5" type="range" value="98.0">
+</div>
+<!-- Fórmula e Cálculo Automático -->
+<div class="bg-slate-900/90 rounded-xl p-3 border border-slate-800 flex items-center justify-between text-xs">
+<div>
+<span class="text-[10px] uppercase font-mono tracking-wider text-slate-400">Fórmula de Dispersão</span>
+<div class="font-mono text-slate-300 mt-0.5">
+              RCQ = <span class="text-cyan-400 font-semibold" id="formula-waist">82.0</span> ÷ <span class="text-cyan-400 font-semibold" id="formula-hip">98.0</span>
+</div>
+</div>
+<div class="text-right">
+<span class="text-[10px] text-slate-400 block font-mono">Índice Calculado</span>
+<span class="text-xl font-extrabold text-cyan-400 font-mono tracking-tight" id="rcq-big-value">0.837</span>
+</div>
+</div>
+</div>
+<!-- Card Visual Anatômico & Termômetro de Risco -->
+<div class="md:col-span-5 bg-gradient-to-b from-brand-card to-[#0d1629] p-4 rounded-2xl border border-brand-border flex flex-col justify-between">
+<!-- Topo: Morfologia & Silhueta -->
+<div>
+<div class="flex justify-between items-center mb-2">
+<span class="text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5" id="morpho-title"><span class="inline-block w-1.5 h-1.5 rounded-full bg-cyan-400"></span> Padrão Androide (Formato Maçã)</span>
+<span class="text-[10px] font-mono text-slate-400" id="morpho-desc">Adiposidade Visceral e Troncular</span>
+</div>
+<!-- Silhueta Vetorial Ilustrativa -->
+<div class="relative bg-slate-900/60 rounded-xl py-3 px-2 border border-slate-800 flex items-center justify-center min-h-[140px]">
+<!-- Silhueta SVG Dinâmica -->
+<div class="flex items-center justify-center w-full max-w-[170px] relative">
+<svg class="h-36 w-auto transition-all duration-300 drop-shadow-[0_0_12px_rgba(6,182,212,0.25)]" id="morpho-silhouette" viewBox="0 0 100 180">
+<!-- Cabeça -->
+<circle cx="50" cy="20" fill="#38bdf8" r="13"></circle>
+<!-- Tronco e membros Masculino (Androide por padrão) -->
+<path d="M 32 40 C 30 50, 26 70, 28 82 C 30 92, 34 105, 38 114 L 39 168 C 39 174, 46 174, 46 168 L 47 118 L 53 118 L 54 168 C 54 174, 61 174, 61 168 L 62 114 C 66 105, 70 92, 72 82 C 74 70, 70 50, 68 40 Z" fill="#0284c7" id="svg-body-path"></path>
+<!-- Braços -->
+<path d="M 30 42 C 22 55, 20 80, 22 96 C 23 100, 26 100, 26 96 C 26 82, 28 62, 33 46 Z" fill="#38bdf8" opacity="0.8"></path>
+<path d="M 70 42 C 78 55, 80 80, 78 96 C 77 100, 74 100, 74 96 C 74 82, 72 62, 67 46 Z" fill="#38bdf8" opacity="0.8"></path>
+<!-- Linha Cintura -->
+<line stroke="#f59e0b" stroke-dasharray="3 2" stroke-width="2" x1="16" x2="84" y1="78" y2="78"></line>
+<circle cx="50" cy="78" fill="#f59e0b" r="3"></circle>
+<!-- Linha Quadril -->
+<line stroke="#06b6d4" stroke-dasharray="3 2" stroke-width="2" x1="14" x2="86" y1="104" y2="104"></line>
+<circle cx="50" cy="104" fill="#06b6d4" r="3"></circle>
+</svg>
+<!-- Tags Flutuantes nas Linhas -->
+<div class="absolute -right-3 top-10 flex flex-col gap-5 text-[10px] font-mono pointer-events-none">
+<div class="bg-amber-950/90 text-amber-300 px-1.5 py-0.5 rounded border border-amber-600/50 shadow">
+                  C: <span id="visual-waist-badge" class="">82.0</span> cm
+                </div>
+<div class="bg-cyan-950/90 text-cyan-300 px-1.5 py-0.5 rounded border border-cyan-600/50 shadow">
+                  Q: <span id="visual-hip-badge" class="">98.0</span> cm
+                </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Termômetro de Risco & Categoria -->
+<div class="mt-3 space-y-2">
+<div class="flex items-center justify-between">
+<span class="text-[11px] text-slate-400 font-medium">Classificação Atual</span>
+<span class="text-xs font-bold px-2.5 py-0.5 rounded-full border bg-yellow-950/80 text-yellow-300 border-yellow-500/50 transition-all duration-300" id="risk-pill">BAIXO (&lt; 0,84)</span>
+</div>
+<!-- Barra de Risco Segmentada -->
+<div class="space-y-1">
+<div class="relative h-3 w-full rounded-full overflow-hidden bg-slate-800 flex">
+<div class="h-full w-1/4 bg-[#eab308]" title="Baixo"></div>
+<div class="h-full w-1/4 bg-[#22c55e]" title="Moderado"></div>
+<div class="h-full w-1/4 bg-[#eab308]" title="Alto"></div>
+<div class="h-full w-1/4 bg-[#ef4444]" title="Muito Alto"></div>
+<!-- Ponteiro Indicador -->
+<div class="absolute top-0 bottom-0 w-1.5 bg-white shadow-[0_0_8px_#ffffff] transition-all duration-300" id="risk-needle" style="left: 12%;"></div>
+</div>
+<div class="flex justify-between text-[9px] font-mono text-slate-400 px-0.5">
+<span class="">BAIXO</span>
+<span class="">MODERADO</span>
+<span class="">ALTO</span>
+<span class="">MUITO ALTO</span>
+</div>
+</div>
+</div>
+</div>
+</div><section aria-label="Guia de Medição e Pontos Anatômicos" class="bg-brand-card p-4 sm:p-5 rounded-2xl border border-brand-border space-y-4 shadow-xl"><div class="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-slate-800 gap-2"><div><h2 class="text-sm font-bold text-white flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-cyan-400"></span>Guia Visual de Medição Padronizada (Ponto Anatômico &amp; Riscos)</h2><p class="text-[11px] text-slate-400 mt-0.5">Protocolo oficial com pontos de referência ósseos e estratificação de risco por circunferência da cintura</p></div><span class="text-[10px] font-mono px-2.5 py-1 rounded bg-cyan-950/70 border border-cyan-800/40 text-cyan-300 font-semibold w-fit">Referência OMS / ISAK</span></div><div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center"><div class="md:col-span-6 flex justify-center"><div class="relative rounded-xl overflow-hidden border border-slate-700 bg-slate-900/80 shadow-lg group"><img alt="Guia de medição da cintura para homens e mulheres com pontos de corte de risco" class="w-full max-w-sm h-auto object-cover rounded-xl transition duration-300 hover:scale-[1.02]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCt0Hm6OqdVzVj66CvE7UnxGD_R_1mQ9ShEwJIKLb97K72cyibuP2nZ5DpamgmlkaN1ZjW0P1jp0SNz0-IbQKTOoVb3b9Ve0sjCQhLRJvHt1mXC7tirxAdDweVo11N4yBiyu1Z2ViJophJVy3f16QpPYOEC4Bgh0zOUyc3qJe7x2TVZwfR6L8RkIqorni7ut3m06G6dZuVB1AkaCSqhaWjGK4Phr0kkbsT7f4AF8l0t5CUN8CMTCa5OIC2lbWWoEhX"><div class="absolute bottom-2 left-2 right-2 bg-slate-900/90 backdrop-blur-md px-2.5 py-1.5 rounded-lg border border-slate-700/80 text-[10px] text-slate-300 text-center font-medium">Ponto médio anatômico: última costela &amp; crista ilíaca</div></div></div><div class="md:col-span-6 space-y-3.5"><div class="bg-slate-900/90 p-3 rounded-xl border border-slate-800"><div class="flex items-center gap-2 text-xs font-bold text-cyan-300 mb-1"><svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg><span class="">COMO MEDIR CORRETAMENTE</span></div><p class="text-xs text-slate-300 leading-relaxed font-sans">Use uma fita métrica flexível e inelástica posicionada no <strong class="text-white">ponto médio entre a borda inferior da última costela e a crista do osso do quadril</strong> (crista ilíaca), mantendo a fita em plano horizontal com abdômen relaxado ao final de uma expiração normal.</p></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"><div class="bg-slate-900/70 rounded-xl p-3 border border-cyan-900/40 space-y-2"><div class="flex items-center justify-between border-b border-slate-800 pb-1.5"><span class="text-xs font-bold text-cyan-300 uppercase tracking-wide">♂ Homem</span><span class="text-[10px] font-mono text-slate-400">Cintura (cm)</span></div><div class="space-y-1.5 text-[11px] font-mono"><div class="flex items-center justify-between p-1 rounded bg-emerald-950/40 border border-emerald-800/40"><span class="text-emerald-300 font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Até 94 cm</span><span class="text-[10px] text-emerald-400 uppercase font-semibold">Risco Baixo</span></div><div class="flex items-center justify-between p-1 rounded bg-amber-950/40 border border-amber-600/40"><span class="text-yellow-300 font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span>94 a 102 cm</span><span class="text-[10px] text-yellow-300 uppercase font-semibold">Aumentado</span></div><div class="flex items-center justify-between p-1 rounded bg-red-950/40 border border-red-800/40"><span class="text-red-300 font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>Acima de 102 cm</span><span class="text-[10px] text-red-400 uppercase font-semibold">Muito Alto</span></div></div></div><div class="bg-slate-900/70 rounded-xl p-3 border border-pink-900/40 space-y-2"><div class="flex items-center justify-between border-b border-slate-800 pb-1.5"><span class="text-xs font-bold text-pink-300 uppercase tracking-wide">♀ Mulher</span><span class="text-[10px] font-mono text-slate-400">Cintura (cm)</span></div><div class="space-y-1.5 text-[11px] font-mono"><div class="flex items-center justify-between p-1 rounded bg-emerald-950/40 border border-emerald-800/40"><span class="text-emerald-300 font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Até 80 cm</span><span class="text-[10px] text-emerald-400 uppercase font-semibold">Risco Baixo</span></div><div class="flex items-center justify-between p-1 rounded bg-amber-950/40 border border-amber-600/40"><span class="text-yellow-300 font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-yellow-400"></span>80 a 88 cm</span><span class="text-[10px] text-yellow-300 uppercase font-semibold">Aumentado</span></div><div class="flex items-center justify-between p-1 rounded bg-red-950/40 border border-red-800/40"><span class="text-red-300 font-bold flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>Acima de 88 cm</span><span class="text-[10px] text-red-400 uppercase font-semibold">Muito Alto</span></div></div></div></div></div></div></section>
+<!-- END: CalculatorAndVisualCard -->
+<!-- BEGIN: ReferenceRiskTable -->
+<section aria-label="Tabela de Relação Cintura Quadril" class="bg-brand-card rounded-2xl border border-brand-border p-4 shadow-xl space-y-3">
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 border-b border-slate-800 pb-2">
+<div>
+<h2 class="text-sm font-bold text-white flex items-center gap-2">
+<svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span id="table-header-title" class="">CLASSIFICAÇÃO DE RISCOS PARA HOMENS</span>
+</h2>
+<p class="text-[11px] text-slate-400">Fonte: Applied body composition assessment, pág. 82 Ed. Human Kinetics 1996</p>
+</div>
+<div class="text-[11px] font-mono text-slate-400 flex items-center gap-2">
+<span class="inline-flex items-center gap-1">
+<span class="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block"></span> Moderado = Meta Saudável
+          </span>
+</div>
+</div>
+<!-- Tabela Responsiva Estilizada -->
+<div class="overflow-x-auto rounded-xl border border-slate-800">
+<table class="w-full text-center text-xs border-collapse" id="risk-table">
+<thead>
+<tr class="bg-slate-900/90 text-slate-300 font-semibold border-b border-slate-800 text-[11px]">
+<th class="py-2.5 px-2 text-left font-mono">IDADE</th>
+<th class="py-2.5 px-2 bg-[#d4af37]/20 text-yellow-200 border-x border-slate-800/60 font-bold">BAIXO</th>
+<th class="py-2.5 px-2 bg-emerald-950/40 text-emerald-300 border-r border-slate-800/60 font-bold">MODERADO</th>
+<th class="py-2.5 px-2 bg-amber-950/40 text-yellow-300 border-r border-slate-800/60 font-bold">ALTO</th>
+<th class="py-2.5 px-2 bg-red-950/40 text-red-300 font-bold">MUITO ALTO</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-800/60 font-mono text-[11px]" id="table-body"><tr class="hover:bg-slate-800/50 text-slate-300 transition-colors">
+          <td class="py-2 px-2 text-left font-semibold text-slate-400">
+            
+            20 a 29
+          </td>
+          <td class="py-2 px-2 bg-yellow-500/10 text-yellow-300 border-x border-slate-800/60">&lt; 0,83</td>
+          <td class="py-2 px-2 bg-emerald-600/15 text-emerald-400 border-r border-slate-800/60">0,83 a 0,88</td>
+          <td class="py-2 px-2 bg-yellow-500/10 text-yellow-300 border-r border-slate-800/60">0,89 a 0,94</td>
+          <td class="py-2 px-2 bg-red-600/15 text-red-400">&gt; 0,94</td>
+        </tr><tr class="active-row-highlight bg-slate-800 text-white font-bold transition-all duration-200">
+          <td class="py-2 px-2 text-left font-semibold text-cyan-300 font-bold flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            30 a 39
+          </td>
+          <td class="py-2 px-2 bg-yellow-500/10 text-yellow-300 border-x border-slate-800/60">&lt; 0,84</td>
+          <td class="py-2 px-2 bg-emerald-600/15 text-emerald-400 border-r border-slate-800/60">0,84 a 0,91</td>
+          <td class="py-2 px-2 bg-yellow-500/10 text-yellow-300 border-r border-slate-800/60">0,92 a 0,96</td>
+          <td class="py-2 px-2 bg-red-600/15 text-red-400">&gt; 0,96</td>
+        </tr><tr class="hover:bg-slate-800/50 text-slate-300 transition-colors">
+          <td class="py-2 px-2 text-left font-semibold text-slate-400">
+            
+            40 a 49
+          </td>
+          <td class="py-2 px-2 bg-yellow-500/10 text-yellow-300 border-x border-slate-800/60">&lt; 0,88</td>
+          <td class="py-2 px-2 bg-emerald-600/15 text-emerald-400 border-r border-slate-800/60">0,88 a 0,95</td>
+          <td class="py-2 px-2 bg-yellow-500/10 text-yellow-300 border-r border-slate-800/60">0,96 a 1,00</td>
+          <td class="py-2 px-2 bg-red-600/15 text-red-400">&gt; 1,00</td>
+        </tr><tr class="hover:bg-slate-800/50 text-slate-300 transition-colors">
+          <td class="py-2 px-2 text-left font-semibold text-slate-400">
+            
+            50 a 59
+          </td>
+          <td class="py-2 px-2 bg-yellow-500/10 text-yellow-300 border-x border-slate-800/60">&lt; 0,90</td>
+          <td class="py-2 px-2 bg-emerald-600/15 text-emerald-400 border-r border-slate-800/60">0,90 a 0,96</td>
+          <td class="py-2 px-2 bg-yellow-500/10 text-yellow-300 border-r border-slate-800/60">0,97 a 1,02</td>
+          <td class="py-2 px-2 bg-red-600/15 text-red-400">&gt; 1,02</td>
+        </tr><tr class="hover:bg-slate-800/50 text-slate-300 transition-colors">
+          <td class="py-2 px-2 text-left font-semibold text-slate-400">
+            
+            60 a 69
+          </td>
+          <td class="py-2 px-2 bg-yellow-500/10 text-yellow-300 border-x border-slate-800/60">&lt; 0,91</td>
+          <td class="py-2 px-2 bg-emerald-600/15 text-emerald-400 border-r border-slate-800/60">0,91 a 0,98</td>
+          <td class="py-2 px-2 bg-yellow-500/10 text-yellow-300 border-r border-slate-800/60">0,99 a 1,03</td>
+          <td class="py-2 px-2 bg-red-600/15 text-red-400">&gt; 1,03</td>
+        </tr></tbody>
+</table>
+</div>
+<div class="flex items-center justify-between text-[10px] text-slate-400 pt-1">
+<span class="">* A linha em destaque reflete a faixa de idade e o sexo biológico selecionados.</span>
+<span class="text-cyan-400 font-medium">Atualizado em tempo real</span>
+</div>
+</section>
+<!-- END: ReferenceRiskTable -->
+<!-- BEGIN: ClinicalInterpretation -->
+<section aria-label="Parecer Clínico" class="bg-brand-card p-4 rounded-2xl border border-brand-border space-y-2.5">
+<div class="flex items-center justify-between">
+<h3 class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+<svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+          Parecer Antropométrico &amp; Conduta Sugerida
+        </h3>
+<span class="text-[10px] font-mono text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800/50 font-bold">
+          Validado Clínico
+        </span>
+</div>
+<div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 text-xs text-slate-300 leading-relaxed">
+<p id="clinical-opinion" class="">Estratificação: <strong class="text-emerald-400">Risco Coronariano e Metabólico Controlado/Baixo</strong>. A relação cintura-quadril de <strong>0.837</strong> situa-se na faixa recomendada para a faixa etária de 30 a 39 anos. O padrão androide (distribuição troncular) não denota acúmulo patológico de gordura intra-abdominal visceral.</p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
+<div class="flex items-center gap-2 bg-slate-800/40 p-2 rounded-lg border border-slate-800">
+<span class="text-emerald-400 text-sm">✓</span>
+<span class="text-slate-300">Gordura Visceral: <strong class="text-emerald-400 font-bold" id="visceral-fat-status">Adequada / Controlada</strong></span>
+</div>
+<div class="flex items-center gap-2 bg-slate-800/40 p-2 rounded-lg border border-slate-800">
+<span class="text-cyan-400 text-sm">★</span>
+<span class="text-slate-300">Meta recomendada: <strong class="text-white" id="target-rcq-status">≤ 0,91</strong></span>
+</div>
+</div>
+</section>
+<!-- END: ClinicalInterpretation -->
+</main>
+<!-- END: MainContent -->
+<!-- BEGIN: BottomActionBar -->
+<footer class="fixed bottom-0 left-0 right-0 z-40 bg-[#0c1324]/95 backdrop-blur-lg border-t border-brand-border p-3">
+<div class="max-w-3xl mx-auto flex items-center gap-3">
+<!-- Botão Secundário -->
+<button class="flex-1 py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold text-slate-300 bg-slate-800/90 hover:bg-slate-700 border border-slate-700 transition flex items-center justify-center gap-2" onclick="alert('Exportando Relatório RCQ em formato PDF clínico...')" type="button">
+<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">Exportar PDF</span>
+</button>
+<!-- Botão Primário -->
+<button class="flex-[2] py-3 px-4 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 transition shadow-lg shadow-emerald-950/50 flex items-center justify-center gap-2" id="btn-save-record" onclick="alert('Dados da avaliação de RCQ arquivados com sucesso no Prontuário do Paciente!')" type="button">
+<svg class="w-4 h-4 text-emerald-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+<span class="">Salvar no Prontuário</span>
+</button>
+</div>
+</footer>
+<!-- END: BottomActionBar -->
+<!-- BEGIN: InteractiveScript -->
+<script data-purpose="rcq-calculator-and-table-sync">
+    // Dados fiéis extraídos diretamente da imagem fornecida:
+    // "TABELA DE RELAÇÃO DE CINTURA - QUADRIL (Applied body composition assessment, pág. 82 Ed. Human Kinetics 1996)"
+    const RCQ_NORMATIVE_DATA = {
+      male: {
+        title: "CLASSIFICAÇÃO DE RISCOS PARA HOMENS",
+        morphology: "Padrão Androide (Formato Maçã)",
+        morphologyDetail: "Adiposidade Visceral e Troncular",
+        colorTheme: "cyan",
+        defaultWaist: 82.0,
+        defaultHip: 98.0,
+        defaultAge: 32,
+        ranges: [
+          { ageLabel: "20 a 29", minAge: 20, maxAge: 29, low: "< 0,83", mod: "0,83 a 0,88", high: "0,89 a 0,94", veryHigh: "> 0,94", lowVal: 0.83, modVal: 0.88, highVal: 0.94 },
+          { ageLabel: "30 a 39", minAge: 30, maxAge: 39, low: "< 0,84", mod: "0,84 a 0,91", high: "0,92 a 0,96", veryHigh: "> 0,96", lowVal: 0.84, modVal: 0.91, highVal: 0.96 },
+          { ageLabel: "40 a 49", minAge: 40, maxAge: 49, low: "< 0,88", mod: "0,88 a 0,95", high: "0,96 a 1,00", veryHigh: "> 1,00", lowVal: 0.88, modVal: 0.95, highVal: 1.00 },
+          { ageLabel: "50 a 59", minAge: 50, maxAge: 59, low: "< 0,90", mod: "0,90 a 0,96", high: "0,97 a 1,02", veryHigh: "> 1,02", lowVal: 0.90, modVal: 0.96, highVal: 1.02 },
+          { ageLabel: "60 a 69", minAge: 60, maxAge: 69, low: "< 0,91", mod: "0,91 a 0,98", high: "0,99 a 1,03", veryHigh: "> 1,03", lowVal: 0.91, modVal: 0.98, highVal: 1.03 }
+        ]
+      },
+      female: {
+        title: "CLASSIFICAÇÃO DE RISCOS PARA MULHERES",
+        morphology: "Padrão Ginoide (Formato Pêra)",
+        morphologyDetail: "Adiposidade Glúteo-Femoral",
+        colorTheme: "pink",
+        defaultWaist: 68.5,
+        defaultHip: 98.0,
+        defaultAge: 28,
+        ranges: [
+          { ageLabel: "20 a 29", minAge: 20, maxAge: 29, low: "< 0,71", mod: "0,71 a 0,77", high: "0,78 a 0,82", veryHigh: "> 0,82", lowVal: 0.71, modVal: 0.77, highVal: 0.82 },
+          { ageLabel: "30 a 39", minAge: 30, maxAge: 39, low: "< 0,72", mod: "0,72 a 0,78", high: "0,79 a 0,84", veryHigh: "> 0,84", lowVal: 0.72, modVal: 0.78, highVal: 0.84 },
+          { ageLabel: "40 a 49", minAge: 40, maxAge: 49, low: "< 0,73", mod: "0,73 a 0,79", high: "0,80 a 0,87", veryHigh: "> 0,87", lowVal: 0.73, modVal: 0.79, highVal: 0.87 },
+          { ageLabel: "50 a 59", minAge: 50, maxAge: 59, low: "< 0,74", mod: "0,74 a 0,81", high: "0,82 a 0,88", veryHigh: "> 0,88", lowVal: 0.74, modVal: 0.81, highVal: 0.88 },
+          { ageLabel: "60 a 69", minAge: 60, maxAge: 69, low: "< 0,76", mod: "0,76 a 0,83", high: "0,84 a 0,90", veryHigh: "> 0,90", lowVal: 0.76, modVal: 0.83, highVal: 0.90 }
+        ]
+      }
+    };
+
+    let currentGender = 'male';
+    let currentAge = 32;
+    let currentWaist = 82.0;
+    let currentHip = 98.0;
+
+    // DOM Elements
+    const btnMale = document.getElementById('btn-male');
+    const btnFemale = document.getElementById('btn-female');
+    const ageSlider = document.getElementById('age-range');
+    const ageDisplay = document.getElementById('age-val-display');
+    const ageBadge = document.getElementById('age-badge');
+    const waistInput = document.getElementById('waist-input');
+    const waistSlider = document.getElementById('waist-slider');
+    const hipInput = document.getElementById('hip-input');
+    const hipSlider = document.getElementById('hip-slider');
+    const formulaWaist = document.getElementById('formula-waist');
+    const formulaHip = document.getElementById('formula-hip');
+    const rcqBigValue = document.getElementById('rcq-big-value');
+    const riskPill = document.getElementById('risk-pill');
+    const riskNeedle = document.getElementById('risk-needle');
+    const tableHeaderTitle = document.getElementById('table-header-title');
+    const tableBody = document.getElementById('table-body');
+    const morphoTitle = document.getElementById('morpho-title');
+    const morphoDesc = document.getElementById('morpho-desc');
+    const visualWaistBadge = document.getElementById('visual-waist-badge');
+    const visualHipBadge = document.getElementById('visual-hip-badge');
+    const clinicalOpinion = document.getElementById('clinical-opinion');
+    const visceralFatStatus = document.getElementById('visceral-fat-status');
+    const targetRcqStatus = document.getElementById('target-rcq-status');
+    const svgBodyPath = document.getElementById('svg-body-path');
+    const agePresetsContainer = document.getElementById('age-presets');
+
+    // Funções de Renderização e Cálculo
+    function setGender(gender) {
+      currentGender = gender;
+      const data = RCQ_NORMATIVE_DATA[gender];
+      
+      if (gender === 'male') {
+        document.body.classList.remove('gender-female');
+        btnMale.className = "flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 bg-gradient-to-r from-cyan-600 to-blue-600 text-white shadow-md shadow-cyan-900/30 border border-cyan-400/40";
+        btnFemale.className = "flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 bg-slate-800/80 text-slate-400 hover:text-slate-200 border border-transparent";
+        // Atualiza silhueta masculina
+        svgBodyPath.setAttribute('d', 'M 32 40 C 30 50, 26 70, 28 82 C 30 92, 34 105, 38 114 L 39 168 C 39 174, 46 174, 46 168 L 47 118 L 53 118 L 54 168 C 54 174, 61 174, 61 168 L 62 114 C 66 105, 70 92, 72 82 C 74 70, 70 50, 68 40 Z');
+        svgBodyPath.setAttribute('fill', '#0284c7');
+        morphoTitle.innerHTML = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-cyan-400"></span> ${data.morphology}`;
+        morphoTitle.className = "text-xs font-bold uppercase tracking-wider text-cyan-400 flex items-center gap-1.5";
+      } else {
+        document.body.classList.add('gender-female');
+        btnFemale.className = "flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all duration-300 bg-gradient-to-r from-pink-600 to-rose-600 text-white shadow-md shadow-pink-900/30 border border-pink-400/40";
+        btnMale.className = "flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300 bg-slate-800/80 text-slate-400 hover:text-slate-200 border border-transparent";
+        // Atualiza silhueta feminina (quadril mais largo - pêra)
+        svgBodyPath.setAttribute('d', 'M 34 40 C 32 50, 31 66, 32 78 C 26 88, 22 104, 32 115 L 36 168 C 36 174, 44 174, 44 168 L 47 118 L 53 118 L 56 168 C 56 174, 64 174, 64 168 L 68 115 C 78 104, 74 88, 68 78 C 69 66, 68 50, 66 40 Z');
+        svgBodyPath.setAttribute('fill', '#db2777');
+        morphoTitle.innerHTML = `<span class="inline-block w-1.5 h-1.5 rounded-full bg-pink-400"></span> ${data.morphology}`;
+        morphoTitle.className = "text-xs font-bold uppercase tracking-wider text-pink-400 flex items-center gap-1.5";
+      }
+
+      morphoDesc.innerText = data.morphologyDetail;
+      tableHeaderTitle.innerText = data.title;
+      
+      // Ajusta valores padrão se estiver na troca inicial
+      currentWaist = data.defaultWaist;
+      currentHip = data.defaultHip;
+      currentAge = data.defaultAge;
+      
+      waistInput.value = currentWaist.toFixed(1);
+      waistSlider.value = currentWaist;
+      hipInput.value = currentHip.toFixed(1);
+      hipSlider.value = currentHip;
+      ageSlider.value = currentAge;
+      ageDisplay.innerText = `${currentAge} a`;
+
+      updateAgePresetButtons();
+      renderTable();
+      calculateRCQ();
+    }
+
+    function updateAgePresetButtons() {
+      const btns = agePresetsContainer.querySelectorAll('.age-btn');
+      btns.forEach(btn => {
+        const [min, max] = btn.dataset.ageRange.split('-').map(Number);
+        if (currentAge >= min && currentAge <= max) {
+          btn.className = "age-btn text-xs py-1.5 rounded-lg border border-cyan-400 bg-cyan-950/70 text-cyan-300 font-bold active-age";
+          ageBadge.innerText = `Faixa: ${min} a ${max} anos`;
+        } else {
+          btn.className = "age-btn text-xs py-1.5 rounded-lg border border-slate-700 bg-slate-800/60 hover:border-cyan-500 font-medium text-slate-300";
+        }
+      });
+    }
+
+    function renderTable() {
+      const data = RCQ_NORMATIVE_DATA[currentGender];
+      tableBody.innerHTML = '';
+
+      data.ranges.forEach((row) => {
+        const isCurrentAgeRow = (currentAge >= row.minAge && currentAge <= row.maxAge);
+        const tr = document.createElement('tr');
+        
+        if (isCurrentAgeRow) {
+          tr.className = "active-row-highlight bg-slate-800 text-white font-bold transition-all duration-200";
+        } else {
+          tr.className = "hover:bg-slate-800/50 text-slate-300 transition-colors";
+        }
+
+        tr.innerHTML = `
+          <td class="py-2 px-2 text-left font-semibold ${isCurrentAgeRow ? 'text-cyan-300 font-bold flex items-center gap-1' : 'text-slate-400'}">
+            ${isCurrentAgeRow ? '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>' : ''}
+            ${row.ageLabel}
+          </td>
+          <td class="py-2 px-2 bg-yellow-500/10 text-yellow-300 border-x border-slate-800/60">${row.low}</td>
+          <td class="py-2 px-2 bg-emerald-600/15 text-emerald-400 border-r border-slate-800/60">${row.mod}</td>
+          <td class="py-2 px-2 bg-yellow-500/10 text-yellow-300 border-r border-slate-800/60">${row.high}</td>
+          <td class="py-2 px-2 bg-red-600/15 text-red-400">${row.veryHigh}</td>
+        `;
+        tableBody.appendChild(tr);
+      });
+    }
+
+    function calculateRCQ() {
+      const waist = parseFloat(waistInput.value) || 0;
+      const hip = parseFloat(hipInput.value) || 1;
+      
+      const rcq = waist / hip;
+      const formattedRCQ = rcq.toFixed(3);
+      
+      // Atualiza mostradores
+      formulaWaist.innerText = waist.toFixed(1);
+      formulaHip.innerText = hip.toFixed(1);
+      visualWaistBadge.innerText = waist.toFixed(1);
+      visualHipBadge.innerText = hip.toFixed(1);
+      rcqBigValue.innerText = formattedRCQ;
+
+      // Classifica segundo a tabela da faixa etária
+      const genderData = RCQ_NORMATIVE_DATA[currentGender];
+      const activeRange = genderData.ranges.find(r => currentAge >= r.minAge && currentAge <= r.maxAge) || genderData.ranges[1];
+
+      let riskCategory = "";
+      let riskClass = "";
+      let needlePercentage = 50;
+
+      if (rcq < activeRange.lowVal) {
+        riskCategory = `BAIXO (${activeRange.low})`;
+        riskClass = "bg-yellow-950/80 text-yellow-300 border-yellow-500/50";
+        needlePercentage = 12;
+      } else if (rcq <= activeRange.modVal) {
+        riskCategory = `MODERADO (${activeRange.mod})`;
+        riskClass = "bg-emerald-950/90 text-emerald-300 border-emerald-500/50 shadow-sm shadow-emerald-500/20";
+        needlePercentage = 38;
+      } else if (rcq <= activeRange.highVal) {
+        riskCategory = `ALTO (${activeRange.high})`;
+        riskClass = "bg-amber-950/90 text-amber-300 border-amber-500/50";
+        needlePercentage = 63;
+      } else {
+        riskCategory = `MUITO ALTO (${activeRange.veryHigh})`;
+        riskClass = "bg-red-950/90 text-red-300 border-red-500/50 shadow-sm shadow-red-500/20";
+        needlePercentage = 88;
+      }
+
+      // Atualiza pílula de risco
+      riskPill.innerText = riskCategory;
+      riskPill.className = `text-xs font-bold px-2.5 py-0.5 rounded-full border ${riskClass} transition-all duration-300`;
+      riskNeedle.style.left = `${needlePercentage}%`;
+
+      // Atualiza parecer clínico
+      generateClinicalOpinion(rcq, riskCategory, activeRange);
+    }
+
+    function generateClinicalOpinion(rcq, riskCategory, range) {
+      let text = "";
+      const isMale = currentGender === 'male';
+      const morphoType = isMale ? "androide (distribuição troncular)" : "ginoide (distribuição periférica glúteo-femoral)";
+
+      if (rcq <= range.modVal) {
+        text = `Estratificação: <strong class="text-emerald-400">Risco Coronariano e Metabólico Controlado/Baixo</strong>. A relação cintura-quadril de <strong>${rcq.toFixed(3)}</strong> situa-se na faixa recomendada para a faixa etária de ${range.ageLabel} anos. O padrão ${morphoType} não denota acúmulo patológico de gordura intra-abdominal visceral.`;
+        visceralFatStatus.innerText = "Adequada / Controlada";
+        visceralFatStatus.className = "text-emerald-400 font-bold";
+      } else if (rcq <= range.highVal) {
+        text = `Estratificação: <strong class="text-amber-400">Risco Cardiovascular Moderado-Alto</strong>. A RCQ de <strong>${rcq.toFixed(3)}</strong> indica propensão ao acúmulo de gordura periumbilical. Recomenda-se acompanhamento nutricional com foco em déficit calórico moderado e treinamento resistido regular.`;
+        visceralFatStatus.innerText = "Limítrofe / Atenção";
+        visceralFatStatus.className = "text-amber-400 font-bold";
+      } else {
+        text = `Estratificação: <strong class="text-red-400">Risco Cardiovascular Muito Alto</strong>. Valor de <strong>${rcq.toFixed(3)}</strong> fortemente correlacionado a síndrome metabólica, dislipidemia e sobrecarga arterial coronariana. Necessária intervenção multidisciplinar prioritária.`;
+        visceralFatStatus.innerText = "Elevada (Alerta)";
+        visceralFatStatus.className = "text-red-400 font-bold";
+      }
+
+      clinicalOpinion.innerHTML = text;
+      targetRcqStatus.innerText = `≤ ${range.modVal.toFixed(2).replace('.', ',')}`;
+    }
+
+    // Listeners
+    btnMale.addEventListener('click', () => setGender('male'));
+    btnFemale.addEventListener('click', () => setGender('female'));
+
+    ageSlider.addEventListener('input', (e) => {
+      currentAge = parseInt(e.target.value);
+      ageDisplay.innerText = `${currentAge} a`;
+      updateAgePresetButtons();
+      renderTable();
+      calculateRCQ();
+    });
+
+    agePresetsContainer.querySelectorAll('.age-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const [min, max] = btn.dataset.ageRange.split('-').map(Number);
+        currentAge = Math.floor((min + max) / 2);
+        ageSlider.value = currentAge;
+        ageDisplay.innerText = `${currentAge} a`;
+        updateAgePresetButtons();
+        renderTable();
+        calculateRCQ();
+      });
+    });
+
+    waistInput.addEventListener('input', (e) => {
+      currentWaist = parseFloat(e.target.value) || 0;
+      waistSlider.value = currentWaist;
+      calculateRCQ();
+    });
+    waistSlider.addEventListener('input', (e) => {
+      currentWaist = parseFloat(e.target.value) || 0;
+      waistInput.value = currentWaist.toFixed(1);
+      calculateRCQ();
+    });
+
+    hipInput.addEventListener('input', (e) => {
+      currentHip = parseFloat(e.target.value) || 1;
+      hipSlider.value = currentHip;
+      calculateRCQ();
+    });
+    hipSlider.addEventListener('input', (e) => {
+      currentHip = parseFloat(e.target.value) || 1;
+      hipInput.value = currentHip.toFixed(1);
+      calculateRCQ();
+    });
+
+    // Inicialização
+    setGender('male');
+  </script>
+<!-- END: InteractiveScript -->
+
+
+</body></html>

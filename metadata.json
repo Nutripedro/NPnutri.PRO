@@ -1,0 +1,6 @@
+{
+  "name": "NutriTrack Pro - SaaS de Nutrição Clínica & Antropometria",
+  "description": "SaaS clínico para nutricionistas com cálculo de necessidades energéticas e macros, dietas personalizadas, rastreador diário de calorias, antropometria ISAK, bioimpedância, RCQ, pescoço/risco cardiometabólico, fotos comparativas, tabela ANVISA RDC 429/2020 e receituário.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

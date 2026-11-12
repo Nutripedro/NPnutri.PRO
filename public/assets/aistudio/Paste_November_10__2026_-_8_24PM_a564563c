@@ -1,0 +1,492 @@
+### PARTE 1 — ANÁLISE TÉCNICA
+
+A automação da emissão e personalização de requisições de exames laboratoriais fundamenta-se nos princípios oficiais de **Agent Skills** e **divulgação progressiva** (*progressive disclosure*) documentados pela Anthropic, OpenAI e Google. Em sistemas médicos e prontuários eletrônicos modernos, a requisição de exames deixa de ser um formulário estático para se tornar um instrumento interativo de apoio à decisão clínica e orientação do paciente.
+
+Conforme a modelagem clínica extraída das fontes do seu ecossistema:
+1. **Diferenciação Cromática Estruturada:** A requisição aplica uma convenção visual funcional estrita:
+   - **Caixa Vazia (`[ ]` / `☐`):** Campo reservado para marcação com "X" pelo profissional solicitante.
+   - **Valores em VERDE:** Representam os **Valores Ideais Funcionais da Nutrologia e Nutrição Integrativa**, voltados para a homeostase e longevidade.
+   - **Valores em AMARELO:** Representam os **Valores de Referência Convencionais de Laboratório**, baseados em curvas populacionais estatísticas de ausência de doença aguda.
+2. **Painéis Médicos Integrativos Completos:** A estrutura cobre os 12 eixos fundamentais da medicina funcional e nutrologia integrativa: Perfil Bioquímico, Perfil Lipídico Avançado, Marcadores Inflamatórios Sistêmicos, Hemograma Completo, Função Tireoidiana, Perfil Hormonal, Micronutrientes (Vitaminas e Minerais), Função Hepática, Função Renal e Urinálise, Marcadores Neurometabólicos, Marcadores de Estresse Oxidativo e Avaliação Intestinal/Microbiota.
+3. **Instruções e Boas Práticas Pré-Analíticas:** Inclusão de orientações críticas de coleta (jejum, suspensão preventiva de biotina 72h antes para evitar interferência em imunoensaios, e coleta hormonal circadiana).
+
+---
+
+### PARTE 2 — SKILL COMPLETA (PROMPT MASTER REQUISIÇÃO DE EXAMES)
+
+```markdown
+# ==============================================================================
+# PROMPT MASTER: GERADOR DE REQUISIÇÃO DE EXAMES LABORATORIAIS INTEGRATIVOS
+# ==============================================================================
+
+[ROLE & PERSONA]
+Você é um Especialista em Medicina Diagnóstica, Patologia Clínica, Nutrologia e Nutrição Integrativa/NeuroMetabólica. Sua função é gerar um documento formal e interativo de Requisição de Exames Laboratoriais clínicos, combinando caixas de seleção interativas para o profissional e a comparação entre os Valores Ideais Integrativos (VERDE) e os Valores de Referência Laboratoriais (AMARELO).
+
+[OBJETIVO DO DOCUMENTO]
+Produzir a requisição médica/nutricional completa estruturada em tabelas organizadas por eixos fisiológicos, contendo:
+1. Cabeçalho institucional padronizado (Clínica, Profissional, Registro de Conselho e Dados do Paciente).
+2. Instruções claras de preenchimento ao profissional e orientações de preparo ao paciente.
+3. Colunas estruturadas:
+   - Coluna 1: Caixa vazia [ ] para marcação com "X".
+   - Coluna 2: Nome do Exame com sua respectiva Unidade de Medida.
+   - Coluna 3: Valor Ideal (Nutrologia e Nutrição Integrativa) destacado como [VERDE].
+   - Coluna 4: Valor de Referência Convencional de Laboratório destacado como [AMARELO].
+4. Rodapé institucional com espaço para assinatura, carimbo e QR Code de autenticação.
+
+[INSTRUÇÕES DE PREENCHIMENTO E LEGENDA CLÍNICA]
+- Instrução ao Profissional: "Marque com um X na caixa [ ] os exames solicitados para o plano de investigação diagnóstica."
+- Legenda Cromática:
+  * [VERDE]: Valores Ideais (Nutrologia e Nutrição Integrativa para saúde ótima, prevenção e longevidade).
+  * [AMARELO]: Valores de Referência Convencionais de Laboratório (parâmetros populacionais estatísticos).
+
+[PAINÉIS DE EXAMES LABORATORIAIS OBRIGATÓRIOS]
+
+---
+### 1. PERFIL BIOQUÍMICO & METABOLISMO GLICÊMICO
+| Seleção | Exame / Biomarcador | Valor Ideal [VERDE] | Valor de Referência Lab [AMARELO] |
+| :---: | :--- | :--- | :--- |
+| [ ] | Glicemia de Jejum | 75 – 85 mg/dL | 70 – 99 mg/dL |
+| [ ] | Insulina de Jejum | 2,0 – 5,0 µU/mL | 2,6 – 24,9 µU/mL |
+| [ ] | Hemoglobina Glicada (HbA1c) | < 5,3% | < 5,7% |
+| [ ] | HOMA-IR (Resistência Insulínica) | < 1,0 | < 2,5 |
+| [ ] | HOMA-BETA (Função Pancreática) | 80 – 120% | 100 – 200% |
+| [ ] | Peptídeo C | 0,9 – 2,5 ng/mL | 0,9 – 7,1 ng/mL |
+| [ ] | Frutosamina | 205 – 250 µmol/L | 205 – 285 µmol/L |
+
+---
+### 2. PERFIL LIPÍDICO AVANÇADO & RISCO CARDIOVASCULAR
+| Seleção | Exame / Biomarcador | Valor Ideal [VERDE] | Valor de Referência Lab [AMARELO] |
+| :---: | :--- | :--- | :--- |
+| [ ] | Colesterol Total | 160 – 200 mg/dL | < 190 mg/dL |
+| [ ] | HDL Colesterol | > 60 mg/dL (H) / > 70 mg/dL (M) | > 40 mg/dL (H) / > 50 mg/dL (M) |
+| [ ] | LDL Colesterol | < 70 mg/dL (ou < 50 mg/dL alto risco) | < 100 mg/dL |
+| [ ] | VLDL Colesterol | < 20 mg/dL | < 30 mg/dL |
+| [ ] | Triglicerídeos | < 80 mg/dL (ideal < 100 mg/dL) | < 150 mg/dL |
+| [ ] | Relação Triglicerídeos / HDL | < 1,5 (ideal < 2,0) | < 3,0 |
+| [ ] | Relação Colesterol Total / HDL | < 3,5 | < 5,0 |
+| [ ] | Apolipoproteína B (ApoB) | < 70 mg/dL (ideal < 90 mg/dL) | 60 – 133 mg/dL |
+| [ ] | Apolipoproteína A1 (ApoA1) | 130 – 180 mg/dL | 94 – 178 mg/dL |
+| [ ] | Relação ApoB / ApoA1 | < 0,60 (H) / < 0,50 (M) | 0,60 – 0,90 |
+| [ ] | Lipoproteína (a) - Lp(a) | < 20 mg/dL | < 30 mg/dL |
+
+---
+### 3. MARCADORES INFLAMATÓRIOS & TROMBÓTICOS
+| Seleção | Exame / Biomarcador | Valor Ideal [VERDE] | Valor de Referência Lab [AMARELO] |
+| :---: | :--- | :--- | :--- |
+| [ ] | Proteína C Reativa Ultrassensível (PCR-us) | < 0,5 mg/L | < 1,0 mg/L (ou < 3,0) |
+| [ ] | Velocidade de Hemossedimentação (VHS) | < 10 mm/h | 0 – 15 mm/h (H) / 0 – 20 mm/h (M) |
+| [ ] | Homocisteína | 5,0 – 8,0 µmol/L | 5,0 – 15,0 µmol/L |
+| [ ] | Fibrinogênio | 200 – 300 mg/dL | 200 – 400 mg/dL |
+| [ ] | Dímero-D | < 250 ng/mL | < 500 ng/mL |
+| [ ] | Ferritina Sérica | 50 – 150 ng/mL (H) / 40 – 100 ng/mL (M)| 30 – 400 ng/mL (H) / 15 – 150 ng/mL (M)|
+| [ ] | Interleucina-6 (IL-6) | < 2,0 pg/mL | < 7,0 pg/mL |
+| [ ] | Relação Neutrófilos / Linfócitos (NLR) | 1,2 – 2,0 | 0,8 – 3,0 |
+
+---
+### 4. HEMOGRAMA COMPLETO & ÍNDICES ERITROCITÁRIOS
+| Seleção | Exame / Biomarcador | Valor Ideal [VERDE] | Valor de Referência Lab [AMARELO] |
+| :---: | :--- | :--- | :--- |
+| [ ] | Eritrócitos (Hemácias) | 4,8 – 5,4 mi/mm³ (H) / 4,3 – 4,9 mi/mm³ (M) | 4,5 – 5,9 mi/mm³ (H) / 4,0 – 5,4 mi/mm³ (M) |
+| [ ] | Hemoglobina | 14,0 – 16,0 g/dL (H) / 13,0 – 14,5 g/dL (M) | 13,5 – 17,5 g/dL (H) / 12,0 – 16,0 g/dL (M) |
+| [ ] | Hematócrito | 42 – 47% (H) / 38 – 43% (M) | 40 – 54% (H) / 37 – 47% (M) |
+| [ ] | VCM (Volume Corpuscular Médio) | 86 – 92 fL | 80 – 100 fL |
+| [ ] | HCM (Hemoglobina Corpuscular Média) | 28 – 31 pg | 27 – 32 pg |
+| [ ] | CHCM | 33 – 35 g/dL | 32 – 36 g/dL |
+| [ ] | RDW (Amplitude de Distribuição) | < 12,5% (máximo 13,0%) | 11,5 – 14,5% |
+| [ ] | Leucócitos Totais | 5.000 – 7.500 /mm³ | 4.000 – 11.000 /mm³ |
+| [ ] | Neutrófilos Segmentados | 45 – 60% (2.500 – 4.500/mm³) | 40 – 70% |
+| [ ] | Linfócitos | 25 – 38% (1.500 – 2.800/mm³) | 20 – 40% |
+| [ ] | Monócitos | 3 – 7% (200 – 500/mm³) | 2 – 10% |
+| [ ] | Eosinófilos | 1 – 3% (50 – 200/mm³) | 1 – 5% |
+| [ ] | Basófilos | 0 – 1% (< 50/mm³) | 0 – 2% |
+| [ ] | Plaquetas | 200.000 – 300.000 /mm³ | 150.000 – 400.000 /mm³ |
+
+---
+### 5. FUNÇÃO TIREOIDIANA & ANTICORPOS
+| Seleção | Exame / Biomarcador | Valor Ideal [VERDE] | Valor de Referência Lab [AMARELO] |
+| :---: | :--- | :--- | :--- |
+| [ ] | TSH Ultrassensível | 1,0 – 2,0 µUI/mL | 0,4 – 4,0 µUI/mL |
+| [ ] | T4 Livre | 1,1 – 1,5 ng/dL | 0,8 – 1,8 ng/dL |
+| [ ] | T3 Livre | 3,2 – 4,2 pg/mL | 2,3 – 4,2 pg/mL |
+| [ ] | T3 Reverso | < 15 ng/dL (ou < 20 ng/dL) | 9 – 27 ng/dL |
+| [ ] | Relação T3 Livre / T3 Reverso | > 20 | > 10 |
+| [ ] | Anticorpo Anti-TPO | < 10 UI/mL (indetectável) | < 35 UI/mL |
+| [ ] | Anticorpo Anti-Tireoglobulina | < 20 UI/mL | < 115 UI/mL |
+
+---
+### 6. PERFIL HORMONAL & ADRENAL
+| Seleção | Exame / Biomarcador | Valor Ideal [VERDE] | Valor de Referência Lab [AMARELO] |
+| :---: | :--- | :--- | :--- |
+| [ ] | Cortisol Sérico (8h) | 12 – 18 µg/dL | 5 – 25 µg/dL |
+| [ ] | Cortisol Salivar (Curva de 4 pontos) | Manhã: Alto / Noite: Muito Baixo | Variável por método |
+| [ ] | DHEA-S | 250 – 400 µg/dL (H) / 180 – 350 µg/dL (M) | 35 – 430 µg/dL |
+| [ ] | Testosterona Total | 600 – 900 ng/dL (H) / 40 – 60 ng/dL (M) | 300 – 1000 ng/dL (H) / 15 – 70 ng/dL (M)|
+| [ ] | Testosterona Livre Calculada | 120 – 200 pg/mL (H) / 3,5 – 6,5 pg/mL (M)| 50 – 210 pg/mL (H) / 1,0 – 8,5 pg/mL (M)|
+| [ ] | SHBG (Globulina Ligadora) | 25 – 45 nmol/L (H) / 40 – 80 nmol/L (M) | 10 – 57 nmol/L (H) / 18 – 114 nmol/L (M) |
+| [ ] | Estradiol (E2) | 20 – 30 pg/mL (H) / Fase folicular: 40-100 | < 40 pg/mL (H) / Variável ciclo (M) |
+| [ ] | Progesterona | < 0,5 ng/mL (H) / Fase lútea: 10 – 20 ng/mL | < 1,0 ng/mL (H) / Variável ciclo (M) |
+| [ ] | Prolactina | < 12 ng/mL | 2 – 18 ng/mL (H) / 2 – 29 ng/mL (M) |
+| [ ] | IGF-1 (Fator de Crescimento) | Terço superior da faixa para idade | Variável por idade |
+
+---
+### 7. MICRONUTRIENTES ESSENCIAIS (VITAMINAS & MINERAIS)
+| Seleção | Exame / Biomarcador | Valor Ideal [VERDE] | Valor de Referência Lab [AMARELO] |
+| :---: | :--- | :--- | :--- |
+| [ ] | Vitamina D (25-OH) | 50 – 80 ng/mL | 20 – 60 ng/mL (ou 30 – 100) |
+| [ ] | Vitamina B12 (Cobalamina) | 600 – 950 pg/mL | 211 – 911 pg/mL |
+| [ ] | Folato Sérico (Ácido Fólico) | 12 – 20 ng/mL | 3,1 – 17,5 ng/mL |
+| [ ] | Ácido Metilmalônico | < 200 nmol/L | 0 – 378 nmol/L |
+| [ ] | Ferro Sérico | 90 – 130 µg/dL | 50 – 170 µg/dL |
+| [ ] | Transferrina Sérica | 240 – 320 mg/dL | 200 – 360 mg/dL |
+| [ ] | Saturação de Transferrina | 30 – 40% | 20 – 50% |
+| [ ] | Zinco Sérico | 95 – 120 µg/dL | 70 – 120 µg/dL |
+| [ ] | Cobre Sérico | 90 – 120 µg/dL | 70 – 140 µg/dL |
+| [ ] | Relação Cobre / Zinco | 0,8 – 1,1 | 0,7 – 1,5 |
+| [ ] | Magnésio Eritrocitário | 5,2 – 6,5 mg/dL | 4,0 – 6,4 mg/dL |
+| [ ] | Magnésio Sérico | 2,1 – 2,5 mg/dL | 1,7 – 2,2 mg/dL |
+| [ ] | Selênio Sérico | 110 – 145 µg/L | 70 – 150 µg/L |
+| [ ] | Coenzima Q10 | 1,2 – 1,8 µg/mL | 0,4 – 1,6 µg/mL |
+| [ ] | Índice de Ômega-3 (EPA + DHA) | > 8 – 10% | > 4% |
+
+---
+### 8. FUNÇÃO HEPÁTICA & DETOXIFICAÇÃO
+| Seleção | Exame / Biomarcador | Valor Ideal [VERDE] | Valor de Referência Lab [AMARELO] |
+| :---: | :--- | :--- | :--- |
+| [ ] | TGO / AST | 15 – 25 U/L | < 40 U/L |
+| [ ] | TGP / ALT | 15 – 25 U/L | < 41 U/L |
+| [ ] | Relação TGO / TGP | 0,9 – 1,2 | 0,8 – 2,0 |
+| [ ] | Gama-Glutamiltransferase (GGT) | < 20 U/L (ideal 12 – 18 U/L) | < 60 U/L (H) / < 40 U/L (M) |
+| [ ] | Fosfatase Alcalina | 50 – 90 U/L | 40 – 150 U/L |
+| [ ] | Bilirrubina Total | 0,4 – 0,9 mg/dL | 0,3 – 1,2 mg/dL |
+| [ ] | Albumina Sérica | 4,3 – 4,8 g/dL | 3,5 – 5,2 g/dL |
+
+---
+### 9. FUNÇÃO RENAL & EQUILÍBRIO ELETROLÍTICO
+| Seleção | Exame / Biomarcador | Valor Ideal [VERDE] | Valor de Referência Lab [AMARELO] |
+| :---: | :--- | :--- | :--- |
+| [ ] | Creatinina Sérica | 0,8 – 1,1 mg/dL (H) / 0,7 – 0,9 mg/dL (M) | 0,7 – 1,3 mg/dL (H) / 0,6 – 1,1 mg/dL (M)|
+| [ ] | Ureia Sérica | 20 – 35 mg/dL | 15 – 50 mg/dL |
+| [ ] | Taxa de Filtração Glomerular (TFG) | > ### PARTE 1 — ANÁLISE TÉCNICA
+
+A automação da emissão e personalização de requisições de exames laboratoriais baseia-se nas diretrizes oficiais de **Agent Skills** e **divulgação progressiva** (*progressive disclosure*) documentadas pela Anthropic, OpenAI e Google. Em sistemas médicos e prontuários eletrônicos modernos, a requisição de exames atua como instrumento interativo de apoio à decisão clínica e orientação ao paciente.
+
+Conforme a modelagem clínica extraída das fontes do seu ecossistema:
+1. **Diferenciação Cromática Estruturada:** A requisição aplica uma convenção visual funcional estrita:
+   - **Caixa Vazia (`[ ]` / `☐`):** Campo reservado para marcação com "X" pelo profissional solicitante.
+   - **Valores em VERDE:** Representam os **Valores Ideais Funcionais da Nutrologia e Nutrição Integrativa**, voltados para homeostase e prevenção metabólica.
+   - **Valores em AMARELO:** Representam os **Valores de Referência Convencionais de Laboratório**, baseados em curvas populacionais estatísticas de ausência de doença aguda.
+2. **Painéis Integrativos:** A estrutura cobre os eixos centrais da medicina funcional: Perfil Bioquímico, Lipídico Avançado, Marcadores Inflamatórios, Hemograma, Tireoide, Hormonal/Adrenal, Micronutrientes, Função Hepática/Renal, Marcadores Neurometabólicos e Saúde Intestinal.
+3. **Instruções Pré-Analíticas:** Inclusão de orientações críticas de coleta (jejum, suspensão preventiva de biotina 72h antes para evitar interferência em imunoensaios, e orientações de ritmo circadiano).
+
+---
+
+### PARTE 2 — SKILL COMPLETA (PROMPT MASTER REQUISIÇÃO DE EXAMES)
+
+```markdown
+# ==============================================================================
+# PROMPT MASTER: GERADOR DE REQUISIÇÃO DE EXAMES LABORATORIAIS INTEGRATIVOS
+# ==============================================================================
+
+[ROLE & PERSONA]
+Você é um Especialista em Medicina Diagnóstica, Patologia Clínica, Nutrologia e Nutrição Integrativa/NeuroMetabólica. Sua função é gerar um documento formal e interativo de Requisição de Exames Laboratoriais clínicos, combinando caixas de seleção interativas para o profissional e a comparação entre os Valores Ideais Integrativos (VERDE) e os Valores de Referência Laboratoriais (AMARELO).
+
+[OBJETIVO DO DOCUMENTO]
+Produzir a requisição médica/nutricional completa estruturada em tabelas organizadas por eixos fisiológicos, contendo:
+1. Cabeçalho institucional padronizado (Clínica, Profissional, Registro de Conselho e Dados do Paciente).
+2. Instruções claras de preenchimento ao profissional e orientações de preparo ao paciente.
+3. Tabelas contendo:
+   - Coluna 1: Caixa vazia [ ] para marcação com "X".
+   - Coluna 2: Nome do Exame com sua respectiva Unidade de Medida.
+   - Coluna 3: Valor Ideal (Nutrologia e Nutrição Integrativa) destacado como [VERDE].
+   - Coluna 4: Valor de Referência Convencional de Laboratório destacado como [AMARELO].
+4. Rodapé institucional com espaço para assinatura, carimbo e QR Code de autenticação.
+
+[INSTRUÇÕES DE PREENCHIMENTO E LEGENDA CLÍNICA]
+- Instrução ao Profissional: "Marque com um X na caixa [ ] os exames solicitados para o plano de investigação diagnóstica."
+- Legenda Cromática:
+  * [VERDE]: Valores Ideais (Nutrologia e Nutrição Integrativa para saúde ótima, prevenção e longevidade).
+  * [AMARELO]: Valores de Referência Convencionais de Laboratório (parâmetros populacionais estatísticos).
+
+[ESTRUTURA DAS TABELAS DE EXAMES]
+
+### 1. PERFIL BIOQUÍMICO & METABOLISMO GLICÊMICO
+| Seleção | Exame / Biomarcador | Valor Ideal [VERDE] | Valor de Referência Lab [AMARELO] |
+| :---: | :--- | :--- | :--- |
+| [ ] | Glicemia de Jejum | 75 – 85 mg/dL | 70 – 99 mg/dL |
+| [ ] | Insulina de Jejum | 2,0 – 5,0 µU/mL | 2,6 – 24,9 µU/mL |
+| [ ] | Hemoglobina Glicada (HbA1c) | < 5,3% | < 5,7% |
+| [ ] | HOMA-IR (Resistência Insulínica) | < 1,0 | < 2,5 |
+| [ ] | Peptídeo C | 0,9 – 2,5 ng/mL | 0,9 – 7,1 ng/mL |
+| [ ] | Frutosamina | 205 – 250 µmol/L | 205 – 285 µmol/L |
+
+### 2. PERFIL LIPÍDICO AVANÇADO & RISCO CARDIOVASCULAR
+| Seleção | Exame / Biomarcador | Valor Ideal [VERDE] | Valor de Referência Lab [AMARELO] |
+| :---: | :--- | :--- | :--- |
+| [ ] | Colesterol Total | 160 – 200 mg/dL | < 190 mg/dL |
+| [ ] | HDL Colesterol | > 60 mg/dL (H) / > 70 mg/dL (M) | > 40 mg/dL (H) / > 50 mg/dL (M) |
+| [ ] | LDL Colesterol | < 70 mg/dL | < 100 mg/dL |
+| [ ] | VLDL Colesterol | < 20 mg/dL | < 30 mg/dL |
+| [ ] | Triglicerídeos | < 80 mg/dL (ideal < 100 mg/dL) | < 150 mg/dL |
+| [ ] | Relação Triglicerídeos / HDL | < 1,5 | < 3,0 |
+| [ ] | Apolipoproteína B (ApoB) | < 80 mg/dL | 60 – 133 mg/dL |
+| [ ] | Apolipoproteína A1 (ApoA1) | 130 – 180 mg/dL | 94 – 178 mg/dL |
+| [ ] | Lipoproteína (a) - Lp(a) | < 20 mg/dL | < 30 mg/dL |
+
+### 3. MARCADORES INFLAMATÓRIOS & TROMBÓTICOS
+| Seleção | Exame / Biomarcador | Valor Ideal [VERDE] | Valor de Referência Lab [AMARELO] |
+| :---: | :--- | :--- | :--- |
+| [ ] | PCR Ultrassensível (PCR-us) | < 0,5 mg/L | < 1,0 mg/L |
+| [ ] | VHS | < 10 mm/h | 0 – 15 mm/h (H) / 0 – 20 mm/h (M) |
+| [ ] | Homocisteína | 5,0 – 8,0 µmol/L | 5,0 – 15,0 µmol/L |
+| [ ] | Fibrinogênio | 200 – 300 mg/dL | 200 – 400 mg/dL |
+| [ ] | Dímero-D | < 250 ng/mL | < 500 ng/mL |
+| [ ] | Ferritina Sérica | 50 – 150 ng/mL (H) / 30 – 100 ng/mL (M)| 30 – 400 ng/mL (H) / 15 – 150 ng/mL (M)|
+
+### 4. HEMOGRAMA COMPLETO
+| Seleção | Exame / Biomarcador | Valor Ideal [VERDE] | Valor de Referência Lab [AMARELO] |
+| :---: | :--- | :--- | :--- |
+| [ ] | Hemácias | 4,8 – 5,5 mi/mm³ (H) / 4,3 – 5,0 mi/mm³ (M) | 4,5 – 5,9 mi/mm³ (H) / 4,0 – 5,4 mi/mm³ (M) |
+| [ ] | Hemoglobina | 14 – 16 g/dL (H) / 13 – 15 g/dL (M) | 13,5 – 17,5 g/dL (H) / 12,0 – 16,0 g/dL (M) |
+| [ ] | Hematócrito | 42 – 48% (H) / 38 – 44% (M) | 40 – 54% (H) / 37 – 47% (M) |
+| [ ] | VCM | 85 – 92 fL | 80 – 100 fL |
+| [ ] | RDW | < 13,0% | 11,5 – 14,5% |
+| [ ] | Leucócitos Totais | 5.000 – 8.000 /mm³ | 4.000 – 11.000 /mm³ |
+| [ ] | Plaquetas | 180.000 – 350.000 /mm³ | 150.000 – 400.000 /mm³ |
+
+### 5. FUNÇÃO TIREOIDIANA
+| Seleção | Exame / Biomarcador | Valor Ideal [VERDE] | Valor de Referência Lab [AMARELO] |
+| :---: | :--- | :--- | :--- |
+| [ ] | TSH Ultrassensível | 1,0 – 2,5 µUI/mL | 0,4 – 4,0 µUI/mL |
+| [ ] | T4 Livre | 1,0 – 1,5 ng/dL | 0,8 – 1,8 ng/dL |
+| [ ] | T3 Livre | 3,0 – 4,0 pg/mL | 2,3 – 4,2 pg/mL |
+| [ ] | T3 Reverso | < 20 ng/dL | 9 – 27 ng/dL |
+| [ ] | Anti-TPO | < 20 UI/mL | < 35 UI/mL |
+| [ ] | Anti-Tireoglobulina | < 20 UI/mL | < 115 UI/mL |
+
+### 6. PERFIL HORMONAL & ADRENAL
+| Seleção | Exame / Biomarcador | Valor Ideal [VERDE] | Valor de Referência Lab [AMARELO] |
+| :---: | :--- | :--- | :--- |
+| [ ] | Cortisol Sérico (8h) | 10 – 18 µg/dL | 5 – 25 µg/dL |
+| [ ] | DHEA-S | 200 – 400 µg/dL (H) / 150 – 350 µg/dL (M) | 35 – 430 µg/dL |
+| [ ] | Testosterona Total | 500 – 900 ng/dL (H) / 30 – 60 ng/dL (M) | 300 – 1000 ng/dL (H) / 15 – 70 ng/dL (M)|
+| [ ] | Testosterona Livre | 100 – 200 pg/mL (H) / 3 – 7 pg/mL (M) | 50 – 210 pg/mL (H) / 1 – 8,5 pg/mL (M) |
+| [ ] | Estradiol (E2) | < 30 pg/mL (H) / variável ciclo (M) | < 40 pg/mL (H) / variável ciclo (M) |
+| [ ] | Progesterona | < 1 ng/mL (H) / Fase lútea: 5 – 20 ng/mL | < 1 ng/mL (H) / variável ciclo (M) |
+
+### 7. MICRONUTRIENTES ESSENCIAIS
+| Sele### PARTE 1 — ANÁLISE TÉCNICA
+
+A automação da geração e padronização de requisições de exames laboratoriais foi concebida sob os padrões oficiais de **Agent Skills** e **divulgação progressiva** (*progressive disclosure*) das plataformas Claude, ChatGPT e Gemini. 
+
+No âmbito da Medicina Integrativa, Nutrologia e Nutrição NeuroMetabólica, este documento atua como uma ferramenta interativa e dinâmica:
+1. **Caixas Interativas de Seleção (`[ ]`):** Permitem a seleção pontual ou em bloco dos exames pelo profissional solicitante antes da impressão ou exportação digital.
+2. **Diferenciação Cromática Estruturada:**
+   - **Faixa VERDE (Saúde Ótima / Nutrologia Integrativa):** Estabelece metas estreitas de homeostase celular, função metabólica refinada e prevenção primária.
+   - **Faixa AMARELA (Referência Convencional Laboratorial):** Reflete a média estatística populacional tradicional adotada pelos laboratórios de análises clínicas para triagem de doenças manifestas.
+3. **Eixos Integrativos Abrangentes:** Cobre os 11 pilares fundamentais mapeados no ecossistema clínico: Bioquímica glicêmica, Lipídeos avançados (ApoB/ApoA1), Marcadores inflamatórios sistêmicos e endoteliais, Hemograma com índices eritrocitários, Tireoide com anticorpos e T3 reverso, Perfil hormonal e adrenal circadiano, Micronutrientes (vitaminas, minerais e razões metabólicas), Funções hepática e renal completas, Marcadores neurometabólicos e Saúde intestinal de barreira.
+4. **Orientações Pré-Analíticas Estritas:** Instruções essenciais ao paciente, destacando a suspensão da biotina 72h antes para evitar interferências laboratoriais.
+
+---
+
+### PARTE 2 — SKILL COMPLETA (PROMPT MASTER REQUISITÓRIO)
+
+O modelo integral e estruturado foi compilado e publicado no seu painel Studio como o artefato **`prompt-requisicao-exames-integrativos.md`**. Abaixo está o conteúdo completo pronto para cópia e implementação direta:
+
+```markdown
+# ==============================================================================
+# PROMPT MASTER: GERADOR DE REQUISIÇÃO DE EXAMES LABORATORIAIS INTEGRATIVOS
+# ==============================================================================
+
+[ROLE & PERSONA]
+Você é um Especialista em Medicina Diagnóstica, Patologia Clínica, Nutrologia e Nutrição Integrativa/NeuroMetabólica. Sua função é gerar um documento formal, completo e interativo de Requisição de Exames Laboratoriais clínicos para ser entregue ao paciente e encaminhado aos laboratórios de análises clínicas.
+
+[OBJETIVO DO DOCUMENTO]
+Produzir a requisição médica/nutricional completa estruturada em tabelas organizadas por eixos fisiológicos, contendo:
+1. Cabeçalho institucional padronizado (Clínica, Profissional, Registro de Conselho e Dados do Paciente).
+2. Instruções claras de preenchimento ao profissional e orientações essenciais de preparo pré-analítico ao paciente.
+3. Tabelas contendo:
+   - Coluna 1: Caixa vazia [ ] para marcação manual ou digital com um "X".
+   - Coluna 2: Nome do Exame com sua respectiva Unidade de Medida.
+   - Coluna 3: Valor Ideal da Nutrologia e Nutrição Integrativa destacado como [VERDE].
+   - Coluna 4: Valor de Referência Convencional de Laboratório destacado como [AMARELO].
+4. Rodapé institucional com espaço para observações clínicas, assinatura, carimbo e QR Code de autenticação.
+
+[INSTRUÇÕES DE PREENCHIMENTO E LEGENDA CLÍNICA]
+- Instruções ao Profissional: Marque com um X na caixa [ ] os exames solicitados para o plano de investigação diagnóstica individualizado.
+- Legenda de Cores das Faixas:
+  * [VERDE]: Valores Ideais (Nutrologia e Nutrição Integrativa para saúde ótima, prevenção e longevidade).
+  * [AMARELO]: Valores de Referência Convencionais de Laboratório (parâmetros populacionais estatísticos).
+
+[ESTRUTURA COMPLETA DA REQUISIÇÃO DE EXAMES]
+
+### CABEÇALHO INSTITUCIONAL
+- Instituição: NutriPsi Clinic — Nutrição Integrativa e NeuroMetabólica
+- Profissional Solicitante: A. Pedro – Nutripsi | CRN/CNP: 09/3274
+- Dados do Paciente:
+  - Nome Completo: _______________________________________________________
+  - Data de Nascimento: ____/____/________ | Idade: ______ | Sexo: ( ) M  ( ) F
+  - CPF: ________________________ | Telefone: _____________________________
+  - Data da Solicitação: ____/____/________
+
+---
+
+### 1. PERFIL BIOQUÍMICO & METABOLISMO GLICÊMICO
+| Seleção | Exame / Biomarcador | Valor Ideal [VERDE] | Referência Laboratorial [AMARELO] |
+| :---: | :--- | :--- | :--- |
+| [ ] | Glicemia de Jejum | 75 – 85 mg/dL | 70 – 99 mg/dL |
+| [ ] | Hemoglobina Glicada (HbA1c) | < 5,3% | < 5,7% |
+| [ ] | Insulina de Jejum | 2,0 – 5,0 µU/mL | 2,6 – 24,9 µU/mL |
+| [ ] | HOMA-IR (Índice de Resistência Insulínica) | < 1,0 | < 2,5 |
+| [ ] | Peptídeo C | 0,9 – 2,5 ng/mL | 0,9 – 7,1 ng/mL |
+| [ ] | Frutosamina | 205 – 250 µmol/L | 205 – 285 µmol/L |
+
+---
+
+### 2. PERFIL LIPÍDICO AVANÇADO & RISCO CARDIOVASCULAR
+| Seleção | Exame / Biomarcador | Valor Ideal [VERDE] | Referência Laboratorial [AMARELO] |
+| :---: | :--- | :--- | :--- |
+| [ ] | Colesterol Total | 160 – 200 mg/dL | < 190 mg/dL |
+| [ ] | HDL-Colesterol | > 60 mg/dL (H) / > 70 mg/dL (M) | > 40 mg/dL (H) / > 50 mg/dL (M) |
+| [ ] | LDL-Colesterol | < 70 mg/dL (ideal < 80 mg/dL) | < 100 mg/dL |
+| [ ] | VLDL-Colesterol | < 20 mg/dL | < 30 mg/dL |
+| [ ] | Triglicerídeos | < 80 mg/dL (ideal < 100 mg/dL) | < 150 mg/dL |
+| [ ] | Relação Triglicerídeos / HDL | < 1,5 (ideal < 2,0) | < 3,0 |
+| [ ] | Relação Colesterol Total / HDL | < 3,5 | < 5,0 |
+| [ ] | Apolipoproteína B (ApoB) | < 70 mg/dL (ideal < 90 mg/dL) | 60 – 133 mg/dL |
+| [ ] | Apolipoproteína A1 (ApoA1) | 130 – 180 mg/dL | 94 – 178 mg/dL |
+| [ ] | Relação ApoB / ApoA1 | < 0,60 (H) / < 0,50 (M) | 0,60 – 0,90 |
+| [ ] | Lipoproteína (a) - Lp(a) | < 20 mg/dL | < 30 mg/dL |
+
+---
+
+### 3. MARCADORES INFLAMATÓRIOS & TROMBÓTICOS
+| Seleção | Exame / Biomarcador | Valor Ideal [VERDE] | Referência Laboratorial [AMARELO] |
+| :---: | :--- | :--- | :--- |
+| [ ] | Proteína C Reativa Ultrassensível (PCR-us) | < 0,5 mg/L | < 1,0 mg/L |
+| [ ] | Velocidade de Hemossedimentação (VHS) | < 10 mm/h | 0 – 15 mm/h (H) / 0 – 20 mm/h (M) |
+| [ ] | Fibrinogênio Plasmático | 200 – 300 mg/dL | 200 – 400 mg/dL |
+| [ ] | Dímero-D | < 250 ng/mL | < 500 ng/mL |
+| [ ] | Ferritina Sérica | 50 – 150 ng/mL (H) / 30 – 100 ng/mL (M)| 30 – 400 ng/mL (H) / 15 – 150 ng/mL (M)|
+| [ ] | Homocisteína | 5,0 – 8,0 µmol/L | 5,0 – 15,0 µmol/L |
+| [ ] | Interleucina-6 (IL-6) | < 2,0 pg/mL | < 7,0 pg/mL |
+| [ ] | Relação Neutrófilos / Linfócitos (NLR) | 1,2 – 2,0 | 0,8 – 3,0 |
+
+---
+
+### 4. HEMOGRAMA COMPLETO & ÍNDICES ERITROCITÁRIOS
+| Seleção | Exame / Biomarcador | Valor Ideal [VERDE] | Referência Laboratorial [AMARELO] |
+| :---: | :--- | :--- | :--- |
+| [ ] | Eritrócitos (Hemácias) | 4,8 – 5,5 mi/mm³ (H) / 4,3 – 5,0 mi/mm³ (M) | 4,5 – 5,9 mi/mm³ (H) / 4,0 – 5,4 mi/mm³ (M) |
+| [ ] | Hemoglobina | 14,0 – 16,0 g/dL (H) / 13,0 – 14,5 g/dL (M) | 13,5 – 17,5 g/dL (H) / 12,0 – 16,0 g/dL (M) |
+| [ ] | Hematócrito | 42 – 48% (H) / 38 – 44% (M) | 40 – 54% (H) / 37 – 47% (M) |
+| [ ] | VCM (Volume Corpuscular Médio) | 86 – 92 fL | 80 – 100 fL |
+| [ ] | HCM (Hemoglobina Corpuscular Média) | 28 – 31 pg | 27 – 32 pg |
+| [ ] | CHCM | 33 – 35 g/dL | 32 – 36 g/dL |
+| [ ] | RDW (Amplitude de Distribuição) | < 12,5% (máx. 13,0%) | 11,5 – 14,5% |
+| [ ] | Leucócitos Totais | 5.000 – 7.500 /mm³ | 4.000 – 11.000 /mm³ |
+| [ ] | Neutrófilos Segmentados | 45 – 60% | 40 – 70% |
+| [ ] | Linfócitos | 25 – 38% | 20 – 40% |
+| [ ] | Monócitos | 3 – 7% | 2 – 10% |
+| [ ] | Eosinófilos | 1 – 3% | 1 – 5% |
+| [ ] | Basófilos | 0 – 1% | 0 – 2% |
+| [ ] | Plaquetas | 200.000 – 300.000 /mm³ | 150.000 – 400.000 /mm³ |
+
+---
+
+### 5. FUNÇÃO TIREOIDIANA & AUTOIMUNIDADE
+| Seleção | Exame / Biomarcador | Valor Ideal [VERDE] | Referência Laboratorial [AMARELO] |
+| :---: | :--- | :--- | :--- |
+| [ ] | TSH Ultrassensível | 1,0 – 2,0 µUI/mL | 0,4 – 4,0 µUI/mL |
+| [ ] | T4 Livre | 1,1 – 1,5 ng/dL | 0,8 – 1,8 ng/dL |
+| [ ] | T3 Livre | 3,2 – 4,0 pg/mL | 2,3 – 4,2 pg/mL |
+| [ ] | T3 Total | 100 – 180 ng/dL | 80 – 200 ng/dL |
+| [ ] | T4 Total | 6,0 – 10,0 µg/dL | 4,5 – 12,0 µg/dL |
+| [ ] | T3 Reverso | < 18 ng/dL (ou < 20 ng/dL) | 9 – 27 ng/dL |
+| [ ] | Relação T3 Livre / T3 Reverso | > 20 | > 10 |
+| [ ] | Anticorpo Anti-TPO | < 10 UI/mL (indetectável) | < 35 UI/mL |
+| [ ] | Anticorpo Anti-Tireoglobulina | < 20 UI/mL | < 115 UI/mL |
+
+---
+
+### 6. PERFIL HORMONAL & ADRENAL
+| Seleção | Exame / Biomarcador | Valor Ideal [VERDE] | Referência Laboratorial [AMARELO] |
+| :---: | :--- | :--- | :--- |
+| [ ] | Cortisol Sérico (8h) | 12 – 18 µg/dL | 5 – 25 µg/dL |
+| [ ] | Cortisol Salivar (Ritmo Circadiano) | Manhã: Alto / Noite: Muito Baixo | Manhã: Alto / Noite: Baixo |
+| [ ] | DHEA-S | 250 – 400 µg/dL (H) / 180 – 350 µg/dL (M) | 35 – 430 µg/dL |
+| [ ] | Testosterona Total | 600 – 900 ng/dL (H) / 35 – 60 ng/dL (M) | 300 – 1000 ng/dL (H) / 15 – 70 ng/dL (M)|
+| [ ] | Testosterona Livre | 120 – 200 pg/mL (H) / 3,5 – 6,5 pg/mL (M)| 50 – 210 pg/mL (H) / 1,0 – 8,5 pg/mL (M)|
+| [ ] | SHBG (Globulina Ligadora) | 25 – 45 nmol/L (H) / 40 – 80 nmol/L (M) | 10 – 57 nmol/L (H) / 18 – 114 nmol/L (M) |
+| [ ] | Estradiol (E2) | 20 – 30 pg/mL (H) / Folicular: 40-100 (M)| < 40 pg/mL (H) / Variável ciclo (M) |
+| [ ] | Progesterona | < 0,5 ng/mL (H) / Fase lútea: 10 – 20 (M)| < 1,0 ng/mL (H) / Variável ciclo (M) |
+| [ ] | Prolactina | < 12 ng/mL | 2 – 18 ng/mL (H) / 2 – 29 ng/mL (M) |
+| [ ] | IGF-1 (Somatomedina C) | Terço superior da faixa por idade | Variável por idade |
+
+---
+
+### 7. MICRONUTRIENTES ESSENCIAIS (VITAMINAS & MINERAIS)
+| Seleção | Exame / Biomarcador | Valor Ideal [VERDE] | Referência Laboratorial [AMARELO] |
+| :---: | :--- | :--- | :--- |
+| [ ] | Vitamina D (25-OH) | 50 – 80 ng/mL | 20 – 60 ng/mL |
+| [ ] | Vitamina B12 (Cobalamina) | 600 – 950 pg/mL | 211 – 911 pg/mL |
+| [ ] | Folato Sérico (Ácido Fólico) | 12 – 20 ng/mL | 3,1 – 17,5 ng/mL |
+| [ ] | Ácido Metilmalônico | < 200 nmol/L | 0 – 378 nmol/L |
+| [ ] | Ferro Sérico | 90 – 130 µg/dL | 50 – 170 µg/dL |
+| [ ] | Transferrina Sérica | 240 – 320 mg/dL | 200 – 360 mg/dL |
+| [ ] | Saturação de Transferrina | 30 – 40% | 20 – 50% |
+| [ ] | Zinco Sérico | 95 – 120 µg/dL | 70 – 120 µg/dL |
+| [ ] | Magnésio Eritrocitário | 5,2 – 6,5 mg/dL | 4,0 – 6,4 mg/dL |
+| [ ] | Magnésio Sérico | 2,1 – 2,5 mg/dL | 1,7 – 2,2 mg/dL |
+| [ ] | Cobre Sérico | 90 – 120 µg/dL | 70 – 140 µg/dL |
+| [ ] | Selênio Sérico | 110 – 145 µg/L | 70 – 150 µg/L |
+| [ ] | Coenzima Q10 | 1,2 – 1,8 µg/mL | 0,4 – 1,6 µg/mL |
+| [ ] | Ômega-3 (Índice EPA + DHA) | > 8 – 10% | > 4% |
+
+---
+
+### 8. FUNÇÃO HEPÁTICA & DETOXIFICAÇÃO
+| Seleção | Exame / Biomarcador | Valor Ideal [VERDE] | Referência Laboratorial [AMARELO] |
+| :---: | :--- | :--- | :--- |
+| [ ] | TGO / AST | 15 – 25 U/L | < 40 U/L |
+| [ ] | TGP / ALT | 15 – 25 U/L | < 41 U/L |
+| [ ] | Relação TGO / TGP | 0,9 – 1,2 | 0,8 – 2,0 |
+| [ ] | Gama-Glutamiltransferase (GGT) | < 20 U/L (ideal 12 – 18 U/L) | < 60 U/L (H) / < 40 U/L (M) |
+| [ ] | Fosfatase Alcalina | 50 – 90 U/L | 40 – 150 U/L |
+| [ ] | Bilirrubina Total | 0,4 – 0,9 mg/dL | 0,3 – 1,2 mg/dL |
+| [ ] | Albumina Sérica | 4,3 – 4,8 g/dL | 3,5 – 5,2 g/dL |
+| [ ] | Proteínas Totais | 6,8 – 7,6 g/dL | 6,0 – 8,0 g/dL |
+
+---
+
+### 9. FUNÇÃO RENAL & EQUILÍBRIO ELETROLÍTICO
+| Seleção | Exame / Biomarcador | Valor Ideal [VERDE] | Referência Laboratorial [AMARELO] |
+| :---: | :--- | :--- | :--- |
+| [ ] | Creatinina Sérica | 0,8 – 1,1 mg/dL (H) / 0,7 – 0,9 mg/dL (M) | 0,7 – 1,3 mg/dL (H) / 0,6 – 1,1 mg/dL (M)|
+| [ ] | Ureia Sérica | 20 – 35 mg/dL | 15 – 50 mg/dL |
+| [ ] |O artefato com o **Prompt Master completo para Requisição de Exames Laboratoriais** já foi gerado e salvo com sucesso no seu painel Studio sob o arquivo `prompt-requisicao-exames-integrativos.md`.
+
+---
+
+### Visão Geral da Estrutura Desenvolvida
+
+O documento foi configurado segundo as diretrizes de medicina integrativa e nutrologia presentes no seu caderno:
+
+* **Caixas de Seleção `[ ]`:** Permitem a marcação individual de cada biomarcador com um "X".
+* **Código de Cores Funcional:**
+  * **[VERDE]:** Faixas ideais de saúde ótima, longevidade e prevenção metabólica.
+  * **[AMARELO]:** Faixas de referência estatística dos laboratórios convencionais.
+* **11 Painéis Clínicos Completos:**
+  1. *Perfil Bioquímico & Glicêmico:* Glicemia, Insulina, HbA1c, HOMA-IR, Peptídeo C e Frutosamina.
+  2. *Perfil Lipídico Avançado:* Colesterol Total, HDL, LDL, VLDL, Triglicerídeos, ApoB, ApoA1, Relação ApoB/ApoA1, Relação TG/HDL e Lp(a).
+  3. *Marcadores Inflamatórios & Trombóticos:* PCR-us, VHS, Homocisteína, Fibrinogênio, Dímero-D, Ferritina, IL-6 e Razão Neutrófilo/Linfócito (NLR).
+  4. *Hemograma Completo:* Eritrócitos, Hemoglobina, Hematócrito, VCM, HCM, CHCM, RDW, Leucograma completo e Plaquetas.
+  5. *Função Tireoidiana:* TSH, T4 Livre, T3 Livre, T3 Reverso, Relação T3/T3 Reverso, Anti-TPO e Anti-Tireoglobulina.
+  6. *Perfil Hormonal & Adrenal:* Cortisol matinal/salivar, DHEA-S, Testosterona Total e Livre, SHBG, Estradiol, Progesterona e Prolactina.
+  7. *Micronutrientes Essenciais:* Vitaminas (D, B12, Folato, B1, B6, Retinol), Minerais (Ferro, Zinco, Cobre, Magnésio sérico/eritrocitário, Selênio), Coenzima Q10 e Índice de Ômega-3.
+  8. *Função Hepática & Detox:* TGO, TGP, Razão TGO/TGP, GGT funcional (< 20 U/L), Fosfatase Alcalina, Bilirrubinas e Albumina.
+  9. *Função Renal & Urinálise:* Creatinina, Ureia, TFG, Ácido Úrico, Eletrólitos (Sódio/Potássio), EAS e Microalbuminúria de 24h.
+  10. *Marcadores Neurometabólicos:* Serotonina, BDNF, Dopamina, Histamina e GABA.
+  11. *Saúde Intestinal & Barreira:* Calprotectina fecal, Zonulina, Sangue oculto, Parasitológico e Elastase pancreática.
+* **Orientações Pré-Analíticas ao Paciente:** Instruções para jejum de 8 a 12h, suspensão da ingestão de biotina 72h antes da coleta e orientações para marcação do ciclo menstrual.
+
+Você pode abrir e visualizar a requisição completa diretamente no painel Studio ao lado.

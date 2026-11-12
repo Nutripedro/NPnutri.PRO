@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-surface":"#0b1c30","primary":"#004f28","on-tertiary-fixed":"#3b0900","background":"#f8f9ff","secondary-fixed-dim":"#bec6e0","on-background":"#0b1c30","on-primary-fixed":"#00210d","surface-container-high":"#dce9ff","on-secondary":"#ffffff","tertiary":"#831f00","surface-tint":"#0a6d3a","secondary-container":"#dae2fd","inverse-on-surface":"#eaf1ff","on-error-container":"#93000a","outline-variant":"#bec9be","primary-fixed-dim":"#83d99b","inverse-surface":"#213145","error":"#ba1a1a","surface-dim":"#cbdbf5","inverse-primary":"#83d99b","on-tertiary-container":"#ffc8b9","on-tertiary":"#ffffff","on-error":"#ffffff","secondary":"#565e74","tertiary-container":"#a63411","outline":"#6f7a6f","on-primary-container":"#90e7a8","surface-container-low":"#eff4ff","error-container":"#ffdad6","primary-container":"#046a38","on-primary":"#ffffff","surface":"#f8f9ff","on-secondary-fixed-variant":"#3f465c","tertiary-fixed":"#ffdbd1","surface-variant":"#d3e4fe","secondary-fixed":"#dae2fd","surface-container-lowest":"#ffffff","surface-container-highest":"#d3e4fe","on-surface-variant":"#3f4940","on-tertiary-fixed-variant":"#872000","surface-bright":"#f8f9ff","on-primary-fixed-variant":"#00522a","tertiary-fixed-dim":"#ffb5a0","surface-container":"#e5eeff","on-secondary-container":"#5c647a","on-secondary-fixed":"#131b2e","primary-fixed":"#9ef6b6"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"pad-sm":"0.75rem","margin-tablet":"1.5rem","pad-xs":"0.5rem","pad-2xs":"0.25rem","gutter-mobile":"0.75rem","margin-mobile":"1rem","pad-md":"1rem","pad-lg":"1.25rem","gutter-desktop":"1.25rem","pad-xl":"1.5rem","touch-min":"2.75rem","pad-2xl":"2rem"},fontFamily:{"headline-sm":["Plus Jakarta Sans"],"display-lg":["Plus Jakarta Sans"],"body-md":["Plus Jakarta Sans"],"body-sm":["Plus Jakarta Sans"],"headline-lg-mobile":["Plus Jakarta Sans"],"label-md":["Inter"],"body-lg":["Plus Jakarta Sans"],"label-sm":["Inter"],"headline-md":["Plus Jakarta Sans"],"label-numeric-md":["Inter"],"label-numeric-lg":["Inter"],"headline-lg":["Plus Jakarta Sans"]},fontSize:{"headline-sm":["16px",{lineHeight:"22px",fontWeight:"600"}],"display-lg":["36px",{lineHeight:"44px",letterSpacing:"-0.02em",fontWeight:"700"}],"body-md":["14px",{lineHeight:"20px",fontWeight:"400"}],"body-sm":["12px",{lineHeight:"16px",fontWeight:"400"}],"headline-lg-mobile":["22px",{lineHeight:"28px",letterSpacing:"-0.01em",fontWeight:"700"}],"label-md":["13px",{lineHeight:"16px",letterSpacing:"0.01em",fontWeight:"500"}],"body-lg":["16px",{lineHeight:"24px",fontWeight:"400"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.04em",fontWeight:"600"}],"headline-md":["20px",{lineHeight:"26px",fontWeight:"600"}],"label-numeric-md":["18px",{lineHeight:"24px",fontWeight:"600"}],"label-numeric-lg":["24px",{lineHeight:"28px",letterSpacing:"-0.01em",fontWeight:"600"}],"headline-lg":["28px",{lineHeight:"36px",letterSpacing:"-0.015em",fontWeight:"700"}]}}}};</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface font-body-md text-body-md flex flex-col min-h-screen"><header class="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)] pt-safe"><div class="h-16 px-margin-mobile flex items-center justify-between"><div class="flex items-center gap-pad-xs"><button aria-label="Go Back" class="w-11 h-11 -ml-1.5 rounded-lg flex items-center justify-center text-on-surface hover:bg-surface-container transition-colors active:scale-95" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back</span></button><div class="flex flex-col"><h1 class="font-headline-sm text-headline-sm text-on-surface tracking-tight leading-snug truncate max-w-[190px]">Active Bioimpedance Test</h1><div class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-primary-container"></span><span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Subject #0824 • Hydrated</span></div></div></div><div class="flex items-center gap-pad-xs"><div class="flex items-center gap-1 px-2 py-1 rounded-full bg-surface-container text-primary text-[12px] font-label-sm"><span class="material-symbols-outlined text-[15px]">sensors</span><span class="font-label-sm text-label-sm">50 kHz</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 bg-surface"><div class="flex flex-col w-full pb-safe">
+<!-- Status do Dispositivo & Metadados do Paciente -->
+<section class="px-margin-mobile pt-pad-xs pb-pad-sm flex flex-col gap-pad-xs">
+<div class="bg-surface-container rounded-xl p-pad-md flex flex-col gap-pad-xs shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[20px]">badge</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface">Lucas Mendes</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">32 anos • 1,85 m • 83,3 kg</span>
+</div>
+</div>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-surface-container-high text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+          ISAK Nível 2
+        </span>
+</div>
+<div class="grid grid-cols-2 gap-pad-xs pt-1">
+<div class="bg-surface-container-low rounded-lg p-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">calendar_today</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Data da Medição</span>
+<span class="font-label-md text-label-md text-on-surface">12 Fev 2025 • 08:30</span>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-lg p-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">cable</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">BIA Tetrapolar 8-E</span>
+<span class="font-label-md text-label-md text-on-surface">50 &amp; 250 kHz Multi</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Filtros / Abas de Navegação Clínica -->
+<section class="px-margin-mobile pb-pad-sm">
+<div class="flex gap-2 overflow-x-auto no-scrollbar py-1">
+<button class="px-4 py-2 rounded-full bg-primary text-on-primary font-label-md text-label-md shadow-sm transition-all flex items-center gap-1.5 whitespace-nowrap" id="tab-overview" onclick="switchClinicalTab('overview')">
+<span class="material-symbols-outlined text-[16px]">donut_large</span>
+        Visão Geral (6 Parâmetros)
+      </button>
+<button class="px-4 py-2 rounded-full bg-surface-container text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high transition-all flex items-center gap-1.5 whitespace-nowrap" id="tab-segmental" onclick="switchClinicalTab('segmental')">
+<span class="material-symbols-outlined text-[16px]">accessibility_new</span>
+        Análise Segmentar
+      </button>
+<button class="px-4 py-2 rounded-full bg-surface-container text-on-surface-variant font-label-md text-label-md hover:bg-surface-container-high transition-all flex items-center gap-1.5 whitespace-nowrap" id="tab-hydration" onclick="switchClinicalTab('hydration')">
+<span class="material-symbols-outlined text-[16px]">water_drop</span>
+        Matriz Hídrica (ICW/ECW)
+      </button>
+</div>
+</section>
+<!-- CONTEÚDO PRINCIPAL: VISÃO GERAL -->
+<div class="flex flex-col w-full" id="content-overview">
+<!-- Grade dos 6 Parâmetros Clínicos Obrigatórios -->
+<section class="px-margin-mobile flex flex-col gap-pad-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant tracking-wider uppercase font-semibold">Parâmetros Antropométricos Principais</span>
+<span class="font-label-sm text-label-sm text-primary font-medium">Equação Jackson-Pollock/Siri</span>
+</div>
+<!-- 1. MASSA MAGRA (FFM / Lean Body Mass) -->
+<article class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm flex flex-col gap-pad-xs">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-primary-container/20 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[20px]">fitness_center</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">1. Massa Magra (FFM)</h2>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Livre de gordura • Esqueleto + Órgãos + Músculo</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded bg-primary text-on-primary font-label-sm text-label-sm">Adequado</span>
+</div>
+<div class="flex items-baseline gap-2 pt-1">
+<span class="font-label-numeric-lg text-label-numeric-lg text-primary">68,4</span>
+<span class="font-label-md text-label-md text-on-surface-variant">kg</span>
+<span class="font-label-md text-label-md text-primary font-semibold ml-auto">82,1% do peso</span>
+</div>
+<!-- Barra de Adequação com Meta Clínica -->
+<div class="flex flex-col gap-1 pt-1">
+<div class="flex justify-between font-label-sm text-label-sm text-on-surface-variant">
+<span>Faixa esperada: 61,0 - 71,5 kg</span>
+<span class="font-medium text-on-surface">Meta clínica: &gt; 65,0 kg</span>
+</div>
+<div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden relative">
+<div class="h-full bg-primary rounded-full transition-all duration-500" style="width: 82%;"></div>
+<div class="absolute top-0 bottom-0 left-[75%] w-0.5 bg-on-surface"></div>
+</div>
+</div>
+</article>
+<!-- 2. MASSA GORDA (Fat Mass) -->
+<article class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm flex flex-col gap-pad-xs">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-tertiary-fixed flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[20px]">pie_chart</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">2. Massa Gorda (Fat Mass)</h2>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Tecido adiposo subcutâneo e visceral</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded bg-secondary-container text-on-secondary-fixed font-label-sm text-label-sm">Faixa Saudável</span>
+</div>
+<div class="flex items-baseline gap-2 pt-1">
+<span class="font-label-numeric-lg text-label-numeric-lg text-on-surface">14,9</span>
+<span class="font-label-md text-label-md text-on-surface-variant">kg</span>
+<span class="font-label-md text-label-md text-secondary font-semibold ml-auto">Meta: 12,0 - 15,5 kg</span>
+</div>
+<div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-secondary rounded-full" style="width: 58%;"></div>
+</div>
+</article>
+<!-- 3. ÁGUA CORPORAL TOTAL (TBW / ACT) -->
+<article class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm flex flex-col gap-pad-xs">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">water_drop</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">3. Água Corporal Total (ACT)</h2>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Equilíbrio eletrolítico intra/extracelular</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm">Normo-hidratado</span>
+</div>
+<div class="flex items-baseline gap-2 pt-1">
+<span class="font-label-numeric-lg text-label-numeric-lg text-primary">50,1</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Litros</span>
+<span class="font-label-md text-label-md text-on-surface font-semibold ml-auto">60,1% vol. corporal</span>
+</div>
+<!-- Particionamento Hídrico ICW / ECW -->
+<div class="grid grid-cols-2 gap-2 pt-1">
+<div class="bg-surface-container-low p-2.5 rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Água Intracelular (ICW)</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface">31,2</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">L (62,3%)</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-2.5 rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Água Extracelular (ECW)</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface">18,9</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">L (37,7%)</span>
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between text-label-sm font-label-sm bg-surface-container-low px-3 py-1.5 rounded-lg">
+<span class="text-on-surface-variant">Índice de Edema (ECW/TBW):</span>
+<span class="font-semibold text-primary">0,377 (Padrão ouro: 0,360 - 0,390)</span>
+</div>
+</article>
+<!-- 4. PORCENTAGEM DE GORDURA (%G / Body Fat %) -->
+<article class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm flex flex-col gap-pad-xs">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-tertiary-container">
+<span class="material-symbols-outlined text-[20px]">percent</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">4. Porcentagem de Gordura (%G)</h2>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Composição relativa em adipócitos</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm">Ótimo</span>
+</div>
+<div class="flex items-baseline gap-2 pt-1">
+<span class="font-label-numeric-lg text-label-numeric-lg text-on-surface">17,9</span>
+<span class="font-headline-sm text-headline-sm text-on-surface-variant">%</span>
+<span class="font-label-md text-label-md text-on-surface-variant ml-auto">Faixa: 10% - 20%</span>
+</div>
+<!-- Termômetro / Régua Gráfica de Faixas -->
+<div class="flex flex-col gap-1 pt-1">
+<div class="h-3 w-full rounded-full flex overflow-hidden">
+<div class="h-full bg-secondary-container flex-1" title="Baixo (&lt;10%)"></div>
+<div class="h-full bg-primary-container flex-[2] relative" title="Adequado (10-20%)">
+<div class="absolute top-0 bottom-0 left-[79%] w-1 bg-surface-container-lowest shadow-md"></div>
+</div>
+<div class="h-full bg-tertiary-fixed-dim flex-1" title="Sobrepeso (20-25%)"></div>
+<div class="h-full bg-tertiary flex-1" title="Obesidade (&gt;25%)"></div>
+</div>
+<div class="flex justify-between font-label-sm text-label-sm text-on-surface-variant">
+<span>Baixo (&lt;10%)</span>
+<span class="text-primary font-semibold">17,9% Saudável</span>
+<span>Sobrepeso</span>
+<span>Obesidade</span>
+</div>
+</div>
+</article>
+<!-- 5. TAXA METABÓLICA BASAL (TMB) -->
+<article class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm flex flex-col gap-pad-xs">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">local_fire_department</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">5. Taxa Metabólica Basal (TMB)</h2>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Consumo mínimo em repouso absoluto</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm text-label-sm">Katch-McArdle</span>
+</div>
+<div class="flex items-baseline gap-2 pt-1">
+<span class="font-label-numeric-lg text-label-numeric-lg text-primary">1.842</span>
+<span class="font-label-md text-label-md text-on-surface-variant">kcal / dia</span>
+</div>
+<div class="p-2.5 rounded-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Gasto Energético Total Estimado (GET)</span>
+<span class="font-body-sm text-body-sm text-on-surface">Fator de Atividade: 1,55 (Moderado)</span>
+</div>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface font-semibold">2.855 kcal</span>
+</div>
+</article>
+<!-- 6. ÍNDICE DE MASSA CORPÓREA (IMC) -->
+<article class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm flex flex-col gap-pad-xs">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-lg bg-surface-container-high flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-[20px]">scale</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">6. Índice de Massa Corporal (IMC)</h2>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Relação peso/estatura (OMS)</span>
+</div>
+</div>
+<span class="px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed font-label-sm text-label-sm">Eutrofia</span>
+</div>
+<div class="flex items-baseline gap-2 pt-1">
+<span class="font-label-numeric-lg text-label-numeric-lg text-on-surface">24,2</span>
+<span class="font-label-md text-label-md text-on-surface-variant">kg/m²</span>
+<span class="font-label-md text-label-md text-primary font-semibold ml-auto">Classificação: Eutrófico</span>
+</div>
+<div class="flex flex-col gap-1 pt-1">
+<div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden flex">
+<div class="h-full bg-secondary-container flex-[18.5]"></div>
+<div class="h-full bg-primary flex-[6.4]"></div>
+<div class="h-full bg-tertiary-container flex-[5.1]"></div>
+</div>
+<div class="flex justify-between font-label-sm text-label-sm text-on-surface-variant">
+<span>&lt;18,5 Magreza</span>
+<span class="font-semibold text-primary">18,5 - 24,9 Normal</span>
+<span>&gt;25,0 Sobrepeso</span>
+</div>
+</div>
+</article>
+</section>
+<!-- Fracionamento em 4 Componentes e Integridade Celular -->
+<section class="px-margin-mobile pt-pad-md flex flex-col gap-pad-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Compartimentação Molecular &amp; Vitalidade</span>
+<div class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm flex flex-col gap-pad-sm">
+<div class="flex justify-between items-center">
+<span class="font-headline-sm text-headline-sm text-on-surface">Modelo de 4 Compartimentos</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Total: 100% (83,3 kg)</span>
+</div>
+<!-- Barra Multicomponente Segmentada -->
+<div class="h-4 w-full rounded-full flex overflow-hidden">
+<div class="h-full bg-primary flex-[60.1]" title="Água: 60.1%"></div>
+<div class="h-full bg-primary-fixed-dim flex-[17.8]" title="Proteína: 17.8%"></div>
+<div class="h-full bg-secondary-fixed flex-[4.2]" title="Minerais: 4.2%"></div>
+<div class="h-full bg-tertiary-fixed-dim flex-[17.9]" title="Gordura: 17.9%"></div>
+</div>
+<!-- Legenda 4C -->
+<div class="grid grid-cols-2 gap-2 text-label-sm font-label-sm">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+<span class="text-on-surface">Água Corporal: 50,1 kg (60,1%)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-fixed-dim"></span>
+<span class="text-on-surface">Proteína Muscular: 14,8 kg (17,8%)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-secondary-fixed"></span>
+<span class="text-on-surface">Minerais Ósseos: 3,5 kg (4,2%)</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary-fixed-dim"></span>
+<span class="text-on-surface">Massa Lipídica: 14,9 kg (17,9%)</span>
+</div>
+</div>
+<!-- Ângulo de Fase Card Destaque -->
+<div class="mt-1 p-3 rounded-lg bg-surface-container flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[22px]">vital_signs</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm text-on-surface">Ângulo de Fase (Phase Angle @ 50kHz)</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Integridade da membrana celular</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="font-label-numeric-lg text-label-numeric-lg text-primary">7,2°</span>
+<span class="font-label-sm text-label-sm text-primary font-semibold">Excelente / Alto Vigor</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Parecer Clínico Nutricional -->
+<section class="px-margin-mobile pt-pad-md pb-pad-md flex flex-col gap-pad-xs">
+<div class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm flex flex-col gap-pad-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">assignment_turned_in</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Parecer Diagnóstico &amp; Conduta</span>
+</div>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-primary-fixed text-on-primary-fixed">Protocolo Aprovado</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface leading-relaxed">
+          Paciente apresenta composição corporal altamente favorável para performance esportiva, com excelente proporção de massa magra (&gt;82%) e índice de edema ECW/TBW em patamar estritamente fisiológico (0,377). O ângulo de fase de 7,2° expressa alta integridade de membranas mitocondriais e excelente capacidade de recuperação.
+        </p>
+<div class="flex flex-wrap gap-2 pt-1">
+<span class="px-2.5 py-1 rounded-md bg-surface-container text-on-surface-variant font-label-sm text-label-sm">Manutenção hipertrófica</span>
+<span class="px-2.5 py-1 rounded-md bg-surface-container text-on-surface-variant font-label-sm text-label-sm">Consumo hídrico ~3,5 L/dia</span>
+<span class="px-2.5 py-1 rounded-md bg-surface-container text-on-surface-variant font-label-sm text-label-sm">Meta calórica 2.900 kcal</span>
+</div>
+</div>
+</section>
+</div>
+<!-- CONTEÚDO TAB 2: ANÁLISE SEGMENTAR (Hidden por padrão, reativado por switch) -->
+<div class="hidden flex flex-col w-full px-margin-mobile gap-pad-sm pb-pad-md" id="content-segmental">
+<div class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm flex flex-col gap-pad-xs">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-on-surface">Mapeamento Segmentar (5 Zonas)</span>
+<span class="font-label-sm text-label-sm text-primary font-medium">BIA Multi-canal</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Distribuição muscular e hídrica independente:</span>
+<div class="flex flex-col gap-2 pt-2">
+<!-- Braço Direito -->
+<div class="bg-surface-container-low p-3 rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">front_hand</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Braço Direito</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">ECW/TBW: 0,375</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-numeric-md text-label-numeric-md text-primary">4,12 kg</span>
+<span class="block font-label-sm text-label-sm text-primary">106% da meta</span>
+</div>
+</div>
+<!-- Braço Esquerdo -->
+<div class="bg-surface-container-low p-3 rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">back_hand</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Braço Esquerdo</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">ECW/TBW: 0,376</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface">4,05 kg</span>
+<span class="block font-label-sm text-label-sm text-on-surface-variant">104% da meta</span>
+</div>
+</div>
+<!-- Tronco -->
+<div class="bg-surface-container-low p-3 rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">accessibility</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Tronco</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">ECW/TBW: 0,378</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-numeric-md text-label-numeric-md text-primary">32,60 kg</span>
+<span class="block font-label-sm text-label-sm text-primary">102% da meta</span>
+</div>
+</div>
+<!-- Perna Direita -->
+<div class="bg-surface-container-low p-3 rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">directions_run</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Perna Direita</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">ECW/TBW: 0,381</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-numeric-md text-label-numeric-md text-primary">10,85 kg</span>
+<span class="block font-label-sm text-label-sm text-primary">105% da meta</span>
+</div>
+</div>
+<!-- Perna Esquerda -->
+<div class="bg-surface-container-low p-3 rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">directions_walk</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Perna Esquerda</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">ECW/TBW: 0,380</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-numeric-md text-label-numeric-md text-primary">10,78 kg</span>
+<span class="block font-label-sm text-label-sm text-primary">104% da meta</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- CONTEÚDO TAB 3: MATRIZ HÍDRICA (Hidden por padrão) -->
+<div class="hidden flex flex-col w-full px-margin-mobile gap-pad-sm pb-pad-md" id="content-hydration">
+<div class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm flex flex-col gap-pad-xs">
+<span class="font-headline-sm text-headline-sm text-on-surface">Volemia e Distribuição de Fluidos</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Análise detalhada de retenção e hidratação tecidual:</span>
+<div class="mt-2 grid grid-cols-1 gap-2">
+<div class="p-3 bg-surface-container-low rounded-lg flex justify-between items-center">
+<div>
+<span class="font-label-md text-label-md text-on-surface font-medium">Resistência a 50 kHz</span>
+<span class="block font-body-sm text-body-sm text-on-surface-variant">Impedância do corpo inteiro</span>
+</div>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface">422,4 Ω</span>
+</div>
+<div class="p-3 bg-surface-container-low rounded-lg flex justify-between items-center">
+<div>
+<span class="font-label-md text-label-md text-on-surface font-medium">Reatância a 50 kHz</span>
+<span class="block font-body-sm text-body-sm text-on-surface-variant">Capacitância de membranas</span>
+</div>
+<span class="font-label-numeric-md text-label-numeric-md text-primary">53,1 Ω</span>
+</div>
+<div class="p-3 bg-surface-container-low rounded-lg flex justify-between items-center">
+<div>
+<span class="font-label-md text-label-md text-on-surface font-medium">Status de Retenção Subcutânea</span>
+<span class="block font-body-sm text-body-sm text-on-surface-variant">Nenhum acúmulo de fluido periférico</span>
+</div>
+<span class="px-2 py-1 rounded bg-primary text-on-primary font-label-sm text-label-sm">Ausência de Edema</span>
+</div>
+</div>
+</div>
+</div>
+<!-- AÇÕES FIXAS INFERIORES: SALVAR E EXPORTAR -->
+<nav aria-label="Ações de Laudo" class="sticky bottom-0 inset-x-0 bg-surface/95 backdrop-blur-md p-margin-mobile shadow-xl flex gap-pad-xs">
+<button class="flex-1 h-12 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center justify-center gap-2 transition-all active:scale-[0.98]" onclick="simulatePdfExport()">
+<span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+      Exportar Laudo PDF
+    </button>
+<button class="flex-1 h-12 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md flex items-center justify-center gap-2 transition-all shadow-md active:scale-[0.98]" onclick="simulateSaveRecord()">
+<span class="material-symbols-outlined text-[18px]">save</span>
+      Salvar no Prontuário
+    </button>
+</nav>
+<!-- Notificação Flutuante (Toast) Interativo -->
+<div class="fixed bottom-20 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface px-4 py-2.5 rounded-full font-label-md text-label-md shadow-xl flex items-center gap-2 opacity-0 pointer-events-none transition-all duration-300 z-50" id="clinical-toast">
+<span class="material-symbols-outlined text-primary-fixed-dim text-[18px]">check_circle</span>
+<span id="clinical-toast-msg">Dados sincronizados com sucesso!</span>
+</div>
+</div>
+<script>
+  function switchClinicalTab(tabId) {
+    const tabs = ['overview', 'segmental', 'hydration'];
+    tabs.forEach(t => {
+      const content = document.getElementById('content-' + t);
+      const btn = document.getElementById('tab-' + t);
+      if (t === tabId) {
+        content.classList.remove('hidden');
+        btn.classList.remove('bg-surface-container', 'text-on-surface-variant');
+        btn.classList.add('bg-primary', 'text-on-primary', 'shadow-sm');
+      } else {
+        content.classList.add('hidden');
+        btn.classList.add('bg-surface-container', 'text-on-surface-variant');
+        btn.classList.remove('bg-primary', 'text-on-primary', 'shadow-sm');
+      }
+    });
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('clinical-toast');
+    const toastMsg = document.getElementById('clinical-toast-msg');
+    toastMsg.textContent = msg;
+    toast.classList.remove('opacity-0', 'pointer-events-none');
+    toast.classList.add('opacity-100');
+    setTimeout(() => {
+      toast.classList.remove('opacity-100');
+      toast.classList.add('opacity-0', 'pointer-events-none');
+    }, 2500);
+  }
+
+  function simulatePdfExport() {
+    showToast('Gerando laudo clínico da BIA em PDF...');
+  }
+
+  function simulateSaveRecord() {
+    showToast('Exame anexado ao histórico do paciente!');
+  }
+</script></main></body></html>

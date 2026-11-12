@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"on-primary":"#ffffff","on-tertiary-container":"#ffc8b9","error":"#ba1a1a","surface-bright":"#f8f9ff","on-error":"#ffffff","on-tertiary-fixed":"#3b0900","surface-container-low":"#eff4ff","primary-container":"#046a38","on-error-container":"#93000a","primary-fixed-dim":"#83d99b","background":"#f8f9ff","outline-variant":"#bec9be","surface-dim":"#cbdbf5","on-surface":"#0b1c30","on-primary-fixed-variant":"#00522a","on-secondary-fixed-variant":"#3f465c","surface-container":"#e5eeff","surface":"#f8f9ff","on-tertiary-fixed-variant":"#872000","surface-container-high":"#dce9ff","inverse-on-surface":"#eaf1ff","primary":"#004f28","on-background":"#0b1c30","tertiary-fixed-dim":"#ffb5a0","outline":"#6f7a6f","on-secondary-container":"#5c647a","inverse-surface":"#213145","secondary-container":"#dae2fd","on-tertiary":"#ffffff","on-surface-variant":"#3f4940","surface-tint":"#0a6d3a","on-primary-fixed":"#00210d","secondary-fixed":"#dae2fd","surface-container-lowest":"#ffffff","on-primary-container":"#90e7a8","secondary":"#565e74","surface-container-highest":"#d3e4fe","error-container":"#ffdad6","primary-fixed":"#9ef6b6","on-secondary-fixed":"#131b2e","inverse-primary":"#83d99b","tertiary-fixed":"#ffdbd1","surface-variant":"#d3e4fe","secondary-fixed-dim":"#bec6e0","on-secondary":"#ffffff","tertiary-container":"#a63411","tertiary":"#831f00"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"pad-lg":"1.25rem","pad-sm":"0.75rem","gutter-desktop":"1.25rem","margin-tablet":"1.5rem","pad-2xs":"0.25rem","margin-mobile":"1rem","touch-min":"2.75rem","pad-xs":"0.5rem","pad-md":"1rem","pad-xl":"1.5rem","pad-2xl":"2rem","gutter-mobile":"0.75rem"},"fontFamily":{"label-sm":["Inter"],"body-sm":["Plus Jakarta Sans"],"display-lg":["Plus Jakarta Sans"],"headline-lg":["Plus Jakarta Sans"],"headline-lg-mobile":["Plus Jakarta Sans"],"label-numeric-md":["Inter"],"label-md":["Inter"],"headline-sm":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"body-lg":["Plus Jakarta Sans"],"label-numeric-lg":["Inter"],"body-md":["Plus Jakarta Sans"]},"fontSize":{"label-sm":["11px",{"lineHeight":"14px","letterSpacing":"0.04em","fontWeight":"600"}],"body-sm":["12px",{"lineHeight":"16px","fontWeight":"400"}],"display-lg":["36px",{"lineHeight":"44px","letterSpacing":"-0.02em","fontWeight":"700"}],"headline-lg":["28px",{"lineHeight":"36px","letterSpacing":"-0.015em","fontWeight":"700"}],"headline-lg-mobile":["22px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"700"}],"label-numeric-md":["18px",{"lineHeight":"24px","fontWeight":"600"}],"label-md":["13px",{"lineHeight":"16px","letterSpacing":"0.01em","fontWeight":"500"}],"headline-sm":["16px",{"lineHeight":"22px","fontWeight":"600"}],"headline-md":["20px",{"lineHeight":"26px","fontWeight":"600"}],"body-lg":["16px",{"lineHeight":"24px","fontWeight":"400"}],"label-numeric-lg":["24px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"600"}],"body-md":["14px",{"lineHeight":"20px","fontWeight":"400"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between select-none"><div class="flex flex-col"><div class="h-20 px-pad-xl flex items-center justify-between bg-surface-container-low"><div class="flex items-center gap-pad-sm"><div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-on-primary font-headline-md font-bold">N</div><div class="flex flex-col"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight leading-none">NutriTrack Pro</span><span class="font-label-sm text-label-sm text-primary font-semibold uppercase tracking-wider mt-1">Antropometria</span></div></div><button class="w-8 h-8 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">dock_to_left</span></button></div><div class="px-pad-lg py-pad-md"><span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary px-pad-sm">Ferramentas de Cálculo</span><nav class="mt-pad-xs flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary font-semibold shadow-[0_1px_3px_0_rgba(15,23,42,0.04)]"><a class="h-11 px-pad-md rounded-lg flex items-center gap-pad-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="calculadora-dobras-cutaneas" href="#"><span class="material-symbols-outlined text-[20px]">straighten</span><span class="font-body-md text-body-md">Dobras Cutâneas</span></a><a class="h-11 px-pad-md rounded-lg flex items-center gap-pad-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="modulo-bioimpedancia" href="#"><span class="material-symbols-outlined text-[20px]">monitor_heart</span><span class="font-body-md text-body-md">Bioimpedância</span></a><a class="h-11 px-pad-md rounded-lg flex items-center gap-pad-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="rcq-perimetria" href="#"><span class="material-symbols-outlined text-[20px]">fitbit</span><span class="font-body-md text-body-md">RCQ &amp; Perimetria</span></a><a class="h-11 px-pad-md rounded-lg flex items-center gap-pad-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="pescoco-cardiometabolico" href="#"><span class="material-symbols-outlined text-[20px]">ecg_heart</span><span class="font-body-md text-body-md">Risco Cardiometabólico</span></a><a class="h-11 px-pad-md rounded-lg flex items-center gap-pad-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="fotos-comparativas" href="#"><span class="material-symbols-outlined text-[20px]">photo_camera</span><span class="font-body-md text-body-md">Fotos Comparativas</span></a></nav></div><div class="px-pad-lg py-pad-xs"><span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary px-pad-sm">Gestão do Paciente</span><nav class="mt-pad-xs flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary font-semibold"><a class="h-11 px-pad-md rounded-lg flex items-center gap-pad-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="historico-evolucoes" href="#"><span class="material-symbols-outlined text-[20px]">history</span><span class="font-body-md text-body-md">Histórico &amp; Evoluções</span></a><a class="h-11 px-pad-md rounded-lg flex items-center gap-pad-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="protocolos-formulas" href="#"><span class="material-symbols-outlined text-[20px]">science</span><span class="font-body-md text-body-md">Protocolos &amp; Fórmulas</span></a></nav></div></div><div class="p-pad-lg flex flex-col gap-pad-xs bg-surface-container-low"><a class="h-10 px-pad-md rounded-lg flex items-center gap-pad-sm text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="configuracoes-clinicas" href="#"><span class="material-symbols-outlined text-[20px]">tune</span><span class="font-body-md text-body-md">Configurações Clínicas</span></a><div class="flex items-center gap-pad-sm pt-pad-xs"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="flex flex-col overflow-hidden"><span class="font-body-sm text-body-sm font-semibold text-on-surface truncate">Dra. Vanessa L.</span><span class="font-label-sm text-label-sm text-secondary truncate">CRN-3 48192</span></div></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-32 bg-surface-container-lowest/95 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex flex-col justify-between"><div class="h-16 px-pad-xl flex items-center justify-between gap-pad-md"><div class="flex items-center gap-pad-md overflow-hidden"><div class="flex items-center gap-2 text-on-surface-variant font-label-md text-label-md truncate"><span class="hover:text-on-surface cursor-pointer">Antropometria</span><span class="material-symbols-outlined text-[16px] text-secondary">chevron_right</span><span class="text-primary font-semibold truncate">Calculadora de Dobras Cutâneas &amp; %G</span></div><div class="hidden xl:flex items-center gap-pad-sm px-pad-md py-1 rounded-full bg-surface-container-low"><span class="w-2 h-2 rounded-full bg-primary-container"></span><span class="font-label-sm text-label-sm text-on-surface font-semibold">Mariana Costa</span><span class="text-secondary text-label-sm">•</span><span class="font-label-sm text-label-sm text-on-surface-variant">34 anos</span><span class="text-secondary text-label-sm">•</span><span class="font-label-sm text-label-sm text-on-surface-variant">64.5 kg</span><span class="text-secondary text-label-sm">•</span><span class="font-label-sm text-label-sm text-on-surface-variant">1.65 m</span><span class="px-1.5 py-0.5 rounded bg-surface-container-highest font-label-sm text-label-sm text-on-secondary-container font-semibold">IMC 23.7</span></div></div><div class="flex items-center gap-pad-sm"><button class="h-10 px-pad-md rounded-lg bg-surface-container-low text-on-surface font-headline-sm text-body-md hover:bg-surface-container transition-colors flex items-center gap-2" type="button"><span class="material-symbols-outlined text-[18px]">sync</span><span class="hidden sm:inline font-semibold">Sincronizar Prontuário</span></button><button class="h-10 px-pad-md rounded-lg bg-primary text-on-primary font-headline-sm text-body-md hover:bg-primary-container transition-colors flex items-center gap-2 shadow-[0_1px_3px_0_rgba(15,23,42,0.04)]" type="button"><span class="material-symbols-outlined text-[18px]">picture_as_pdf</span><span class="hidden sm:inline font-semibold">Exportar Laudo PDF</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div><div class="h-16 px-pad-xl flex items-center overflow-x-auto gap-pad-lg"><nav class="flex items-center gap-pad-xl h-full" data-active-classes="text-primary font-semibold shadow-[inset_0_-2px_0_0_#004f28]"><a class="h-full flex items-center text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors" data-path="calculadora-dobras-cutaneas" href="#">Dobras Cutâneas</a><a class="h-full flex items-center text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors" data-path="modulo-bioimpedancia" href="#">Bioimpedância</a><a class="h-full flex items-center text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors" data-path="rcq-perimetria" href="#">RCQ &amp; Perimetria</a><a class="h-full flex items-center text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors" data-path="pescoco-cardiometabolico" href="#">Pescoço &amp; Cardiometabólico</a><a class="h-full flex items-center text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-colors" data-path="fotos-comparativas" href="#">Fotos Comparativas</a></nav></div></header><main class="relative pt-32 w-full min-h-screen bg-surface px-pad-xl py-pad-xl"><div class="flex flex-col w-full">
+<!-- Sub-bar: Protocol & Formula Quick-Bar -->
+<section class="w-full bg-surface-container-lowest rounded-2xl p-pad-lg mb-pad-lg shadow-[0_1px_4px_rgba(11,28,48,0.04)]">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-pad-md">
+<!-- Left: Patient Snapshot & Instrument Spec -->
+<div class="flex flex-wrap items-center gap-pad-md">
+<div class="flex items-center gap-pad-sm pr-pad-md">
+<div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[26px]">accessibility_new</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm text-on-surface">Mariana Costa</span>
+<span class="px-2 py-0.5 rounded-full bg-primary-container/15 text-primary text-label-sm font-semibold">Avaliação #4</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">Feminino • 34 anos • 64.5 kg • 165 cm • <span class="text-primary font-medium">IMC 23.7 (Eutrofia)</span></p>
+</div>
+</div>
+<div class="flex items-center gap-pad-xs px-pad-md py-1.5 rounded-xl bg-surface-container-low text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px] text-primary">precision_manufacturing</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Adipômetro Clínico</span>
+<span class="font-body-sm text-body-sm font-semibold text-on-surface">Harpenden Científico 0.1mm (Pressão Constante 10g/mm²)</span>
+</div>
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant px-pad-md py-1.5 rounded-xl bg-surface-container-low">
+<span class="material-symbols-outlined text-[18px] text-primary">calendar_today</span>
+<span class="font-body-sm text-body-sm font-medium">Coleta: <strong class="text-on-surface">24/Out/2024 (Hoje, 09:40)</strong></span>
+</div>
+</div>
+<!-- Right: Controls -->
+<div class="flex items-center gap-pad-sm">
+<button class="h-10 px-pad-md rounded-xl bg-surface-container-low text-on-surface font-label-md text-label-md hover:bg-surface-container transition-all flex items-center gap-2" type="button">
+<span class="material-symbols-outlined text-[18px]">history</span>
+<span>Histórico (3)</span>
+</button>
+<button class="h-10 px-pad-md rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-all flex items-center gap-2" type="button">
+<span class="material-symbols-outlined text-[18px]">refresh</span>
+<span>Zerar Campos</span>
+</button>
+</div>
+</div>
+<!-- Protocol Tabs + Conversion Matrix Switcher -->
+<div class="mt-pad-lg pt-pad-md grid grid-cols-1 xl:grid-cols-12 gap-pad-md items-center">
+<div class="xl:col-span-8 flex flex-col sm:flex-row items-start sm:items-center gap-pad-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary whitespace-nowrap">Protocolo Selecionado:</span>
+<div class="flex flex-wrap gap-2 w-full sm:w-auto" id="protocol-selector">
+<button class="protocol-tab flex-1 sm:flex-initial px-pad-md py-2 rounded-xl bg-primary text-on-primary font-label-md text-label-md flex items-center gap-2 shadow-sm transition-all" data-protocol="jp7" type="button">
+<span class="material-symbols-outlined text-[18px]">military_tech</span>
+<span>Jackson-Pollock 7 Dobras</span>
+<span class="text-xs px-1.5 py-0.2 rounded-full bg-on-primary/20 text-on-primary font-semibold">Padrão Ouro</span>
+</button>
+<button class="protocol-tab flex-1 sm:flex-initial px-pad-md py-2 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-all flex items-center gap-2" data-protocol="jp3" type="button">
+<span class="material-symbols-outlined text-[18px]">filter_3</span>
+<span>Jackson-Pollock 3 Dobras</span>
+</button>
+<button class="protocol-tab flex-1 sm:flex-initial px-pad-md py-2 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-all flex items-center gap-2" data-protocol="dw4" type="button">
+<span class="material-symbols-outlined text-[18px]">grid_view</span>
+<span>Durnin-Womersley 4 Dobras</span>
+</button>
+</div>
+</div>
+<div class="xl:col-span-4 flex items-center justify-start xl:justify-end gap-pad-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary whitespace-nowrap">Equação Densidade &gt; %G:</span>
+<div class="inline-flex p-1 rounded-xl bg-surface-container-low">
+<button class="px-3 py-1 rounded-lg bg-surface-container-lowest text-primary font-label-sm text-label-sm font-semibold shadow-sm" id="eq-siri" type="button">Siri (1961)</button>
+<button class="px-3 py-1 rounded-lg text-secondary font-label-sm text-label-sm hover:text-on-surface" id="eq-brozek" type="button">Brožek (1963)</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Split Layout: 8 cols (Visual Anatomy & Input Cards) + 4 cols (Realtime Clinical Engine) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-pad-lg items-start">
+<!-- LEFT PANE: Measurement Matrix & ISAK Visual Guide (8 Cols) -->
+<section class="lg:col-span-8 flex flex-col gap-pad-md">
+<!-- Visual Reference Strip directly showing anatomical positions from image -->
+<div class="bg-surface-container-lowest rounded-2xl p-pad-lg shadow-[0_1px_4px_rgba(11,28,48,0.04)]">
+<div class="flex items-center justify-between mb-pad-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[22px]">center_focus_strong</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Guia Fotográfico de Posições Anatômicas (Norma ISAK)</h2>
+</div>
+<span class="text-label-sm font-label-sm text-secondary bg-surface-container-low px-2.5 py-1 rounded-full">Protocolo 7 Dobras Feminino</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-12 gap-pad-md items-center mt-pad-xs">
+<div class="sm:col-span-5 relative group overflow-hidden rounded-xl bg-surface-container-low shadow-sm">
+<img alt="Mapa de Dobras Cutâneas ISAK" class="w-full h-48 object-cover object-center transform group-hover:scale-105 transition-transform duration-300" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVdjuosTPB7auRW9t5c8nC5GVZ74B4361gOFaRdO0DsqDJmqS6AelLnT4VuhWsr9Mh7D-tkV3z54v-GGWFX1Gk3nDRSRai3qLpZump0Uq9xr7dCEW9eqcI2Q8EA0AQgmVhFuDUKbzW_jKCnTuhg_FrWub2H29WjgNcONFo1YUV072NwK_bostzdUG1d4HPyae-nlkqs9Sj8Vx7HLnc0Y5oyl8BQMzZRvPC5pNQZffoqLwKFobDViFDudVAPNVEclqX"/>
+<div class="absolute bottom-2 left-2 bg-inverse-surface/85 backdrop-blur-md text-inverse-on-surface text-label-sm font-label-sm px-2.5 py-1 rounded-lg flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-primary-fixed">photo_library</span>
+<span>Atlas de Posições Adipômetro</span>
+</div>
+</div>
+<div class="sm:col-span-7 flex flex-col justify-between h-full space-y-pad-xs">
+<div class="p-pad-sm rounded-xl bg-surface-container-low flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-primary font-semibold uppercase tracking-wider">Metodologia Padrão-Ouro ISAK</span>
+<span class="text-xs px-2 py-0.5 rounded bg-primary/10 text-primary font-semibold">Tolerância ≤ 5%</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                Palpe o ponto de reparo ósseo, destaque a prega cutânea a 1 cm do ponto com polegar e indicador e aplique os mordentes em ângulo de 90° durante exatos 2 segundos antes da leitura.
+              </p>
+</div>
+<!-- Quick KPI pill inside guide -->
+<div class="grid grid-cols-3 gap-2">
+<div class="p-2.5 rounded-xl bg-surface-container flex flex-col">
+<span class="text-label-sm font-label-sm text-secondary">Preenchidas</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold mt-0.5" id="kpi-filled">7 / 7</span>
+</div>
+<div class="p-2.5 rounded-xl bg-surface-container flex flex-col">
+<span class="text-label-sm font-label-sm text-secondary">Σ Dobras Total</span>
+<span class="font-headline-sm text-headline-sm text-primary font-bold mt-0.5" id="kpi-sum-inline">94.8 mm</span>
+</div>
+<div class="p-2.5 rounded-xl bg-surface-container flex flex-col">
+<span class="text-label-sm font-label-sm text-secondary">Status Triplicatas</span>
+<span class="font-headline-sm text-headline-sm text-primary font-bold mt-0.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[18px]">verified</span> 100%
+                </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Measurement Site Cards -->
+<div class="flex flex-col gap-pad-sm" id="skinfolds-container">
+<!-- Site 1: Subescapular -->
+<article class="site-card bg-surface-container-lowest rounded-2xl p-pad-md shadow-[0_1px_3px_rgba(11,28,48,0.04)] hover:shadow-md transition-shadow">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-pad-md">
+<div class="flex items-center gap-pad-md min-w-[240px]">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-primary font-bold text-headline-sm shrink-0">
+                01
+              </div>
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Subescapular (SE)</h3>
+<span class="text-xs px-2 py-0.5 rounded bg-surface-container text-secondary font-medium">Oblíqua (45°)</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">2 cm abaixo do ângulo inferior da escápula</p>
+</div>
+</div>
+<!-- Inputs Triplicate -->
+<div class="flex flex-wrap items-center gap-pad-sm justify-start md:justify-end flex-1">
+<div class="flex items-center gap-1.5">
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-secondary text-center">Medida 1</span>
+<div class="relative flex items-center">
+<input class="skinfold-input w-20 h-11 px-2.5 text-center font-label-numeric-md text-label-numeric-md text-on-surface rounded-xl bg-surface-container-low focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all" data-site="subscapular" data-take="1" step="0.1" type="number" value="12.4"/>
+<span class="absolute right-2 text-xs text-secondary pointer-events-none">mm</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-secondary text-center">Medida 2</span>
+<div class="relative flex items-center">
+<input class="skinfold-input w-20 h-11 px-2.5 text-center font-label-numeric-md text-label-numeric-md text-on-surface rounded-xl bg-surface-container-low focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all" data-site="subscapular" data-take="2" step="0.1" type="number" value="12.6"/>
+<span class="absolute right-2 text-xs text-secondary pointer-events-none">mm</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-secondary text-center">Medida 3</span>
+<div class="relative flex items-center">
+<input class="skinfold-input w-20 h-11 px-2.5 text-center font-label-numeric-md text-label-numeric-md text-on-surface rounded-xl bg-surface-container-low focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all" data-site="subscapular" data-take="3" step="0.1" type="number" value="12.5"/>
+<span class="absolute right-2 text-xs text-secondary pointer-events-none">mm</span>
+</div>
+</div>
+</div>
+<!-- Computed Median Output -->
+<div class="min-w-[96px] h-11 px-3 rounded-xl bg-primary-container/10 flex flex-col justify-center items-center">
+<span class="text-label-sm font-label-sm text-primary font-semibold uppercase">Média Final</span>
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold site-average" id="avg-subscapular">12.5 mm</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Site 2: Tricipital -->
+<article class="site-card bg-surface-container-lowest rounded-2xl p-pad-md shadow-[0_1px_3px_rgba(11,28,48,0.04)] hover:shadow-md transition-shadow">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-pad-md">
+<div class="flex items-center gap-pad-md min-w-[240px]">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-primary font-bold text-headline-sm shrink-0">
+                02
+              </div>
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Tricipital (TR)</h3>
+<span class="text-xs px-2 py-0.5 rounded bg-surface-container text-secondary font-medium">Vertical</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Ponto médio entre acrômio e olécrano posterior</p>
+</div>
+</div>
+<!-- Inputs Triplicate -->
+<div class="flex flex-wrap items-center gap-pad-sm justify-start md:justify-end flex-1">
+<div class="flex items-center gap-1.5">
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-secondary text-center">Medida 1</span>
+<div class="relative flex items-center">
+<input class="skinfold-input w-20 h-11 px-2.5 text-center font-label-numeric-md text-label-numeric-md text-on-surface rounded-xl bg-surface-container-low focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all" data-site="triceps" data-take="1" step="0.1" type="number" value="16.0"/>
+<span class="absolute right-2 text-xs text-secondary pointer-events-none">mm</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-secondary text-center">Medida 2</span>
+<div class="relative flex items-center">
+<input class="skinfold-input w-20 h-11 px-2.5 text-center font-label-numeric-md text-label-numeric-md text-on-surface rounded-xl bg-surface-container-low focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all" data-site="triceps" data-take="2" step="0.1" type="number" value="16.2"/>
+<span class="absolute right-2 text-xs text-secondary pointer-events-none">mm</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-secondary text-center">Medida 3</span>
+<div class="relative flex items-center">
+<input class="skinfold-input w-20 h-11 px-2.5 text-center font-label-numeric-md text-label-numeric-md text-on-surface rounded-xl bg-surface-container-low focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all" data-site="triceps" data-take="3" step="0.1" type="number" value="15.8"/>
+<span class="absolute right-2 text-xs text-secondary pointer-events-none">mm</span>
+</div>
+</div>
+</div>
+<!-- Computed Median Output -->
+<div class="min-w-[96px] h-11 px-3 rounded-xl bg-primary-container/10 flex flex-col justify-center items-center">
+<span class="text-label-sm font-label-sm text-primary font-semibold uppercase">Média Final</span>
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold site-average" id="avg-triceps">16.0 mm</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Site 3: Peitoral / Torácica -->
+<article class="site-card bg-surface-container-lowest rounded-2xl p-pad-md shadow-[0_1px_3px_rgba(11,28,48,0.04)] hover:shadow-md transition-shadow">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-pad-md">
+<div class="flex items-center gap-pad-md min-w-[240px]">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-primary font-bold text-headline-sm shrink-0">
+                03
+              </div>
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Torácica / Peitoral (PE)</h3>
+<span class="text-xs px-2 py-0.5 rounded bg-surface-container text-secondary font-medium">Diagonal</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">1/3 da distância linha axilar e mamilo (Feminino)</p>
+</div>
+</div>
+<!-- Inputs Triplicate -->
+<div class="flex flex-wrap items-center gap-pad-sm justify-start md:justify-end flex-1">
+<div class="flex items-center gap-1.5">
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-secondary text-center">Medida 1</span>
+<div class="relative flex items-center">
+<input class="skinfold-input w-20 h-11 px-2.5 text-center font-label-numeric-md text-label-numeric-md text-on-surface rounded-xl bg-surface-container-low focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all" data-site="chest" data-take="1" step="0.1" type="number" value="7.8"/>
+<span class="absolute right-2 text-xs text-secondary pointer-events-none">mm</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-secondary text-center">Medida 2</span>
+<div class="relative flex items-center">
+<input class="skinfold-input w-20 h-11 px-2.5 text-center font-label-numeric-md text-label-numeric-md text-on-surface rounded-xl bg-surface-container-low focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all" data-site="chest" data-take="2" step="0.1" type="number" value="8.0"/>
+<span class="absolute right-2 text-xs text-secondary pointer-events-none">mm</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-secondary text-center">Medida 3</span>
+<div class="relative flex items-center">
+<input class="skinfold-input w-20 h-11 px-2.5 text-center font-label-numeric-md text-label-numeric-md text-on-surface rounded-xl bg-surface-container-low focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all" data-site="chest" data-take="3" step="0.1" type="number" value="7.9"/>
+<span class="absolute right-2 text-xs text-secondary pointer-events-none">mm</span>
+</div>
+</div>
+</div>
+<!-- Computed Median Output -->
+<div class="min-w-[96px] h-11 px-3 rounded-xl bg-primary-container/10 flex flex-col justify-center items-center">
+<span class="text-label-sm font-label-sm text-primary font-semibold uppercase">Média Final</span>
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold site-average" id="avg-chest">7.9 mm</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Site 4: Axilar Média -->
+<article class="site-card bg-surface-container-lowest rounded-2xl p-pad-md shadow-[0_1px_3px_rgba(11,28,48,0.04)] hover:shadow-md transition-shadow">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-pad-md">
+<div class="flex items-center gap-pad-md min-w-[240px]">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-primary font-bold text-headline-sm shrink-0">
+                04
+              </div>
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Axilar Média (AM)</h3>
+<span class="text-xs px-2 py-0.5 rounded bg-surface-container text-secondary font-medium">Horizontal</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Intersecção linha axilar média e apêndice xifoide</p>
+</div>
+</div>
+<!-- Inputs Triplicate -->
+<div class="flex flex-wrap items-center gap-pad-sm justify-start md:justify-end flex-1">
+<div class="flex items-center gap-1.5">
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-secondary text-center">Medida 1</span>
+<div class="relative flex items-center">
+<input class="skinfold-input w-20 h-11 px-2.5 text-center font-label-numeric-md text-label-numeric-md text-on-surface rounded-xl bg-surface-container-low focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all" data-site="axillary" data-take="1" step="0.1" type="number" value="10.2"/>
+<span class="absolute right-2 text-xs text-secondary pointer-events-none">mm</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-secondary text-center">Medida 2</span>
+<div class="relative flex items-center">
+<input class="skinfold-input w-20 h-11 px-2.5 text-center font-label-numeric-md text-label-numeric-md text-on-surface rounded-xl bg-surface-container-low focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all" data-site="axillary" data-take="2" step="0.1" type="number" value="10.4"/>
+<span class="absolute right-2 text-xs text-secondary pointer-events-none">mm</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-secondary text-center">Medida 3</span>
+<div class="relative flex items-center">
+<input class="skinfold-input w-20 h-11 px-2.5 text-center font-label-numeric-md text-label-numeric-md text-on-surface rounded-xl bg-surface-container-low focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all" data-site="axillary" data-take="3" step="0.1" type="number" value="10.3"/>
+<span class="absolute right-2 text-xs text-secondary pointer-events-none">mm</span>
+</div>
+</div>
+</div>
+<!-- Computed Median Output -->
+<div class="min-w-[96px] h-11 px-3 rounded-xl bg-primary-container/10 flex flex-col justify-center items-center">
+<span class="text-label-sm font-label-sm text-primary font-semibold uppercase">Média Final</span>
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold site-average" id="avg-axillary">10.3 mm</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Site 5: Supra-ilíaca -->
+<article class="site-card bg-surface-container-lowest rounded-2xl p-pad-md shadow-[0_1px_3px_rgba(11,28,48,0.04)] hover:shadow-md transition-shadow">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-pad-md">
+<div class="flex items-center gap-pad-md min-w-[240px]">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-primary font-bold text-headline-sm shrink-0">
+                05
+              </div>
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Supra-ilíaca (SI)</h3>
+<span class="text-xs px-2 py-0.5 rounded bg-surface-container text-secondary font-medium">Oblíqua anterior</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Crista ilíaca na projeção da linha axilar anterior</p>
+</div>
+</div>
+<!-- Inputs Triplicate -->
+<div class="flex flex-wrap items-center gap-pad-sm justify-start md:justify-end flex-1">
+<div class="flex items-center gap-1.5">
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-secondary text-center">Medida 1</span>
+<div class="relative flex items-center">
+<input class="skinfold-input w-20 h-11 px-2.5 text-center font-label-numeric-md text-label-numeric-md text-on-surface rounded-xl bg-surface-container-low focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all" data-site="suprailiac" data-take="1" step="0.1" type="number" value="14.1"/>
+<span class="absolute right-2 text-xs text-secondary pointer-events-none">mm</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-secondary text-center">Medida 2</span>
+<div class="relative flex items-center">
+<input class="skinfold-input w-20 h-11 px-2.5 text-center font-label-numeric-md text-label-numeric-md text-on-surface rounded-xl bg-surface-container-low focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all" data-site="suprailiac" data-take="2" step="0.1" type="number" value="14.3"/>
+<span class="absolute right-2 text-xs text-secondary pointer-events-none">mm</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-secondary text-center">Medida 3</span>
+<div class="relative flex items-center">
+<input class="skinfold-input w-20 h-11 px-2.5 text-center font-label-numeric-md text-label-numeric-md text-on-surface rounded-xl bg-surface-container-low focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all" data-site="suprailiac" data-take="3" step="0.1" type="number" value="14.2"/>
+<span class="absolute right-2 text-xs text-secondary pointer-events-none">mm</span>
+</div>
+</div>
+</div>
+<!-- Computed Median Output -->
+<div class="min-w-[96px] h-11 px-3 rounded-xl bg-primary-container/10 flex flex-col justify-center items-center">
+<span class="text-label-sm font-label-sm text-primary font-semibold uppercase">Média Final</span>
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold site-average" id="avg-suprailiac">14.2 mm</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Site 6: Abdominal -->
+<article class="site-card bg-surface-container-lowest rounded-2xl p-pad-md shadow-[0_1px_3px_rgba(11,28,48,0.04)] hover:shadow-md transition-shadow">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-pad-md">
+<div class="flex items-center gap-pad-md min-w-[240px]">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-primary font-bold text-headline-sm shrink-0">
+                06
+              </div>
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Abdominal (AB)</h3>
+<span class="text-xs px-2 py-0.5 rounded bg-surface-container text-secondary font-medium">Vertical</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">2 cm lateralmente à borda direita da cicatriz umbilical</p>
+</div>
+</div>
+<!-- Inputs Triplicate -->
+<div class="flex flex-wrap items-center gap-pad-sm justify-start md:justify-end flex-1">
+<div class="flex items-center gap-1.5">
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-secondary text-center">Medida 1</span>
+<div class="relative flex items-center">
+<input class="skinfold-input w-20 h-11 px-2.5 text-center font-label-numeric-md text-label-numeric-md text-on-surface rounded-xl bg-surface-container-low focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all" data-site="abdominal" data-take="1" step="0.1" type="number" value="15.8"/>
+<span class="absolute right-2 text-xs text-secondary pointer-events-none">mm</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-secondary text-center">Medida 2</span>
+<div class="relative flex items-center">
+<input class="skinfold-input w-20 h-11 px-2.5 text-center font-label-numeric-md text-label-numeric-md text-on-surface rounded-xl bg-surface-container-low focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all" data-site="abdominal" data-take="2" step="0.1" type="number" value="16.0"/>
+<span class="absolute right-2 text-xs text-secondary pointer-events-none">mm</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-secondary text-center">Medida 3</span>
+<div class="relative flex items-center">
+<input class="skinfold-input w-20 h-11 px-2.5 text-center font-label-numeric-md text-label-numeric-md text-on-surface rounded-xl bg-surface-container-low focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all" data-site="abdominal" data-take="3" step="0.1" type="number" value="15.9"/>
+<span class="absolute right-2 text-xs text-secondary pointer-events-none">mm</span>
+</div>
+</div>
+</div>
+<!-- Computed Median Output -->
+<div class="min-w-[96px] h-11 px-3 rounded-xl bg-primary-container/10 flex flex-col justify-center items-center">
+<span class="text-label-sm font-label-sm text-primary font-semibold uppercase">Média Final</span>
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold site-average" id="avg-abdominal">15.9 mm</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Site 7: Coxa Medial -->
+<article class="site-card bg-surface-container-lowest rounded-2xl p-pad-md shadow-[0_1px_3px_rgba(11,28,48,0.04)] hover:shadow-md transition-shadow">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-pad-md">
+<div class="flex items-center gap-pad-md min-w-[240px]">
+<div class="w-12 h-12 rounded-xl bg-surface-container flex items-center justify-center text-primary font-bold text-headline-sm shrink-0">
+                07
+              </div>
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Coxa Medial (CX)</h3>
+<span class="text-xs px-2 py-0.5 rounded bg-surface-container text-secondary font-medium">Vertical</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Ponto médio entre prega inguinal e borda superior da patela</p>
+</div>
+</div>
+<!-- Inputs Triplicate -->
+<div class="flex flex-wrap items-center gap-pad-sm justify-start md:justify-end flex-1">
+<div class="flex items-center gap-1.5">
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-secondary text-center">Medida 1</span>
+<div class="relative flex items-center">
+<input class="skinfold-input w-20 h-11 px-2.5 text-center font-label-numeric-md text-label-numeric-md text-on-surface rounded-xl bg-surface-container-low focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all" data-site="thigh" data-take="1" step="0.1" type="number" value="18.0"/>
+<span class="absolute right-2 text-xs text-secondary pointer-events-none">mm</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-secondary text-center">Medida 2</span>
+<div class="relative flex items-center">
+<input class="skinfold-input w-20 h-11 px-2.5 text-center font-label-numeric-md text-label-numeric-md text-on-surface rounded-xl bg-surface-container-low focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all" data-site="thigh" data-take="2" step="0.1" type="number" value="18.2"/>
+<span class="absolute right-2 text-xs text-secondary pointer-events-none">mm</span>
+</div>
+</div>
+<div class="flex flex-col">
+<span class="text-label-sm font-label-sm text-secondary text-center">Medida 3</span>
+<div class="relative flex items-center">
+<input class="skinfold-input w-20 h-11 px-2.5 text-center font-label-numeric-md text-label-numeric-md text-on-surface rounded-xl bg-surface-container-low focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary focus:outline-none transition-all" data-site="thigh" data-take="3" step="0.1" type="number" value="17.8"/>
+<span class="absolute right-2 text-xs text-secondary pointer-events-none">mm</span>
+</div>
+</div>
+</div>
+<!-- Computed Median Output -->
+<div class="min-w-[96px] h-11 px-3 rounded-xl bg-primary-container/10 flex flex-col justify-center items-center">
+<span class="text-label-sm font-label-sm text-primary font-semibold uppercase">Média Final</span>
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold site-average" id="avg-thigh">18.0 mm</span>
+</div>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- RIGHT PANE: Real-time Clinical Results Engine & Somatotype Breakdown (4 Cols) -->
+<aside class="lg:col-span-4 flex flex-col gap-pad-md sticky top-36">
+<!-- Primary Diagnostic Result Card -->
+<div class="bg-surface-container-lowest rounded-2xl p-pad-lg shadow-[0_1px_4px_rgba(11,28,48,0.04)] relative overflow-hidden">
+<div class="flex items-center justify-between mb-pad-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary">Composição Corporal Instantânea</span>
+<span class="flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+            Algoritmo Ativo
+          </span>
+</div>
+<div class="flex items-baseline justify-between pt-2">
+<div>
+<div class="flex items-baseline gap-1">
+<span class="font-display-lg text-display-lg text-on-surface font-extrabold" id="kpi-bf">21.4</span>
+<span class="text-headline-md font-headline-md text-primary font-bold">%</span>
+</div>
+<p class="font-label-md text-label-md text-secondary mt-0.5">Gordura Corporal Relativa (%G)</p>
+</div>
+<div class="text-right">
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 text-primary font-headline-sm text-headline-sm font-bold">
+              Saudável
+            </span>
+<p class="font-label-sm text-label-sm text-secondary mt-1">Pollock &amp; Wilmore (1990)</p>
+</div>
+</div>
+<!-- Visual Risk Thermometer Bar -->
+<div class="mt-pad-lg">
+<div class="flex justify-between items-center text-label-sm font-label-sm text-secondary mb-1.5">
+<span>Escala de Risco Metabólico / %G</span>
+<span class="font-semibold text-primary">Faixa Alvo (20–24%)</span>
+</div>
+<div class="w-full h-3 rounded-full bg-surface-container overflow-hidden flex relative">
+<div class="h-full bg-secondary w-[15%]" title="Essencial (&lt;12%)"></div>
+<div class="h-full bg-primary-fixed-dim w-[15%]" title="Atleta (12-16%)"></div>
+<div class="h-full bg-primary-container w-[20%]" title="Fitness (17-20%)"></div>
+<div class="h-full bg-primary w-[20%]" title="Saudável (21-24%)"></div>
+<div class="h-full bg-tertiary-fixed-dim w-[15%]" title="Sobrepeso (25-30%)"></div>
+<div class="h-full bg-error w-[15%]" title="Obesidade (&gt;30%)"></div>
+</div>
+<!-- Marker needle -->
+<div class="relative w-full h-4 mt-0.5">
+<div class="absolute left-[62%] -translate-x-1/2 flex flex-col items-center">
+<div class="w-0 h-0 border-l-[4px] border-l-transparent border-r-[4px] border-r-transparent border-b-[6px] border-b-on-surface"></div>
+<span class="text-[10px] font-bold text-on-surface">21.4%</span>
+</div>
+</div>
+</div>
+<!-- Delta vs Last Consultation -->
+<div class="mt-pad-md p-pad-sm rounded-xl bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">trending_down</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant font-medium">Evolução desde 18/Ago/2024:</span>
+</div>
+<div class="flex items-center gap-2 font-label-md text-label-md font-semibold">
+<span class="text-primary">-1.8% Gordura</span>
+<span class="text-secondary">•</span>
+<span class="text-primary">+0.9 kg Magra</span>
+</div>
+</div>
+<!-- 2-Compartment Model Split (Mass Breakdown) -->
+<div class="mt-pad-lg grid grid-cols-2 gap-pad-sm">
+<div class="p-pad-sm rounded-xl bg-surface-container flex flex-col">
+<div class="flex items-center justify-between">
+<span class="text-label-sm font-label-sm text-secondary">Massa Gorda (MG)</span>
+<span class="material-symbols-outlined text-secondary text-[16px]">water_drop</span>
+</div>
+<span class="font-label-numeric-lg text-label-numeric-lg text-on-surface font-bold mt-1" id="kpi-fat-kg">13.8 <span class="text-label-md font-normal text-secondary">kg</span></span>
+<span class="text-label-sm font-label-sm text-secondary mt-0.5">21.4% do peso</span>
+</div>
+<div class="p-pad-sm rounded-xl bg-surface-container flex flex-col">
+<div class="flex items-center justify-between">
+<span class="text-label-sm font-label-sm text-secondary">Massa Magra (MLG)</span>
+<span class="material-symbols-outlined text-primary text-[16px]">fitness_center</span>
+</div>
+<span class="font-label-numeric-lg text-label-numeric-lg text-primary font-bold mt-1" id="kpi-lean-kg">50.7 <span class="text-label-md font-normal text-secondary">kg</span></span>
+<span class="text-label-sm font-label-sm text-primary font-semibold mt-0.5">78.6% do peso</span>
+</div>
+</div>
+<!-- Density & Math Detail -->
+<div class="mt-pad-md pt-pad-sm flex items-center justify-between text-body-sm font-body-sm text-secondary">
+<span>Densidade Corporal (DC):</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface font-bold" id="kpi-density">1.0508 <span class="text-xs text-secondary font-normal">g/cm³</span></span>
+</div>
+</div>
+<!-- Target Simulator Card (Body Composition Goal) -->
+<div class="bg-surface-container-lowest rounded-2xl p-pad-lg shadow-[0_1px_4px_rgba(11,28,48,0.04)]">
+<div class="flex items-center justify-between mb-pad-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">flag</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Simulador de Meta &amp; Peso Ideal</h3>
+</div>
+<span class="text-xs font-semibold px-2 py-0.5 rounded bg-surface-container-high text-on-surface">Prescrição</span>
+</div>
+<div class="flex flex-col gap-pad-sm">
+<div>
+<div class="flex justify-between items-center text-label-md font-label-md text-on-surface mb-1">
+<span>% Gordura Alvo Desejado:</span>
+<span class="font-bold text-primary font-label-numeric-md" id="target-bf-display">18.0%</span>
+</div>
+<input class="w-full accent-primary h-2 bg-surface-container rounded-lg cursor-pointer" id="target-slider" max="28" min="14" step="0.5" type="range" value="18"/>
+<div class="flex justify-between text-[11px] text-secondary mt-1">
+<span>Atlética (14%)</span>
+<span>Recomendada (18%)</span>
+<span>Manutenção (24%)</span>
+</div>
+</div>
+<div class="p-pad-sm rounded-xl bg-surface-container-low flex items-center justify-between mt-1">
+<div>
+<span class="text-label-sm font-label-sm text-secondary uppercase tracking-wider block">Peso Estimado para a Meta</span>
+<span class="font-label-numeric-lg text-label-numeric-lg text-on-surface font-bold" id="target-weight">61.8 kg</span>
+</div>
+<div class="text-right">
+<span class="text-label-sm font-label-sm text-secondary uppercase tracking-wider block">Δ Gordura a Perder</span>
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold">-2.7 kg</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Diagnostic Summary / Parecer Automatizado -->
+<div class="bg-surface-container-lowest rounded-2xl p-pad-lg shadow-[0_1px_4px_rgba(11,28,48,0.04)]">
+<div class="flex items-center gap-2 mb-pad-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">clinical_notes</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Síntese Diagnóstica Antropométrica</h3>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+          Paciente do sexo feminino, 34 anos, exibe excelente taxa de massa magra (78.6%) e nível adiposo em faixa eutrófica saudável (21.4%). Identifica-se discreta predominância androgênica/troncular com maior reserva nas regiões supra-ilíaca (14.2 mm) e abdominal (15.9 mm), com membros inferiores responsivos ao treinamento de força.
+        </p>
+<div class="mt-pad-md flex flex-wrap gap-2">
+<span class="text-xs px-2.5 py-1 rounded-full bg-surface-container font-medium text-on-surface">Gynóide / Eutrófica</span>
+<span class="text-xs px-2.5 py-1 rounded-full bg-surface-container font-medium text-on-surface">ISAK Nível 1 Certificado</span>
+<span class="text-xs px-2.5 py-1 rounded-full bg-primary/10 text-primary font-semibold">Equação Siri Ativa</span>
+</div>
+</div>
+<!-- Quick Action Buttons -->
+<div class="flex flex-col gap-2 pt-pad-xs">
+<button class="h-12 w-full rounded-xl bg-primary text-on-primary font-headline-sm text-body-lg hover:bg-primary-container transition-all flex items-center justify-center gap-2 shadow-sm" type="button">
+<span class="material-symbols-outlined text-[20px]">save</span>
+<span>Salvar no Prontuário Clínico</span>
+</button>
+<div class="grid grid-cols-2 gap-2">
+<button class="h-11 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-all flex items-center justify-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[18px]">share</span>
+<span>Resumo WhatsApp</span>
+</button>
+<button class="h-11 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-all flex items-center justify-center gap-1.5" type="button">
+<span class="material-symbols-outlined text-[18px]">compare_arrows</span>
+<span>Bioimpedância</span>
+</button>
+</div>
+</div>
+</aside>
+</div>
+</div>
+<script>
+  (function() {
+    // Interactive computation logic
+    const inputs = document.querySelectorAll('.skinfold-input');
+    const targetSlider = document.getElementById('target-slider');
+    const targetBfDisplay = document.getElementById('target-bf-display');
+    const targetWeightDisplay = document.getElementById('target-weight');
+
+    const eqSiriBtn = document.getElementById('eq-siri');
+    const eqBrozekBtn = document.getElementById('eq-brozek');
+    let currentEquation = 'siri'; // 'siri' or 'brozek'
+    const patientWeight = 64.5;
+    const patientAge = 34;
+
+    function calculateMediansAndTotals() {
+      const sites = ['subscapular', 'triceps', 'chest', 'axillary', 'suprailiac', 'abdominal', 'thigh'];
+      let sum = 0;
+      let count = 0;
+
+      sites.forEach(site => {
+        const takeInputs = document.querySelectorAll(`.skinfold-input[data-site="${site}"]`);
+        const values = [];
+        takeInputs.forEach(inp => {
+          const val = parseFloat(inp.value);
+          if (!isNaN(val) && val > 0) values.push(val);
+        });
+
+        if (values.length > 0) {
+          // calculate average
+          const avg = values.reduce((a, b) => a + b, 0) / values.length;
+          const avgElem = document.getElementById(`avg-${site}`);
+          if (avgElem) avgElem.textContent = avg.toFixed(1) + ' mm';
+          sum += avg;
+          count++;
+        }
+      });
+
+      // Update sum indicators
+      const kpiSum = document.getElementById('kpi-sum-inline');
+      if (kpiSum) kpiSum.textContent = sum.toFixed(1) + ' mm';
+
+      // Jackson & Pollock 7-site Body Density for Females
+      // BD = 1.0970 - (0.00046971 * sum) + (0.00000056 * sum^2) - (0.00012828 * age)
+      const bd = 1.0970 - (0.00046971 * sum) + (0.00000056 * (sum * sum)) - (0.00012828 * patientAge);
+      const densityElem = document.getElementById('kpi-density');
+      if (densityElem) densityElem.innerHTML = bd.toFixed(4) + ' <span class="text-xs text-secondary font-normal">g/cm³</span>';
+
+      // %BF conversion
+      let bf = 0;
+      if (currentEquation === 'siri') {
+        // Siri: [(4.95 / BD) - 4.50] * 100
+        bf = ((4.95 / bd) - 4.50) * 100;
+      } else {
+        // Brozek: [(4.57 / BD) - 4.142] * 100
+        bf = ((4.57 / bd) - 4.142) * 100;
+      }
+
+      if (bf < 5) bf = 5;
+      if (bf > 55) bf = 55;
+
+      const bfElem = document.getElementById('kpi-bf');
+      if (bfElem) bfElem.textContent = bf.toFixed(1);
+
+      // Mass calculations
+      const fatKg = (patientWeight * (bf / 100));
+      const leanKg = patientWeight - fatKg;
+
+      const fatKgElem = document.getElementById('kpi-fat-kg');
+      if (fatKgElem) fatKgElem.innerHTML = fatKg.toFixed(1) + ' <span class="text-label-md font-normal text-secondary">kg</span>';
+
+      const leanKgElem = document.getElementById('kpi-lean-kg');
+      if (leanKgElem) leanKgElem.innerHTML = leanKg.toFixed(1) + ' <span class="text-label-md font-normal text-secondary">kg</span>';
+
+      updateTargetWeight(leanKg);
+    }
+
+    function updateTargetWeight(currentLean) {
+      if (!targetSlider || !targetBfDisplay || !targetWeightDisplay) return;
+      const targetBf = parseFloat(targetSlider.value);
+      targetBfDisplay.textContent = targetBf.toFixed(1) + '%';
+      
+      // Target weight = Lean Mass / (1 - (Target BF / 100))
+      const targetWeight = currentLean / (1 - (targetBf / 100));
+      targetWeightDisplay.textContent = targetWeight.toFixed(1) + ' kg';
+    }
+
+    // Attach listeners
+    inputs.forEach(input => {
+      input.addEventListener('input', calculateMediansAndTotals);
+    });
+
+    if (targetSlider) {
+      targetSlider.addEventListener('input', function() {
+        const leanText = document.getElementById('kpi-lean-kg');
+        const lean = parseFloat(leanText ? leanText.textContent : '50.7') || 50.7;
+        updateTargetWeight(lean);
+      });
+    }
+
+    // Formula toggle switchers
+    if (eqSiriBtn && eqBrozekBtn) {
+      eqSiriBtn.addEventListener('click', function() {
+        currentEquation = 'siri';
+        eqSiriBtn.className = 'px-3 py-1 rounded-lg bg-surface-container-lowest text-primary font-label-sm text-label-sm font-semibold shadow-sm';
+        eqBrozekBtn.className = 'px-3 py-1 rounded-lg text-secondary font-label-sm text-label-sm hover:text-on-surface';
+        calculateMediansAndTotals();
+      });
+
+      eqBrozekBtn.addEventListener('click', function() {
+        currentEquation = 'brozek';
+        eqBrozekBtn.className = 'px-3 py-1 rounded-lg bg-surface-container-lowest text-primary font-label-sm text-label-sm font-semibold shadow-sm';
+        eqSiriBtn.className = 'px-3 py-1 rounded-lg text-secondary font-label-sm text-label-sm hover:text-on-surface';
+        calculateMediansAndTotals();
+      });
+    }
+
+    // Protocol switcher tabs visual state
+    const protocolTabs = document.querySelectorAll('.protocol-tab');
+    protocolTabs.forEach(tab => {
+      tab.addEventListener('click', function() {
+        protocolTabs.forEach(t => {
+          t.className = 'protocol-tab flex-1 sm:flex-initial px-pad-md py-2 rounded-xl bg-surface-container text-on-surface font-label-md text-label-md hover:bg-surface-container-high transition-all flex items-center gap-2';
+        });
+        this.className = 'protocol-tab flex-1 sm:flex-initial px-pad-md py-2 rounded-xl bg-primary text-on-primary font-label-md text-label-md flex items-center gap-2 shadow-sm transition-all';
+      });
+    });
+
+    // Run initial compute
+    calculateMediansAndTotals();
+  })();
+</script></main></div></body></html>

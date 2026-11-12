@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <script>
+      // In AI Studio preview environment, HMR WebSocket is disabled (HMR: Disabled).
+      // Safely ignore Vite HMR WebSocket connection notices without modifying native WebSocket constructor.
+      (function() {
+        function isViteHmrError(str) {
+          if (!str || typeof str !== 'string') return false;
+          return str.indexOf('WebSocket') !== -1 ||
+                 str.indexOf('vite:ws') !== -1 ||
+                 str.indexOf('failed to connect to websocket') !== -1 ||
+                 str.indexOf('closed without opened') !== -1 ||
+                 str.indexOf('SendBeforeConnectError') !== -1 ||
+                 str.indexOf('send was called before connect') !== -1 ||
+                 str.indexOf('invoke was called before connect') !== -1;
+        }
+
+        function filterViteArgs(args) {
+          for (var i = 0; i < args.length; i++) {
+            var a = args[i];
+            var str = (a && (a.message || a.stack || String(a))) || '';
+            if (isViteHmrError(str) || (args[0] === '[vite]' && isViteHmrError(String(a)))) {
+              return true;
+            }
+          }
+          return false;
+        }
+
+        function wrapConsole(cons) {
+          if (!cons || cons.__vite_wrapped) return cons;
+          var realError = cons.error;
+          cons.error = function() {
+            var args = Array.prototype.slice.call(arguments);
+            if (filterViteArgs(args)) {
+              return; // Suppress Vite HMR WebSocket disconnect notice as per environment constraints
+            }
+            return realError.apply(this, args);
+          };
+          cons.__vite_wrapped = true;
+          return cons;
+        }
+
+        wrapConsole(window.console);
+
+        var _console = window.console;
+        try {
+          Object.defineProperty(window, 'console', {
+            configurable: true,
+            enumerable: true,
+            get: function() {
+              return _console;
+            },
+            set: function(newVal) {
+              _console = wrapConsole(newVal);
+            }
+          });
+        } catch (_) {}
+
+        var _onerror = window.onerror;
+        try {
+          Object.defineProperty(window, 'onerror', {
+            configurable: true,
+            enumerable: true,
+            get: function() { return _onerror; },
+            set: function(handler) {
+              _onerror = function(message, source, lineno, colno, error) {
+                var str = String(message) + ' ' + String(error && error.message ? error.message : '');
+                if (isViteHmrError(str)) {
+                  return true;
+                }
+                if (typeof handler === 'function') {
+                  return handler.apply(this, arguments);
+                }
+              };
+            }
+          });
+        } catch (_) {}
+
+        var _onunhandledrejection = window.onunhandledrejection;
+        try {
+          Object.defineProperty(window, 'onunhandledrejection', {
+            configurable: true,
+            enumerable: true,
+            get: function() { return _onunhandledrejection; },
+            set: function(handler) {
+              _onunhandledrejection = function(event) {
+                var reason = event && event.reason;
+                var str = String(reason && reason.message ? reason.message : reason || '');
+                if (isViteHmrError(str)) {
+                  if (event && event.preventDefault) event.preventDefault();
+                  return true;
+                }
+                if (typeof handler === 'function') {
+                  return handler.apply(this, arguments);
+                }
+              };
+            }
+          });
+        } catch (_) {}
+
+        window.addEventListener('error', function(event) {
+          var str = String(event && event.message ? event.message : '');
+          if (isViteHmrError(str)) {
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            return true;
+          }
+        }, true);
+
+        window.addEventListener('unhandledrejection', function(event) {
+          var reason = event && event.reason;
+          var str = String(reason && reason.message ? reason.message : reason || '');
+          if (isViteHmrError(str)) {
+            event.stopImmediatePropagation();
+            event.preventDefault();
+            return true;
+          }
+        }, true);
+      })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>NUTRI PRO - SaaS de Nutrição Clínica & Antropometria</title>
+    <meta name="description" content="NUTRI PRO - SaaS clínico para nutricionistas com cálculo de necessidades energéticas e macros, dietas personalizadas, rastreador diário de calorias, antropometria ISAK, bioimpedância, RCQ, pescoço/risco cardiometabólico, fotos comparativas, tabela ANVISA RDC 429/2020 e receituário." />
+    <meta property="og:title" content="NUTRI PRO - SaaS de Nutrição Clínica & Antropometria" />
+    <meta property="og:description" content="NUTRI PRO - SaaS clínico para nutricionistas com cálculo de necessidades energéticas e macros, dietas personalizadas, rastreador diário de calorias, antropometria ISAK, bioimpedância, RCQ, pescoço/risco cardiometabólico, fotos comparativas, tabela ANVISA RDC 429/2020 e receituário." />
+    <meta property="og:type" content="website" />
+    <!-- Mobile App Native Shell & Viewport Lock Meta Tags -->
+    <meta name="theme-color" content="#004f28" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="NUTRI PRO" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-TapHighlight" content="no" />
+    
+    <!-- Google Fonts: Plus Jakarta Sans, Inter, Material Symbols Outlined -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+  </head>
+  <body class="bg-[#f8f9ff] text-[#0b1c30] antialiased">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

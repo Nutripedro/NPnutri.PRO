@@ -1,0 +1,1394 @@
+{
+  "patients": [
+    {
+      "id": "ped-theo",
+      "name": "Theo Albuquerque Santos",
+      "email": "theo.familia@email.com",
+      "phone": "(11) 98111-2233",
+      "cpf": "456.789.012-33",
+      "birthDate": "2024-05-10",
+      "age": 1,
+      "sex": "male",
+      "heightCm": 83,
+      "currentWeightKg": 11.45,
+      "initialWeightKg": 3.42,
+      "imc": 16.62,
+      "avatarInitials": "TA",
+      "recordNumber": "#PED-0192",
+      "goal": "Acompanhamento de Crescimento & Neurodesenvolvimento (Curvas OMS)",
+      "lastAssessmentDate": "2025-11-10",
+      "unit": "Clínica Jardins - Pediatria SP",
+      "isPediatric": true,
+      "pediatricMeasurements": [
+        {
+          "id": "meas-00",
+          "consultationDate": "2024-05-10",
+          "ageMonths": 0,
+          "ageDisplay": "Ao Nascer (0m)",
+          "weightKg": 3.42,
+          "heightCm": 50.2,
+          "headCircumferenceCm": 35,
+          "notes": "Parto a termo saudável. Apgar 9/10. Aleitamento materno exclusivo iniciado na primeira hora.",
+          "bmi": 13.57,
+          "zScores": {
+            "heightForAge": 0.17,
+            "weightForAge": 0.15,
+            "bmiForAge": 0.13,
+            "headCircForAge": 0.44
+          },
+          "percentiles": {
+            "heightForAge": 56.7,
+            "weightForAge": 56,
+            "bmiForAge": 55.2,
+            "headCircForAge": 67
+          },
+          "diagnostics": {
+            "heightForAge": {
+              "index": "height_for_age",
+              "indexLabel": "Estatura para Idade (E/I)",
+              "zScore": 0.17,
+              "percentile": 56.7,
+              "classification": "Estatura Adequada para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Crescimento estatural linear adequado segundo os referenciais da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "weightForAge": {
+              "index": "weight_for_age",
+              "indexLabel": "Peso para Idade (P/I)",
+              "zScore": 0.15,
+              "percentile": 56,
+              "classification": "Peso Adequado para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Evolução ponderal em faixa normal de normalidade e saúde metabólica.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "bmiForAge": {
+              "index": "bmi_for_age",
+              "indexLabel": "IMC para Idade (0 a 5 anos)",
+              "zScore": 0.13,
+              "percentile": 55.2,
+              "classification": "Eutrofia",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Equilíbrio pondero-estatural excelente segundo o padrão de ouro da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "headCircForAge": {
+              "index": "head_circ_for_age",
+              "indexLabel": "Perímetro Cefálico para Idade (PC/I)",
+              "zScore": 0.44,
+              "percentile": 67,
+              "classification": "Normocefalia / Adequado",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Desenvolvimento do perímetro cefálico harmonioso e dentro do padrão da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            }
+          }
+        },
+        {
+          "id": "meas-01",
+          "consultationDate": "2024-06-12",
+          "ageMonths": 1.1,
+          "ageDisplay": "1 mês e 3d (1.1m)",
+          "weightKg": 4.6,
+          "heightCm": 55.1,
+          "headCircumferenceCm": 37.5,
+          "notes": "Ganho ponderal de 39g/dia. Pega adequada da mama, sem fissuras maternas.",
+          "bmi": 15.15,
+          "zScores": {
+            "heightForAge": 0.01,
+            "weightForAge": 0.03,
+            "bmiForAge": 0.1,
+            "headCircForAge": 0.04
+          },
+          "percentiles": {
+            "heightForAge": 50.4,
+            "weightForAge": 51.2,
+            "bmiForAge": 54,
+            "headCircForAge": 51.6
+          },
+          "diagnostics": {
+            "heightForAge": {
+              "index": "height_for_age",
+              "indexLabel": "Estatura para Idade (E/I)",
+              "zScore": 0.01,
+              "percentile": 50.4,
+              "classification": "Estatura Adequada para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Crescimento estatural linear adequado segundo os referenciais da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "weightForAge": {
+              "index": "weight_for_age",
+              "indexLabel": "Peso para Idade (P/I)",
+              "zScore": 0.03,
+              "percentile": 51.2,
+              "classification": "Peso Adequado para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Evolução ponderal em faixa normal de normalidade e saúde metabólica.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "bmiForAge": {
+              "index": "bmi_for_age",
+              "indexLabel": "IMC para Idade (0 a 5 anos)",
+              "zScore": 0.1,
+              "percentile": 54,
+              "classification": "Eutrofia",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Equilíbrio pondero-estatural excelente segundo o padrão de ouro da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "headCircForAge": {
+              "index": "head_circ_for_age",
+              "indexLabel": "Perímetro Cefálico para Idade (PC/I)",
+              "zScore": 0.04,
+              "percentile": 51.6,
+              "classification": "Normocefalia / Adequado",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Desenvolvimento do perímetro cefálico harmonioso e dentro do padrão da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            }
+          }
+        },
+        {
+          "id": "meas-02",
+          "consultationDate": "2024-07-10",
+          "ageMonths": 2,
+          "ageDisplay": "2 meses (2.0m)",
+          "weightKg": 5.75,
+          "heightCm": 58.8,
+          "headCircumferenceCm": 39.3,
+          "notes": "Sorrisos sociais, tônus cervical adequado. Vacinas do 2º mês realizadas.",
+          "bmi": 16.63,
+          "zScores": {
+            "heightForAge": 0.19,
+            "weightForAge": 0.25,
+            "bmiForAge": 0.25,
+            "headCircForAge": 0.15
+          },
+          "percentiles": {
+            "heightForAge": 57.5,
+            "weightForAge": 59.9,
+            "bmiForAge": 59.9,
+            "headCircForAge": 56
+          },
+          "diagnostics": {
+            "heightForAge": {
+              "index": "height_for_age",
+              "indexLabel": "Estatura para Idade (E/I)",
+              "zScore": 0.19,
+              "percentile": 57.5,
+              "classification": "Estatura Adequada para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Crescimento estatural linear adequado segundo os referenciais da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "weightForAge": {
+              "index": "weight_for_age",
+              "indexLabel": "Peso para Idade (P/I)",
+              "zScore": 0.25,
+              "percentile": 59.9,
+              "classification": "Peso Adequado para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Evolução ponderal em faixa normal de normalidade e saúde metabólica.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "bmiForAge": {
+              "index": "bmi_for_age",
+              "indexLabel": "IMC para Idade (0 a 5 anos)",
+              "zScore": 0.25,
+              "percentile": 59.9,
+              "classification": "Eutrofia",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Equilíbrio pondero-estatural excelente segundo o padrão de ouro da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "headCircForAge": {
+              "index": "head_circ_for_age",
+              "indexLabel": "Perímetro Cefálico para Idade (PC/I)",
+              "zScore": 0.15,
+              "percentile": 56,
+              "classification": "Normocefalia / Adequado",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Desenvolvimento do perímetro cefálico harmonioso e dentro do padrão da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            }
+          }
+        },
+        {
+          "id": "meas-03",
+          "consultationDate": "2024-09-15",
+          "ageMonths": 4.2,
+          "ageDisplay": "4 meses e 5d (4.2m)",
+          "weightKg": 7.2,
+          "heightCm": 64.5,
+          "headCircumferenceCm": 41.8,
+          "notes": "Sustenta a cabeça com firmeza. Curva de estatura acompanhando percentil 50-85.",
+          "bmi": 17.31,
+          "zScores": {
+            "heightForAge": 0.1,
+            "weightForAge": 0.09,
+            "bmiForAge": 0.1,
+            "headCircForAge": -0.06
+          },
+          "percentiles": {
+            "heightForAge": 54,
+            "weightForAge": 53.6,
+            "bmiForAge": 54,
+            "headCircForAge": 47.6
+          },
+          "diagnostics": {
+            "heightForAge": {
+              "index": "height_for_age",
+              "indexLabel": "Estatura para Idade (E/I)",
+              "zScore": 0.1,
+              "percentile": 54,
+              "classification": "Estatura Adequada para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Crescimento estatural linear adequado segundo os referenciais da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "weightForAge": {
+              "index": "weight_for_age",
+              "indexLabel": "Peso para Idade (P/I)",
+              "zScore": 0.09,
+              "percentile": 53.6,
+              "classification": "Peso Adequado para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Evolução ponderal em faixa normal de normalidade e saúde metabólica.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "bmiForAge": {
+              "index": "bmi_for_age",
+              "indexLabel": "IMC para Idade (0 a 5 anos)",
+              "zScore": 0.1,
+              "percentile": 54,
+              "classification": "Eutrofia",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Equilíbrio pondero-estatural excelente segundo o padrão de ouro da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "headCircForAge": {
+              "index": "head_circ_for_age",
+              "indexLabel": "Perímetro Cefálico para Idade (PC/I)",
+              "zScore": -0.06,
+              "percentile": 47.6,
+              "classification": "Normocefalia / Adequado",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Desenvolvimento do perímetro cefálico harmonioso e dentro do padrão da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            }
+          }
+        },
+        {
+          "id": "meas-04",
+          "consultationDate": "2024-11-12",
+          "ageMonths": 6.1,
+          "ageDisplay": "6 meses (6.1m)",
+          "weightKg": 8.1,
+          "heightCm": 68.2,
+          "headCircumferenceCm": 43.6,
+          "notes": "Início da introdução alimentar (IA) método BLW adaptado. Excelente aceitação de legumes e frutas.",
+          "bmi": 17.41,
+          "zScores": {
+            "heightForAge": 0.19,
+            "weightForAge": 0.14,
+            "bmiForAge": 0.11,
+            "headCircForAge": 0.05
+          },
+          "percentiles": {
+            "heightForAge": 57.5,
+            "weightForAge": 55.6,
+            "bmiForAge": 54.4,
+            "headCircForAge": 52
+          },
+          "diagnostics": {
+            "heightForAge": {
+              "index": "height_for_age",
+              "indexLabel": "Estatura para Idade (E/I)",
+              "zScore": 0.19,
+              "percentile": 57.5,
+              "classification": "Estatura Adequada para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Crescimento estatural linear adequado segundo os referenciais da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "weightForAge": {
+              "index": "weight_for_age",
+              "indexLabel": "Peso para Idade (P/I)",
+              "zScore": 0.14,
+              "percentile": 55.6,
+              "classification": "Peso Adequado para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Evolução ponderal em faixa normal de normalidade e saúde metabólica.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "bmiForAge": {
+              "index": "bmi_for_age",
+              "indexLabel": "IMC para Idade (0 a 5 anos)",
+              "zScore": 0.11,
+              "percentile": 54.4,
+              "classification": "Eutrofia",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Equilíbrio pondero-estatural excelente segundo o padrão de ouro da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "headCircForAge": {
+              "index": "head_circ_for_age",
+              "indexLabel": "Perímetro Cefálico para Idade (PC/I)",
+              "zScore": 0.05,
+              "percentile": 52,
+              "classification": "Normocefalia / Adequado",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Desenvolvimento do perímetro cefálico harmonioso e dentro do padrão da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            }
+          }
+        },
+        {
+          "id": "meas-05",
+          "consultationDate": "2025-02-10",
+          "ageMonths": 9,
+          "ageDisplay": "9 meses (9.0m)",
+          "weightKg": 9.2,
+          "heightCm": 72.4,
+          "headCircumferenceCm": 45.4,
+          "notes": "Engatinhando com agilidade, senta sem apoio. Consumo de ferro profilático mantido.",
+          "bmi": 17.55,
+          "zScores": {
+            "heightForAge": 0.2,
+            "weightForAge": 0.3,
+            "bmiForAge": 0.33,
+            "headCircForAge": 0.04
+          },
+          "percentiles": {
+            "heightForAge": 57.9,
+            "weightForAge": 61.8,
+            "bmiForAge": 62.9,
+            "headCircForAge": 51.6
+          },
+          "diagnostics": {
+            "heightForAge": {
+              "index": "height_for_age",
+              "indexLabel": "Estatura para Idade (E/I)",
+              "zScore": 0.2,
+              "percentile": 57.9,
+              "classification": "Estatura Adequada para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Crescimento estatural linear adequado segundo os referenciais da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "weightForAge": {
+              "index": "weight_for_age",
+              "indexLabel": "Peso para Idade (P/I)",
+              "zScore": 0.3,
+              "percentile": 61.8,
+              "classification": "Peso Adequado para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Evolução ponderal em faixa normal de normalidade e saúde metabólica.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "bmiForAge": {
+              "index": "bmi_for_age",
+              "indexLabel": "IMC para Idade (0 a 5 anos)",
+              "zScore": 0.33,
+              "percentile": 62.9,
+              "classification": "Eutrofia",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Equilíbrio pondero-estatural excelente segundo o padrão de ouro da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "headCircForAge": {
+              "index": "head_circ_for_age",
+              "indexLabel": "Perímetro Cefálico para Idade (PC/I)",
+              "zScore": 0.04,
+              "percentile": 51.6,
+              "classification": "Normocefalia / Adequado",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Desenvolvimento do perímetro cefálico harmonioso e dentro do padrão da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            }
+          }
+        },
+        {
+          "id": "meas-06",
+          "consultationDate": "2025-05-15",
+          "ageMonths": 12.2,
+          "ageDisplay": "1 ano e 5d (12.2m)",
+          "weightKg": 10.15,
+          "heightCm": 76.5,
+          "headCircumferenceCm": 46.8,
+          "notes": "Primeiros passos independentes. Transição para alimentação da família com baixo teor de sódio.",
+          "bmi": 17.34,
+          "zScores": {
+            "heightForAge": 0.21,
+            "weightForAge": 0.41,
+            "bmiForAge": 0.41,
+            "headCircForAge": 0.01
+          },
+          "percentiles": {
+            "heightForAge": 58.3,
+            "weightForAge": 65.9,
+            "bmiForAge": 65.9,
+            "headCircForAge": 50.4
+          },
+          "diagnostics": {
+            "heightForAge": {
+              "index": "height_for_age",
+              "indexLabel": "Estatura para Idade (E/I)",
+              "zScore": 0.21,
+              "percentile": 58.3,
+              "classification": "Estatura Adequada para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Crescimento estatural linear adequado segundo os referenciais da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "weightForAge": {
+              "index": "weight_for_age",
+              "indexLabel": "Peso para Idade (P/I)",
+              "zScore": 0.41,
+              "percentile": 65.9,
+              "classification": "Peso Adequado para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Evolução ponderal em faixa normal de normalidade e saúde metabólica.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "bmiForAge": {
+              "index": "bmi_for_age",
+              "indexLabel": "IMC para Idade (0 a 5 anos)",
+              "zScore": 0.41,
+              "percentile": 65.9,
+              "classification": "Eutrofia",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Equilíbrio pondero-estatural excelente segundo o padrão de ouro da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "headCircForAge": {
+              "index": "head_circ_for_age",
+              "indexLabel": "Perímetro Cefálico para Idade (PC/I)",
+              "zScore": 0.01,
+              "percentile": 50.4,
+              "classification": "Normocefalia / Adequado",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Desenvolvimento do perímetro cefálico harmonioso e dentro do padrão da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            }
+          }
+        },
+        {
+          "id": "meas-07",
+          "consultationDate": "2025-11-10",
+          "ageMonths": 18,
+          "ageDisplay": "1 ano e 6m (18.0m)",
+          "weightKg": 11.45,
+          "heightCm": 83,
+          "headCircumferenceCm": 48.5,
+          "notes": "Consulta atual: Eutrófico. Crescimento linear harmonioso no canal Z = +0.25 SD.",
+          "bmi": 16.62,
+          "zScores": {
+            "heightForAge": 0.25,
+            "weightForAge": 0.45,
+            "bmiForAge": 0.28,
+            "headCircForAge": 0.09
+          },
+          "percentiles": {
+            "heightForAge": 59.9,
+            "weightForAge": 67.4,
+            "bmiForAge": 61,
+            "headCircForAge": 53.6
+          },
+          "diagnostics": {
+            "heightForAge": {
+              "index": "height_for_age",
+              "indexLabel": "Estatura para Idade (E/I)",
+              "zScore": 0.25,
+              "percentile": 59.9,
+              "classification": "Estatura Adequada para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Crescimento estatural linear adequado segundo os referenciais da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "weightForAge": {
+              "index": "weight_for_age",
+              "indexLabel": "Peso para Idade (P/I)",
+              "zScore": 0.45,
+              "percentile": 67.4,
+              "classification": "Peso Adequado para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Evolução ponderal em faixa normal de normalidade e saúde metabólica.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "bmiForAge": {
+              "index": "bmi_for_age",
+              "indexLabel": "IMC para Idade (0 a 5 anos)",
+              "zScore": 0.28,
+              "percentile": 61,
+              "classification": "Eutrofia",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Equilíbrio pondero-estatural excelente segundo o padrão de ouro da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "headCircForAge": {
+              "index": "head_circ_for_age",
+              "indexLabel": "Perímetro Cefálico para Idade (PC/I)",
+              "zScore": 0.09,
+              "percentile": 53.6,
+              "classification": "Normocefalia / Adequado",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Desenvolvimento do perímetro cefálico harmonioso e dentro do padrão da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            }
+          }
+        }
+      ],
+      "birthLengthCm": 50.2,
+      "birthWeightKg": 3.42,
+      "birthHeadCircCm": 35,
+      "gestationalWeeksAtBirth": 39,
+      "motherName": "Juliana Albuquerque",
+      "pediatricianName": "Dra. Camila Vasconcellos (CRN-3 48910)",
+      "weightHistory": [
+        {
+          "date": "2024-05-10",
+          "weightKg": 3.42,
+          "eventLabel": "Ao Nascer (0m)"
+        },
+        {
+          "date": "2024-06-12",
+          "weightKg": 4.6,
+          "eventLabel": "1 mês e 3d (1.1m)"
+        },
+        {
+          "date": "2024-07-10",
+          "weightKg": 5.75,
+          "eventLabel": "2 meses (2.0m)"
+        },
+        {
+          "date": "2024-09-15",
+          "weightKg": 7.2,
+          "eventLabel": "4 meses e 5d (4.2m)"
+        },
+        {
+          "date": "2024-11-12",
+          "weightKg": 8.1,
+          "eventLabel": "6 meses (6.1m)"
+        },
+        {
+          "date": "2025-02-10",
+          "weightKg": 9.2,
+          "eventLabel": "9 meses (9.0m)"
+        },
+        {
+          "date": "2025-05-15",
+          "weightKg": 10.15,
+          "eventLabel": "1 ano e 5d (12.2m)"
+        },
+        {
+          "date": "2025-11-10",
+          "weightKg": 11.45,
+          "eventLabel": "1 ano e 6m (18.0m)"
+        }
+      ]
+    },
+    {
+      "id": "ped-alice",
+      "name": "Alice Guimarães Ferreira",
+      "email": "alice.familia@email.com",
+      "phone": "(11) 98111-2233",
+      "cpf": "456.789.012-33",
+      "birthDate": "2022-08-20",
+      "age": 3,
+      "sex": "female",
+      "heightCm": 95.5,
+      "currentWeightKg": 14.2,
+      "initialWeightKg": 3.15,
+      "imc": 15.57,
+      "avatarInitials": "AG",
+      "recordNumber": "#PED-0084",
+      "goal": "Acompanhamento de Crescimento & Neurodesenvolvimento (Curvas OMS)",
+      "lastAssessmentDate": "2025-08-20",
+      "unit": "Clínica Jardins - Pediatria SP",
+      "isPediatric": true,
+      "pediatricMeasurements": [
+        {
+          "id": "meas-a0",
+          "consultationDate": "2022-08-20",
+          "ageMonths": 0,
+          "ageDisplay": "Ao Nascer (0m)",
+          "weightKg": 3.15,
+          "heightCm": 49,
+          "headCircumferenceCm": 34,
+          "notes": "Nascimento saudável.",
+          "bmi": 13.12,
+          "zScores": {
+            "heightForAge": -0.08,
+            "weightForAge": -0.18,
+            "bmiForAge": -0.15,
+            "headCircForAge": 0.1
+          },
+          "percentiles": {
+            "heightForAge": 46.8,
+            "weightForAge": 42.9,
+            "bmiForAge": 44,
+            "headCircForAge": 54
+          },
+          "diagnostics": {
+            "heightForAge": {
+              "index": "height_for_age",
+              "indexLabel": "Estatura para Idade (E/I)",
+              "zScore": -0.08,
+              "percentile": 46.8,
+              "classification": "Estatura Adequada para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Crescimento estatural linear adequado segundo os referenciais da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "weightForAge": {
+              "index": "weight_for_age",
+              "indexLabel": "Peso para Idade (P/I)",
+              "zScore": -0.18,
+              "percentile": 42.9,
+              "classification": "Peso Adequado para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Evolução ponderal em faixa normal de normalidade e saúde metabólica.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "bmiForAge": {
+              "index": "bmi_for_age",
+              "indexLabel": "IMC para Idade (0 a 5 anos)",
+              "zScore": -0.15,
+              "percentile": 44,
+              "classification": "Eutrofia",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Equilíbrio pondero-estatural excelente segundo o padrão de ouro da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "headCircForAge": {
+              "index": "head_circ_for_age",
+              "indexLabel": "Perímetro Cefálico para Idade (PC/I)",
+              "zScore": 0.1,
+              "percentile": 54,
+              "classification": "Normocefalia / Adequado",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Desenvolvimento do perímetro cefálico harmonioso e dentro do padrão da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            }
+          }
+        },
+        {
+          "id": "meas-a1",
+          "consultationDate": "2023-02-20",
+          "ageMonths": 6,
+          "ageDisplay": "6 meses (6.0m)",
+          "weightKg": 7.4,
+          "heightCm": 66,
+          "headCircumferenceCm": 42.5,
+          "notes": "Aleitamento materno e introdução de papas principais.",
+          "bmi": 16.99,
+          "zScores": {
+            "heightForAge": 0.12,
+            "weightForAge": 0.12,
+            "bmiForAge": 0.28,
+            "headCircForAge": 0.01
+          },
+          "percentiles": {
+            "heightForAge": 54.8,
+            "weightForAge": 54.8,
+            "bmiForAge": 61,
+            "headCircForAge": 50.4
+          },
+          "diagnostics": {
+            "heightForAge": {
+              "index": "height_for_age",
+              "indexLabel": "Estatura para Idade (E/I)",
+              "zScore": 0.12,
+              "percentile": 54.8,
+              "classification": "Estatura Adequada para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Crescimento estatural linear adequado segundo os referenciais da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "weightForAge": {
+              "index": "weight_for_age",
+              "indexLabel": "Peso para Idade (P/I)",
+              "zScore": 0.12,
+              "percentile": 54.8,
+              "classification": "Peso Adequado para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Evolução ponderal em faixa normal de normalidade e saúde metabólica.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "bmiForAge": {
+              "index": "bmi_for_age",
+              "indexLabel": "IMC para Idade (0 a 5 anos)",
+              "zScore": 0.28,
+              "percentile": 61,
+              "classification": "Eutrofia",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Equilíbrio pondero-estatural excelente segundo o padrão de ouro da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "headCircForAge": {
+              "index": "head_circ_for_age",
+              "indexLabel": "Perímetro Cefálico para Idade (PC/I)",
+              "zScore": 0.01,
+              "percentile": 50.4,
+              "classification": "Normocefalia / Adequado",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Desenvolvimento do perímetro cefálico harmonioso e dentro do padrão da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            }
+          }
+        },
+        {
+          "id": "meas-a2",
+          "consultationDate": "2023-08-20",
+          "ageMonths": 12,
+          "ageDisplay": "1 ano (12.0m)",
+          "weightKg": 9.1,
+          "heightCm": 74.5,
+          "headCircumferenceCm": 45.7,
+          "notes": "Eutrófica, boa aceitação de variedade de vegetais.",
+          "bmi": 16.4,
+          "zScores": {
+            "heightForAge": 0.19,
+            "weightForAge": 0.14,
+            "bmiForAge": 0.19,
+            "headCircForAge": 0.04
+          },
+          "percentiles": {
+            "heightForAge": 57.5,
+            "weightForAge": 55.6,
+            "bmiForAge": 57.5,
+            "headCircForAge": 51.6
+          },
+          "diagnostics": {
+            "heightForAge": {
+              "index": "height_for_age",
+              "indexLabel": "Estatura para Idade (E/I)",
+              "zScore": 0.19,
+              "percentile": 57.5,
+              "classification": "Estatura Adequada para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Crescimento estatural linear adequado segundo os referenciais da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "weightForAge": {
+              "index": "weight_for_age",
+              "indexLabel": "Peso para Idade (P/I)",
+              "zScore": 0.14,
+              "percentile": 55.6,
+              "classification": "Peso Adequado para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Evolução ponderal em faixa normal de normalidade e saúde metabólica.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "bmiForAge": {
+              "index": "bmi_for_age",
+              "indexLabel": "IMC para Idade (0 a 5 anos)",
+              "zScore": 0.19,
+              "percentile": 57.5,
+              "classification": "Eutrofia",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Equilíbrio pondero-estatural excelente segundo o padrão de ouro da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "headCircForAge": {
+              "index": "head_circ_for_age",
+              "indexLabel": "Perímetro Cefálico para Idade (PC/I)",
+              "zScore": 0.04,
+              "percentile": 51.6,
+              "classification": "Normocefalia / Adequado",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Desenvolvimento do perímetro cefálico harmonioso e dentro do padrão da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            }
+          }
+        },
+        {
+          "id": "meas-a3",
+          "consultationDate": "2024-08-20",
+          "ageMonths": 24,
+          "ageDisplay": "2 anos (24.0m)",
+          "weightKg": 11.6,
+          "heightCm": 86.8,
+          "headCircumferenceCm": 48.2,
+          "notes": "Desenvolvimento motor e cognitivo plenos.",
+          "bmi": 15.4,
+          "zScores": {
+            "heightForAge": 0.13,
+            "weightForAge": 0.07,
+            "bmiForAge": 0.05,
+            "headCircForAge": 0.01
+          },
+          "percentiles": {
+            "heightForAge": 55.2,
+            "weightForAge": 52.8,
+            "bmiForAge": 52,
+            "headCircForAge": 50.4
+          },
+          "diagnostics": {
+            "heightForAge": {
+              "index": "height_for_age",
+              "indexLabel": "Estatura para Idade (E/I)",
+              "zScore": 0.13,
+              "percentile": 55.2,
+              "classification": "Estatura Adequada para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Crescimento estatural linear adequado segundo os referenciais da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "weightForAge": {
+              "index": "weight_for_age",
+              "indexLabel": "Peso para Idade (P/I)",
+              "zScore": 0.07,
+              "percentile": 52.8,
+              "classification": "Peso Adequado para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Evolução ponderal em faixa normal de normalidade e saúde metabólica.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "bmiForAge": {
+              "index": "bmi_for_age",
+              "indexLabel": "IMC para Idade (0 a 5 anos)",
+              "zScore": 0.05,
+              "percentile": 52,
+              "classification": "Eutrofia",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Equilíbrio pondero-estatural excelente segundo o padrão de ouro da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "headCircForAge": {
+              "index": "head_circ_for_age",
+              "indexLabel": "Perímetro Cefálico para Idade (PC/I)",
+              "zScore": 0.01,
+              "percentile": 50.4,
+              "classification": "Normocefalia / Adequado",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Desenvolvimento do perímetro cefálico harmonioso e dentro do padrão da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            }
+          }
+        },
+        {
+          "id": "meas-a4",
+          "consultationDate": "2025-08-20",
+          "ageMonths": 36,
+          "ageDisplay": "3 anos (36.0m)",
+          "weightKg": 14.2,
+          "heightCm": 95.5,
+          "headCircumferenceCm": 49.4,
+          "notes": "Consulta dos 3 anos: Eutrófica, IMC p/ idade adequado.",
+          "bmi": 15.57,
+          "zScores": {
+            "heightForAge": 0.11,
+            "weightForAge": 0.15,
+            "bmiForAge": 0.44,
+            "headCircForAge": 0.06
+          },
+          "percentiles": {
+            "heightForAge": 54.4,
+            "weightForAge": 56,
+            "bmiForAge": 67,
+            "headCircForAge": 52.4
+          },
+          "diagnostics": {
+            "heightForAge": {
+              "index": "height_for_age",
+              "indexLabel": "Estatura para Idade (E/I)",
+              "zScore": 0.11,
+              "percentile": 54.4,
+              "classification": "Estatura Adequada para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Crescimento estatural linear adequado segundo os referenciais da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "weightForAge": {
+              "index": "weight_for_age",
+              "indexLabel": "Peso para Idade (P/I)",
+              "zScore": 0.15,
+              "percentile": 56,
+              "classification": "Peso Adequado para a Idade",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Evolução ponderal em faixa normal de normalidade e saúde metabólica.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "bmiForAge": {
+              "index": "bmi_for_age",
+              "indexLabel": "IMC para Idade (0 a 5 anos)",
+              "zScore": 0.44,
+              "percentile": 67,
+              "classification": "Eutrofia",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Equilíbrio pondero-estatural excelente segundo o padrão de ouro da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            },
+            "headCircForAge": {
+              "index": "head_circ_for_age",
+              "indexLabel": "Perímetro Cefálico para Idade (PC/I)",
+              "zScore": 0.06,
+              "percentile": 52.4,
+              "classification": "Normocefalia / Adequado",
+              "severity": "eutrofico",
+              "clinicalGuidance": "Desenvolvimento do perímetro cefálico harmonioso e dentro do padrão da OMS.",
+              "badgeBgColor": "bg-emerald-100",
+              "badgeTextColor": "text-emerald-800",
+              "borderColor": "border-emerald-400"
+            }
+          }
+        }
+      ],
+      "birthLengthCm": 49,
+      "birthWeightKg": 3.15,
+      "birthHeadCircCm": 34,
+      "gestationalWeeksAtBirth": 40,
+      "motherName": "Mariana Guimarães",
+      "pediatricianName": "Dra. Camila Vasconcellos (CRN-3 48910)",
+      "weightHistory": [
+        {
+          "date": "2022-08-20",
+          "weightKg": 3.15,
+          "eventLabel": "Ao Nascer (0m)"
+        },
+        {
+          "date": "2023-02-20",
+          "weightKg": 7.4,
+          "eventLabel": "6 meses (6.0m)"
+        },
+        {
+          "date": "2023-08-20",
+          "weightKg": 9.1,
+          "eventLabel": "1 ano (12.0m)"
+        },
+        {
+          "date": "2024-08-20",
+          "weightKg": 11.6,
+          "eventLabel": "2 anos (24.0m)"
+        },
+        {
+          "date": "2025-08-20",
+          "weightKg": 14.2,
+          "eventLabel": "3 anos (36.0m)"
+        }
+      ]
+    },
+    {
+      "id": "pat-mariana",
+      "name": "Mariana Guimarães",
+      "email": "mariana.gui@email.com",
+      "phone": "(11) 98765-4321",
+      "cpf": "123.456.789-00",
+      "birthDate": "1997-04-18",
+      "age": 28,
+      "sex": "female",
+      "heightCm": 168,
+      "currentWeightKg": 64.2,
+      "initialWeightKg": 67.8,
+      "imc": 22.75,
+      "avatarInitials": "MG",
+      "recordNumber": "#08492",
+      "goal": "Recomposição Corporal e Redução de Gordura Subcutânea",
+      "lastAssessmentDate": "12/02/2025",
+      "unit": "Clínica Jardins - SP",
+      "weightHistory": [
+        {
+          "date": "10/10/24",
+          "weightKg": 68.5,
+          "bodyFatPercent": 23.8,
+          "leanMassKg": 52.2,
+          "fatMassKg": 16.3,
+          "targetWeightKg": 62.9,
+          "eventLabel": "Anamnese & Início"
+        },
+        {
+          "date": "10/11/24",
+          "weightKg": 67.8,
+          "bodyFatPercent": 22.4,
+          "leanMassKg": 52.6,
+          "fatMassKg": 15.2,
+          "targetWeightKg": 62.9,
+          "eventLabel": "Retorno 30d"
+        },
+        {
+          "date": "10/12/24",
+          "weightKg": 66.4,
+          "bodyFatPercent": 21,
+          "leanMassKg": 52.4,
+          "fatMassKg": 14,
+          "targetWeightKg": 62.9,
+          "eventLabel": "Ensaio T0"
+        },
+        {
+          "date": "15/01/25",
+          "weightKg": 65.1,
+          "bodyFatPercent": 19.8,
+          "leanMassKg": 52.2,
+          "fatMassKg": 12.9,
+          "targetWeightKg": 62.9,
+          "eventLabel": "Ajuste Déficit"
+        },
+        {
+          "date": "12/02/25",
+          "weightKg": 64.2,
+          "bodyFatPercent": 18.7,
+          "leanMassKg": 52.2,
+          "fatMassKg": 12,
+          "targetWeightKg": 62.9,
+          "eventLabel": "Ensaio T1 Atual"
+        }
+      ]
+    },
+    {
+      "id": "pat-lucas",
+      "name": "Lucas Mendes",
+      "email": "lucas.mendes@email.com",
+      "phone": "(11) 99123-4567",
+      "cpf": "234.567.890-11",
+      "birthDate": "1993-08-11",
+      "age": 32,
+      "sex": "male",
+      "heightCm": 185,
+      "currentWeightKg": 81.4,
+      "initialWeightKg": 83.3,
+      "imc": 23.78,
+      "avatarInitials": "LM",
+      "recordNumber": "#07219",
+      "goal": "Hipertrofia Limpa com Otimização de Ângulo de Fase",
+      "lastAssessmentDate": "10/02/2025",
+      "unit": "Clínica Jardins - SP",
+      "weightHistory": [
+        {
+          "date": "15/09/24",
+          "weightKg": 78.5,
+          "bodyFatPercent": 16.5,
+          "leanMassKg": 65.5,
+          "fatMassKg": 13,
+          "targetWeightKg": 83.5,
+          "eventLabel": "Início Hipertrofia"
+        },
+        {
+          "date": "20/10/24",
+          "weightKg": 79.8,
+          "bodyFatPercent": 15.8,
+          "leanMassKg": 67.2,
+          "fatMassKg": 12.6,
+          "targetWeightKg": 83.5,
+          "eventLabel": "Ajuste Superávit"
+        },
+        {
+          "date": "25/11/24",
+          "weightKg": 80.6,
+          "bodyFatPercent": 15,
+          "leanMassKg": 68.5,
+          "fatMassKg": 12.1,
+          "targetWeightKg": 83.5,
+          "eventLabel": "Ciclo Creatina"
+        },
+        {
+          "date": "10/01/25",
+          "weightKg": 81.4,
+          "bodyFatPercent": 14.2,
+          "leanMassKg": 69.8,
+          "fatMassKg": 11.6,
+          "targetWeightKg": 83.5,
+          "eventLabel": "Reavaliação BIA"
+        }
+      ]
+    },
+    {
+      "id": "pat-carlos",
+      "name": "Carlos Eduardo Santos",
+      "email": "carlos.edu@email.com",
+      "phone": "(11) 97654-3210",
+      "cpf": "345.678.901-22",
+      "birthDate": "1971-11-23",
+      "age": 54,
+      "sex": "male",
+      "heightCm": 174,
+      "currentWeightKg": 88,
+      "initialWeightKg": 91.5,
+      "imc": 29.07,
+      "avatarInitials": "CE",
+      "recordNumber": "#05411",
+      "goal": "Redução de Gordura Visceral e Risco Cardiometabólico",
+      "lastAssessmentDate": "05/02/2025",
+      "unit": "Clínica Itaim - SP",
+      "weightHistory": [
+        {
+          "date": "10/08/24",
+          "weightKg": 93.8,
+          "bodyFatPercent": 30.5,
+          "leanMassKg": 65.2,
+          "fatMassKg": 28.6,
+          "targetWeightKg": 82,
+          "eventLabel": "Início Clínico"
+        },
+        {
+          "date": "15/10/24",
+          "weightKg": 91.5,
+          "bodyFatPercent": 29.2,
+          "leanMassKg": 64.8,
+          "fatMassKg": 26.7,
+          "targetWeightKg": 82,
+          "eventLabel": "Retorno 60d"
+        },
+        {
+          "date": "10/12/24",
+          "weightKg": 89.6,
+          "bodyFatPercent": 28.3,
+          "leanMassKg": 64.3,
+          "fatMassKg": 25.3,
+          "targetWeightKg": 82,
+          "eventLabel": "Redução Sódio"
+        },
+        {
+          "date": "05/02/25",
+          "weightKg": 88,
+          "bodyFatPercent": 27.5,
+          "leanMassKg": 63.8,
+          "fatMassKg": 24.2,
+          "targetWeightKg": 82,
+          "eventLabel": "Última Reavaliação"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "clinicName": "Clínica NutriTrack Pro",
+    "unit": "Matriz - Jardins SP",
+    "timezone": "America/Sao_Paulo",
+    "currency": "BRL",
+    "allowPatientDeletion": false,
+    "features": {
+      "teleconsulta": true,
+      "whatsappReminders": true,
+      "anvisaLabeling": true
+    }
+  },
+  "evaluations": {},
+  "professionals": [
+    {
+      "id": "prof-01",
+      "name": "Dra. Camila Vasconcellos",
+      "email": "camila.vasconcellos@nutritrack.com",
+      "phone": "(11) 98765-4321",
+      "cpf": "123.456.789-00",
+      "role": "nutricionista",
+      "councilType": "CRN",
+      "registrationCode": "CRN-3 48910",
+      "specialty": "Nutrição Clínica & Esportiva Avançada",
+      "unit": "Clínica Jardins - SP",
+      "isActive": true,
+      "admissionDate": "2023-01-15",
+      "permissions": {
+        "canAccessClinicalRecords": true,
+        "canPerformAnthropometry": true,
+        "canManageGrowthCharts": true,
+        "canPrescribeDiets": true,
+        "canRequestExams": true,
+        "canPrescribeSupplements": true,
+        "canPrescribeMedicalExclusive": false,
+        "canManageAppointments": true,
+        "canRegisterPatients": true,
+        "canDeletePatients": false,
+        "canManageProfessionals": false,
+        "canManageSettings": false,
+        "canViewAuditLogs": false
+      },
+      "avatarInitials": "CV"
+    },
+    {
+      "id": "prof-02",
+      "name": "Dr. Lucas Ferreira",
+      "email": "lucas.ferreira@nutritrack.com",
+      "phone": "(11) 99876-5432",
+      "cpf": "234.567.890-11",
+      "role": "medico",
+      "councilType": "CRM",
+      "registrationCode": "CRM-SP 123456",
+      "specialty": "Nutrologia & Endocrinologia Pediátrica",
+      "unit": "Clínica Jardins - SP",
+      "isActive": true,
+      "admissionDate": "2023-03-20",
+      "permissions": {
+        "canAccessClinicalRecords": true,
+        "canPerformAnthropometry": true,
+        "canManageGrowthCharts": true,
+        "canPrescribeDiets": true,
+        "canRequestExams": true,
+        "canPrescribeSupplements": true,
+        "canPrescribeMedicalExclusive": true,
+        "canManageAppointments": true,
+        "canRegisterPatients": true,
+        "canDeletePatients": false,
+        "canManageProfessionals": false,
+        "canManageSettings": false,
+        "canViewAuditLogs": true
+      },
+      "avatarInitials": "LF"
+    },
+    {
+      "id": "prof-03",
+      "name": "Juliana Prado Silveira",
+      "email": "recepcao@nutritrack.com",
+      "phone": "(11) 97654-3210",
+      "cpf": "345.678.901-22",
+      "role": "recepcionista",
+      "councilType": "MATRICULA",
+      "registrationCode": "REC-2024-08",
+      "specialty": "Atendimento, Triagem & Recepção Ambulatorial",
+      "unit": "Clínica Jardins - SP",
+      "isActive": true,
+      "admissionDate": "2024-02-01",
+      "permissions": {
+        "canAccessClinicalRecords": false,
+        "canPerformAnthropometry": false,
+        "canManageGrowthCharts": false,
+        "canPrescribeDiets": false,
+        "canRequestExams": false,
+        "canPrescribeSupplements": false,
+        "canPrescribeMedicalExclusive": false,
+        "canManageAppointments": true,
+        "canRegisterPatients": true,
+        "canDeletePatients": false,
+        "canManageProfessionals": false,
+        "canManageSettings": false,
+        "canViewAuditLogs": false
+      },
+      "avatarInitials": "JP"
+    },
+    {
+      "id": "prof-04",
+      "name": "Roberto Almeida Santos",
+      "email": "diretoria@nutritrack.com",
+      "phone": "(11) 96543-2109",
+      "cpf": "456.789.012-33",
+      "role": "adm",
+      "councilType": "MATRICULA",
+      "registrationCode": "ADM-001",
+      "specialty": "Direção Clínica, Governança & DPO em Saúde",
+      "unit": "Matriz - Jardins SP",
+      "isActive": true,
+      "admissionDate": "2022-10-01",
+      "permissions": {
+        "canAccessClinicalRecords": true,
+        "canPerformAnthropometry": true,
+        "canManageGrowthCharts": true,
+        "canPrescribeDiets": true,
+        "canRequestExams": true,
+        "canPrescribeSupplements": true,
+        "canPrescribeMedicalExclusive": true,
+        "canManageAppointments": true,
+        "canRegisterPatients": true,
+        "canDeletePatients": true,
+        "canManageProfessionals": true,
+        "canManageSettings": true,
+        "canViewAuditLogs": true
+      },
+      "avatarInitials": "RA"
+    }
+  ],
+  "currentUserId": "prof-01"
+}

@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><title>NutriMetrics Pro - Antropometria Clínica</title><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base { html, body { margin: 0; padding: 0; } body { overscroll-behavior: none; } main > :first-child { margin-top: 0 !important; } main > :last-child { margin-bottom: 0 !important; } } ::-webkit-scrollbar { display: none; }</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-tertiary-fixed-variant": "#872000", "on-secondary-fixed": "#131b2e", "background": "#f8f9ff", "secondary": "#565e74", "secondary-fixed-dim": "#bec6e0", "surface-container-highest": "#d3e4fe", "on-primary-container": "#90e7a8", "surface-variant": "#d3e4fe", "error-container": "#ffdad6", "on-error": "#ffffff", "on-surface": "#0b1c30", "on-secondary": "#ffffff", "surface-container-high": "#dce9ff", "primary": "#004f28", "tertiary-fixed-dim": "#ffb5a0", "secondary-container": "#dae2fd", "surface-dim": "#cbdbf5", "on-surface-variant": "#3f4940", "surface": "#f8f9ff", "primary-fixed": "#9ef6b6", "on-tertiary-container": "#ffc8b9", "surface-bright": "#f8f9ff", "on-primary": "#ffffff", "on-tertiary-fixed": "#3b0900", "on-primary-fixed": "#00210d", "surface-container-lowest": "#ffffff", "inverse-on-surface": "#eaf1ff", "tertiary-fixed": "#ffdbd1", "secondary-fixed": "#dae2fd", "inverse-surface": "#213145", "inverse-primary": "#83d99b", "on-tertiary": "#ffffff", "surface-container-low": "#eff4ff", "on-primary-fixed-variant": "#00522a", "on-error-container": "#93000a", "on-secondary-fixed-variant": "#3f465c", "on-background": "#0b1c30", "tertiary": "#831f00", "tertiary-container": "#a63411", "outline": "#6f7a6f", "outline-variant": "#bec9be", "surface-container": "#e5eeff", "error": "#ba1a1a", "primary-container": "#046a38", "surface-tint": "#0a6d3a", "on-secondary-container": "#5c647a", "primary-fixed-dim": "#83d99b" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "touch-min": "2.75rem", "gutter-desktop": "1.25rem", "margin-mobile": "1rem", "pad-sm": "0.75rem", "pad-2xs": "0.25rem", "pad-lg": "1.25rem", "gutter-mobile": "0.75rem", "margin-tablet": "1.5rem", "pad-xl": "1.5rem", "pad-md": "1rem", "pad-xs": "0.5rem", "pad-2xl": "2rem" }, "fontFamily": { "label-numeric-md": [ "Inter" ], "body-sm": [ "Plus Jakarta Sans" ], "label-md": [ "Inter" ], "headline-md": [ "Plus Jakarta Sans" ], "headline-lg": [ "Plus Jakarta Sans" ], "display-lg": [ "Plus Jakarta Sans" ], "headline-lg-mobile": [ "Plus Jakarta Sans" ], "label-sm": [ "Inter" ], "body-lg": [ "Plus Jakarta Sans" ], "body-md": [ "Plus Jakarta Sans" ], "label-numeric-lg": [ "Inter" ], "headline-sm": [ "Plus Jakarta Sans" ] }, "fontSize": { "label-numeric-md": [ "18px", { "lineHeight": "24px", "fontWeight": "600" } ], "body-sm": [ "12px", { "lineHeight": "16px", "fontWeight": "400" } ], "label-md": [ "13px", { "lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500" } ], "headline-md": [ "20px", { "lineHeight": "26px", "fontWeight": "600" } ], "headline-lg": [ "28px", { "lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "700" } ], "display-lg": [ "36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" } ], "headline-lg-mobile": [ "22px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700" } ], "label-sm": [ "11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "600" } ], "body-lg": [ "16px", { "lineHeight": "24px", "fontWeight": "400" } ], "body-md": [ "14px", { "lineHeight": "20px", "fontWeight": "400" } ], "label-numeric-lg": [ "24px", { "lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600" } ], "headline-sm": [ "16px", { "lineHeight": "22px", "fontWeight": "600" } ] } } } };</script></head><body class="bg-background font-body-md text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between select-none"><div class="flex flex-col"><div class="h-16 px-pad-xl flex items-center gap-pad-sm bg-surface-container-lowest"><div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-on-primary shadow-sm flex-shrink-0"><span class="material-symbols-outlined text-[24px]">vital_signs</span></div><div class="flex flex-col min-w-0 leading-none"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight truncate">NutriMetrics Pro</span><span class="font-label-sm text-label-sm text-primary tracking-wider uppercase truncate mt-pad-2xs">Antropometria Clínica</span></div></div><div class="px-pad-xl py-pad-xs"><div class="h-[1px] w-full bg-surface-container-high"></div></div><div class="px-pad-md py-pad-xs"><div class="px-pad-sm py-pad-2xs"><span class="font-label-sm text-label-sm text-secondary uppercase tracking-wider">Módulos Clínicos</span></div><nav class="flex flex-col gap-pad-2xs mt-pad-xs" data-active-classes="bg-primary-container text-on-primary font-headline-sm shadow-sm"><a class="flex items-center gap-pad-sm px-pad-md h-touch-min rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[20px] flex-shrink-0">dashboard</span><span class="font-label-md text-label-md truncate">Dashboard</span></a><a class="flex items-center gap-pad-sm px-pad-md h-touch-min rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="pacientes-prontuario" href="#"><span class="material-symbols-outlined text-[20px] flex-shrink-0">folder_shared</span><span class="font-label-md text-label-md truncate">Pacientes / Prontuário</span></a><a class="flex items-center gap-pad-sm px-pad-md h-touch-min rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="avaliacao-antropometrica" href="#"><span class="material-symbols-outlined text-[20px] flex-shrink-0">straighten</span><span class="font-label-md text-label-md truncate">Avaliação Antropométrica</span></a><a class="flex items-center gap-pad-sm px-pad-md h-touch-min rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="calculadora-de-dobras" href="#"><span class="material-symbols-outlined text-[20px] flex-shrink-0">calculate</span><span class="font-label-md text-label-md truncate">Calculadora de Dobras</span></a><a class="flex items-center gap-pad-sm px-pad-md h-touch-min rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="dietas-planos" href="#"><span class="material-symbols-outlined text-[20px] flex-shrink-0">restaurant_menu</span><span class="font-label-md text-label-md truncate">Dietas &amp; Planos</span></a><a class="flex items-center gap-pad-sm px-pad-md h-touch-min rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="historico-relatorios" href="#"><span class="material-symbols-outlined text-[20px] flex-shrink-0">query_stats</span><span class="font-label-md text-label-md truncate">Histórico &amp; Relatórios</span></a><a class="flex items-center gap-pad-sm px-pad-md h-touch-min rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" data-path="configuracoes" href="#"><span class="material-symbols-outlined text-[20px] flex-shrink-0">settings</span><span class="font-label-md text-label-md truncate">Configurações</span></a></nav></div></div><div class="p-pad-md m-pad-md bg-surface-container-low rounded-xl flex items-center justify-between"><div class="flex items-center gap-pad-xs min-w-0"><span class="w-2.5 h-2.5 rounded-full bg-primary flex-shrink-0 animate-pulse"></span><div class="flex flex-col min-w-0"><span class="font-label-sm text-label-sm text-on-surface font-semibold truncate">Sincronização Ativa</span><span class="font-body-sm text-body-sm text-secondary truncate">ISAK Level II</span></div></div><span class="material-symbols-outlined text-primary text-[20px]">verified</span></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 px-pad-xl flex items-center justify-between gap-pad-lg"><div class="flex items-center gap-pad-md flex-1 max-w-xl"><div class="relative w-full flex items-center"><span class="material-symbols-outlined absolute left-pad-md text-secondary text-[20px] pointer-events-none">search</span><input class="w-full h-10 pl-10 pr-pad-md bg-surface-container-low border-0 rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-secondary focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all" placeholder="Buscar paciente por nome, CPF ou prontuário (Atalho: Ctrl+K)..." type="text"/></div></div><div class="flex items-center gap-pad-md flex-shrink-0"><div class="flex items-center gap-pad-xs bg-surface-container-low px-pad-sm py-pad-2xs rounded-lg"><span class="material-symbols-outlined text-secondary text-[18px]">apartment</span><select class="bg-transparent border-0 font-label-md text-label-md text-on-surface focus:outline-none cursor-pointer pr-pad-xs"><option value="unidade-1">Consultório Jardins - Sala 402</option><option value="unidade-2">Clínica Integrada Morumbi</option><option value="unidade-3">Atendimento Domiciliar / Híbrido</option></select></div><button aria-label="Notificações clínicas" class="relative w-10 h-10 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-error"></span></button><div class="h-8 w-[1px] bg-surface-container-high"></div><div class="flex items-center gap-pad-sm pl-pad-xs"><div class="flex flex-col text-right leading-tight"><span class="font-label-md text-label-md text-on-surface font-semibold truncate">Dr. Lucas Mendes</span><span class="font-body-sm text-body-sm text-primary font-medium truncate">CRN-3 48219</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0 shadow-sm"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 bg-background min-h-screen px-pad-xl py-pad-xl"><div class="flex flex-col w-full gap-pad-lg">
+<!-- 1. BARRA SUPERIOR DO PRONTUÁRIO DO PACIENTE -->
+<section class="bg-surface-container-lowest rounded-xl p-pad-lg shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-pad-md">
+<div class="flex items-start sm:items-center gap-pad-md flex-1 min-w-0">
+<div class="relative">
+<div class="w-14 h-14 rounded-full bg-surface-container-high flex items-center justify-center font-headline-md text-headline-md text-primary font-bold shadow-inner">
+          MG
+        </div>
+<span class="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-primary ring-2 ring-surface-container-lowest" title="Paciente Ativa"></span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-pad-xs flex-wrap">
+<h1 class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">Mariana Guimarães</h1>
+<span class="px-pad-xs py-0.5 rounded-full bg-surface-container text-secondary font-label-sm text-label-sm">Prontuário #08492</span>
+<span class="px-pad-xs py-0.5 rounded-full bg-primary/10 text-primary font-label-sm text-label-sm font-semibold">ISAK Compliant</span>
+</div>
+<div class="flex items-center gap-pad-sm text-secondary font-body-sm text-body-sm flex-wrap mt-pad-2xs">
+<span>28 anos (Feminino)</span>
+<span>•</span>
+<span>D.N. 14/04/1996</span>
+<span>•</span>
+<span class="font-medium text-on-surface">Altura: <strong class="font-semibold text-primary">1,68 m</strong></span>
+<span>•</span>
+<span class="font-medium text-on-surface">Peso Atual: <strong class="font-semibold text-primary">64,2 kg</strong></span>
+<span>•</span>
+<span class="inline-flex items-center gap-1 font-medium text-on-surface">
+            IMC: <strong class="font-semibold text-primary">22,7 kg/m²</strong>
+<span class="text-primary-container font-semibold">(Eutrofia)</span>
+</span>
+<span>•</span>
+<span class="inline-flex items-center gap-1 bg-surface-container px-pad-xs py-0.5 rounded text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px] text-primary">target</span> Hipertrofia &amp; Redução de Adiposidade
+          </span>
+</div>
+</div>
+</div>
+<!-- Ações de topo -->
+<div class="flex items-center gap-pad-xs flex-shrink-0 flex-wrap">
+<button class="h-10 px-pad-md rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors flex items-center gap-pad-xs" type="button">
+<span class="material-symbols-outlined text-[18px]">history</span>
+<span>Histórico Completo</span>
+</button>
+<button class="h-10 px-pad-md rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors flex items-center gap-pad-xs" type="button">
+<span class="material-symbols-outlined text-[18px]">compare_arrows</span>
+<span>Comparar Avaliações</span>
+</button>
+<button class="h-10 px-pad-md rounded-lg bg-primary-container text-on-primary font-headline-sm text-headline-sm hover:bg-primary transition-all flex items-center gap-pad-xs shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span>Nova Consulta</span>
+</button>
+</div>
+</section>
+<!-- 2. CONTROLES DE PROTOCOLO E CONFIGURAÇÃO -->
+<section class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-pad-md">
+<div class="flex flex-wrap items-center gap-pad-md">
+<!-- Protocolo Selector -->
+<div class="flex items-center gap-pad-xs">
+<span class="font-label-sm text-label-sm text-secondary uppercase font-semibold tracking-wider">Protocolo:</span>
+<div class="inline-flex p-0.5 bg-surface-container rounded-lg">
+<button class="px-pad-sm py-1.5 rounded-md bg-primary-container text-on-primary font-label-md text-label-md shadow-sm" type="button">Jackson &amp; Pollock</button>
+<button class="px-pad-sm py-1.5 rounded-md text-secondary hover:text-on-surface font-label-md text-label-md" type="button">Durnin &amp; Womersley</button>
+<button class="px-pad-sm py-1.5 rounded-md text-secondary hover:text-on-surface font-label-md text-label-md" type="button">Petroski</button>
+<button class="px-pad-sm py-1.5 rounded-md text-secondary hover:text-on-surface font-label-md text-label-md" type="button">ISAK II</button>
+</div>
+</div>
+<!-- Quantidade de Dobras -->
+<div class="flex items-center gap-pad-xs">
+<span class="font-label-sm text-label-sm text-secondary uppercase font-semibold tracking-wider">Dobras:</span>
+<div class="inline-flex p-0.5 bg-surface-container rounded-lg">
+<button class="px-pad-sm py-1.5 rounded-md text-secondary hover:text-on-surface font-label-md text-label-md" type="button">3 Dobras</button>
+<button class="px-pad-sm py-1.5 rounded-md bg-primary-container text-on-primary font-label-md text-label-md shadow-sm" type="button">7 Dobras</button>
+<button class="px-pad-sm py-1.5 rounded-md text-secondary hover:text-on-surface font-label-md text-label-md" type="button">9 Dobras</button>
+</div>
+</div>
+<!-- Fórmula de Conversão -->
+<div class="flex items-center gap-pad-xs">
+<span class="font-label-sm text-label-sm text-secondary uppercase font-semibold tracking-wider">Fórmula %G:</span>
+<select class="bg-surface-container text-on-surface font-label-md text-label-md rounded-lg px-pad-sm py-1.5 border-0 focus:outline-none cursor-pointer">
+<option selected="" value="siri">Siri (1961) - Recomendado</option>
+<option value="brozek">Brozek et al. (1963)</option>
+</select>
+</div>
+</div>
+<!-- Status de Preenchimento -->
+<div class="flex items-center gap-pad-md justify-between lg:justify-end flex-wrap">
+<div class="flex items-center gap-pad-xs">
+<span class="flex h-2.5 w-2.5 relative">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
+</span>
+<span class="font-label-md text-label-md text-primary font-semibold">7 de 7 dobras aferidas (100%)</span>
+</div>
+<div class="flex items-center gap-pad-xs text-secondary font-body-sm text-body-sm bg-surface-container px-pad-sm py-1 rounded-lg">
+<span class="material-symbols-outlined text-[16px]">cloud_done</span>
+<span>Rascunho salvo às 14:38</span>
+</div>
+</div>
+</section>
+<!-- GRID DE CONTEÚDO PRINCIPAL (60% / 40%) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-pad-lg items-start">
+<!-- COLUNA DA ESQUERDA (60%): ÁREA DE COLETA DE DOBRAS CUTÂNEAS -->
+<section class="lg:col-span-7 flex flex-col gap-pad-md">
+<!-- Cabeçalho da Coleta -->
+<div class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-pad-sm">
+<div class="w-8 h-8 rounded-lg bg-primary-container text-on-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">straighten</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-bold">Aferição de Dobras Cutâneas</h2>
+<p class="font-body-sm text-body-sm text-secondary">Protocolo Jackson-Pollock 7 Dobras • Pliômetro Harpenden / Lange (0.1 mm)</p>
+</div>
+</div>
+<button class="text-primary hover:text-primary-container font-label-md text-label-md flex items-center gap-1" type="button">
+<span class="material-symbols-outlined text-[18px]">menu_book</span>
+<span>Guia Anatômico ISAK</span>
+</button>
+</div>
+<!-- Grid de Cards de Dobras (2 Colunas com cards anatômicos) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-pad-md">
+<!-- 1. DOBRA TRICIPITAL -->
+<article class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between gap-pad-sm relative overflow-hidden">
+<div class="flex items-start justify-between gap-pad-xs">
+<div class="flex items-center gap-pad-xs">
+<div class="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Clinical close-up photo of skinfold caliper measuring triceps anatomical site on an athlete patient in a sterile examination room with soft natural lighting and sharp focus on skin pinch and gauge." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgNhg5p2zCs4bkUqR70ShFqW8c5F5S8ptuh5zqpZFikR8jyBztmBcewgZbMXSCi-bVyqc5HhTM7fv2OdzlnyWwrjYPDW2YSsCK7j6IW0egIGMZ76-_P_Hd9q-KzzuYygxlL0GVQece-FGVFRfvPmFjt0LSeAY9OXNVG3cuxvwfQznBvGhA8aA3-0z2bcn5-Mb2Y3bP-QxB3uTDQgX6J0b76ipTkgFj5t6iF_ncBPKf0MU3gUbJ1oY"/>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">Tricipital</h3>
+<span class="material-symbols-outlined text-primary text-[16px]">check_circle</span>
+</div>
+<span class="font-body-sm text-body-sm text-secondary">Vertical • Ponto Médio</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold">14.5</span>
+<span class="font-body-sm text-body-sm text-secondary ml-0.5">mm</span>
+</div>
+</div>
+<!-- Tomadas T1, T2, T3 -->
+<div class="grid grid-cols-3 gap-1.5 pt-pad-xs bg-surface-container-low rounded-lg p-pad-xs">
+<div class="flex flex-col items-center">
+<span class="font-label-sm text-label-sm text-secondary">T1</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface">14.2</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="font-label-sm text-label-sm text-secondary">T2</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface">14.8</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="font-label-sm text-label-sm text-secondary">T3</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface font-semibold text-primary">14.5</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-secondary font-label-sm text-label-sm pt-1">
+<span>Desvio: 0.3 mm (2.1%)</span>
+<span class="text-primary font-medium">Mediana Aplicada</span>
+</div>
+</article>
+<!-- 2. DOBRA SUBESCAPULAR -->
+<article class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between gap-pad-sm relative overflow-hidden">
+<div class="flex items-start justify-between gap-pad-xs">
+<div class="flex items-center gap-pad-xs">
+<div class="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Clinical demonstration photo of subscapular skinfold caliper measurement technique below the inferior angle of the scapula with diagonal skinfold in professional medical office setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDu5tEfDOkLfgBkcl8Hxk6YXqBgT-71IMQ38GS6IZlBeasZSzNs2lPm_CnUAXLclTMGnXAorkHk4zMn_5gaMRSunMFLhRxgdSvYbxezdhzCLDQ5TF6kTPzTQgOgMg8M4mTJ-z8O1fZ-9_0rU_1FhZ5k_AXlKZHofxa1ShyYej-XwY-IpVcYr61rYFoGOgKxJOOgWsKAZEnNB15WFaE-LNGUFAwnoSfBj4ETqlsJhqoMYdhilPQ5CUI"/>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">Subescapular</h3>
+<span class="material-symbols-outlined text-primary text-[16px]">check_circle</span>
+</div>
+<span class="font-body-sm text-body-sm text-secondary">Oblíqua 45° • Âng. Escapular</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold">12.0</span>
+<span class="font-body-sm text-body-sm text-secondary ml-0.5">mm</span>
+</div>
+</div>
+<!-- Tomadas T1, T2, T3 -->
+<div class="grid grid-cols-3 gap-1.5 pt-pad-xs bg-surface-container-low rounded-lg p-pad-xs">
+<div class="flex flex-col items-center">
+<span class="font-label-sm text-label-sm text-secondary">T1</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface">12.0</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="font-label-sm text-label-sm text-secondary">T2</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface">12.2</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="font-label-sm text-label-sm text-secondary">T3</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface">11.8</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-secondary font-label-sm text-label-sm pt-1">
+<span>Desvio: 0.2 mm (1.6%)</span>
+<span class="text-primary font-medium">Média Estável</span>
+</div>
+</article>
+<!-- 3. DOBRA TORÁCICA (PEITORAL) -->
+<article class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between gap-pad-sm relative overflow-hidden">
+<div class="flex items-start justify-between gap-pad-xs">
+<div class="flex items-center gap-pad-xs">
+<div class="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Anatomical assessment photo of chest pectoral skinfold caliper hold between anterior axillary fold and nipple on patient in clean clinical nutrition studio." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbWgW-38gO-jAjhOVDmmEszNvDnvefijqB5JAw55KTFtisxRgOCcUtm3QT3wbUbHdSc3pTfrZH4OVgXU5JH2s20gNxKzvfnu4FgIj3CFjwLMywwlDpRB7Qp1cHn4PentSW_3yrjvpJF_S4YddkQrLtAO7bv1JPWK2Bigo7OAxjDdM9NKCkFRT3txKaj6PqtUB1VJGDJZY1mfU8kUQpMjhcnRhgsXRLSp3cD5GctfWnBuHJuPNCZHc"/>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">Torácica (Peitoral)</h3>
+<span class="material-symbols-outlined text-primary text-[16px]">check_circle</span>
+</div>
+<span class="font-body-sm text-body-sm text-secondary">Diagonal • Linha Axilar Ant.</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold">8.5</span>
+<span class="font-body-sm text-body-sm text-secondary ml-0.5">mm</span>
+</div>
+</div>
+<!-- Tomadas T1, T2, T3 -->
+<div class="grid grid-cols-3 gap-1.5 pt-pad-xs bg-surface-container-low rounded-lg p-pad-xs">
+<div class="flex flex-col items-center">
+<span class="font-label-sm text-label-sm text-secondary">T1</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface">8.5</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="font-label-sm text-label-sm text-secondary">T2</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface">8.4</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="font-label-sm text-label-sm text-secondary">T3</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface">8.6</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-secondary font-label-sm text-label-sm pt-1">
+<span>Desvio: 0.1 mm (1.1%)</span>
+<span class="text-primary font-medium">Excelente Reprodutibilidade</span>
+</div>
+</article>
+<!-- 4. DOBRA AXILAR MÉDIA -->
+<article class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between gap-pad-sm relative overflow-hidden">
+<div class="flex items-start justify-between gap-pad-xs">
+<div class="flex items-center gap-pad-xs">
+<div class="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Close-up clinical photography of midaxillary skinfold taken horizontally at the xiphoid process level with professional digital caliper by a certified nutritionist." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBIzLyRm7QIo5-QaurBjLt6SwSr-K0lU5_Q9AT7xqTfeQC36ZoVhg77Ne3zJmwzAtoSf89RVgYQ49TfzVDYGK3WHwAdMjnRIr2LVlkv_0lW3x3ttb40HoS1xjS3Tt1pPf2l-gJv4nLnN_7sdbKYnimy3-HAPMJ0Yzv8lRasV-Kf7VeCUZwG1X-fS__aYmfKFga_qgKhLq084Mp31LW7_5pDjI470S9iXH-Zyq47lraeLGGxG8-bmXc"/>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">Axilar Média</h3>
+<span class="material-symbols-outlined text-primary text-[16px]">check_circle</span>
+</div>
+<span class="font-body-sm text-body-sm text-secondary">Horizontal • Nível Xifoide</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold">11.0</span>
+<span class="font-body-sm text-body-sm text-secondary ml-0.5">mm</span>
+</div>
+</div>
+<!-- Tomadas T1, T2, T3 -->
+<div class="grid grid-cols-3 gap-1.5 pt-pad-xs bg-surface-container-low rounded-lg p-pad-xs">
+<div class="flex flex-col items-center">
+<span class="font-label-sm text-label-sm text-secondary">T1</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface">11.0</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="font-label-sm text-label-sm text-secondary">T2</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface">11.2</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="font-label-sm text-label-sm text-secondary">T3</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface">10.8</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-secondary font-label-sm text-label-sm pt-1">
+<span>Desvio: 0.2 mm (1.8%)</span>
+<span class="text-primary font-medium">Consistência ISAK</span>
+</div>
+</article>
+<!-- 5. DOBRA SUPRA-ILÍACA (Card de destaque clínico com foto anatômica) -->
+<article class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between gap-pad-sm relative overflow-hidden sm:col-span-2">
+<div class="flex flex-col sm:flex-row items-start justify-between gap-pad-md">
+<div class="flex items-start gap-pad-sm">
+<div class="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="High quality professional medical image of suprailiac skinfold measurement showing dietitian hand pinch diagonally above the iliac crest with clinical caliper display clearly visible." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCthXjgjkJdV7FdaZYUz7Tb1vndX70VUlx2v-FFre7xjgLzp11IyiEfvtqsqZ2ov6Zked2sfKziJ7uUrMcLq46NPa5yaGcXcLcL5JzPEvuGaSwa9Nr5h6GUnNVnrUV_vPpdTh8G4Lh-jy6pQ4UC_7ZuRGHempkUEasJvcJ7yzd_31-VKC6jIpC4aiiGOE6NgxtenvuHVi54UgV_E-exO9WTqXn7wdwb7HmdSRe-UugMzvFjX0rfWxY"/>
+</div>
+<div>
+<div class="flex items-center gap-pad-xs flex-wrap">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Dobra Supra-ilíaca</h3>
+<span class="px-pad-xs py-0.5 rounded-full bg-primary-container text-on-primary font-label-sm text-label-sm font-semibold">Ponto Crítico</span>
+<span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary mt-0.5">Oblíqua para frente e para baixo ao longo da crista ilíaca anterior • Marcação ISAK 45°</p>
+<div class="flex items-center gap-pad-sm mt-pad-xs text-primary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px]">touch_app</span>
+<span>Palpação do tubérculo ilíaco confirmada</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col items-end flex-shrink-0 self-end sm:self-auto">
+<div class="flex items-baseline gap-1">
+<span class="font-headline-lg text-headline-lg text-primary font-bold">15.1</span>
+<span class="font-headline-sm text-headline-sm text-secondary">mm</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-semibold">Média Valida: 15.1 mm</span>
+</div>
+</div>
+<!-- Campos de Tomada Interativa -->
+<div class="grid grid-cols-3 gap-pad-sm bg-surface-container-low p-pad-sm rounded-xl mt-pad-xs">
+<div class="flex flex-col items-center bg-surface-container-lowest p-pad-xs rounded-lg shadow-sm">
+<span class="font-label-sm text-label-sm text-secondary mb-0.5">Tomada 1 (T1)</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface">15.0 mm</span>
+</div>
+<div class="flex flex-col items-center bg-surface-container-lowest p-pad-xs rounded-lg shadow-sm">
+<span class="font-label-sm text-label-sm text-secondary mb-0.5">Tomada 2 (T2)</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface">15.2 mm</span>
+</div>
+<div class="flex flex-col items-center bg-surface-container-lowest p-pad-xs rounded-lg shadow-sm">
+<span class="font-label-sm text-label-sm text-primary mb-0.5 font-bold">Tomada 3 (T3)</span>
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold">15.1 mm</span>
+</div>
+</div>
+</article>
+<!-- 6. DOBRA ABDOMINAL -->
+<article class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between gap-pad-sm relative overflow-hidden">
+<div class="flex items-start justify-between gap-pad-xs">
+<div class="flex items-center gap-pad-xs">
+<div class="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Medical photo demonstrating abdominal skinfold caliper protocol positioned vertically 2 centimeters lateral to the umbilicus during body composition assessment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD04hEjxTcweLHfwotLowmg4IHLg1cdNAGgcQyeSGBGd-fFvEtCBzYK6c2hfKZNpLTmVWz4e0vqn5FKuUTaAmP5YBMcn3q7DDamvK9ybiAFmp-Co0i_41_KZWllSHhPHSisWbYQwgvqgW1W_pZaklqeOqKBSJ-A-sjkpmtnyP4Riq7uw_KpERhKgPAR9NUv1yKLRjiTj799u-VnWX5niMfSRxlaX_owMnGBRtTiGszOYu6PNe2Z6s0"/>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">Abdominal</h3>
+<span class="material-symbols-outlined text-primary text-[16px]">check_circle</span>
+</div>
+<span class="font-body-sm text-body-sm text-secondary">Vertical • 2cm Lateral Cicatriz</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold">12.4</span>
+<span class="font-body-sm text-body-sm text-secondary ml-0.5">mm</span>
+</div>
+</div>
+<!-- Tomadas T1, T2, T3 -->
+<div class="grid grid-cols-3 gap-1.5 pt-pad-xs bg-surface-container-low rounded-lg p-pad-xs">
+<div class="flex flex-col items-center">
+<span class="font-label-sm text-label-sm text-secondary">T1</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface">12.5</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="font-label-sm text-label-sm text-secondary">T2</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface">12.3</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="font-label-sm text-label-sm text-secondary">T3</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface">12.4</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-secondary font-label-sm text-label-sm pt-1">
+<span>Desvio: 0.1 mm (0.8%)</span>
+<span class="text-primary font-medium">Validação Concluída</span>
+</div>
+</article>
+<!-- 7. DOBRA DA COXA -->
+<article class="bg-surface-container-lowest rounded-xl p-pad-md shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between gap-pad-sm relative overflow-hidden">
+<div class="flex items-start justify-between gap-pad-xs">
+<div class="flex items-center gap-pad-xs">
+<div class="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Clinical anthropometry photo of vertical thigh skinfold measurement on anterior midline between inguinal crease and proximal patella border with patient standing." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLffUfJyYRkB43gJ4XjztsVDFbKXy1K9akWrsE59FefnqhH0o0mDMf3lctzwlQhvdkSvKyQiEo_xTXKztlcVrO_Jie4jISxnxdYFPWgE7RuTKylL2rl7rWCd1eyZOUQQr00T6QA-o9k63d6G42nKu5-ul_8yY9o2ZPvO3W8q2YdAaXu_7MjhTRQ-F8J8ljTaTUUZmecGxPcyzr2AJNbXGmGi1FcjoSbnwDpqdrYGDxQC33DMIhTVc"/>
+</div>
+<div class="min-w-0">
+<div class="flex items-center gap-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">Coxa Medial</h3>
+<span class="material-symbols-outlined text-primary text-[16px]">check_circle</span>
+</div>
+<span class="font-body-sm text-body-sm text-secondary">Vertical • Ponto Médio Femoral</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold">11.0</span>
+<span class="font-body-sm text-body-sm text-secondary ml-0.5">mm</span>
+</div>
+</div>
+<!-- Tomadas T1, T2, T3 -->
+<div class="grid grid-cols-3 gap-1.5 pt-pad-xs bg-surface-container-low rounded-lg p-pad-xs">
+<div class="flex flex-col items-center">
+<span class="font-label-sm text-label-sm text-secondary">T1</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface">11.2</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="font-label-sm text-label-sm text-secondary">T2</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface">10.8</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="font-label-sm text-label-sm text-secondary">T3</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface">11.0</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-secondary font-label-sm text-label-sm pt-1">
+<span>Desvio: 0.2 mm (1.8%)</span>
+<span class="text-primary font-medium">ISAK Padrão Ouro</span>
+</div>
+</article>
+</div>
+<!-- Rodapé da Coleta: Somatório das 7 Dobras -->
+<div class="bg-primary-container text-on-primary rounded-xl p-pad-md flex items-center justify-between shadow-md flex-wrap gap-pad-md">
+<div class="flex items-center gap-pad-md">
+<div class="w-12 h-12 rounded-xl bg-on-primary/10 flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[28px]">functions</span>
+</div>
+<div>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-sm text-headline-sm uppercase tracking-wider font-semibold">Somatório de Dobras (Σ7)</span>
+<span class="px-2 py-0.5 rounded bg-on-primary/20 text-on-primary font-label-sm text-label-sm">Todas Coletadas</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-primary-container">Protocolo completo Jackson-Pollock 7 Dobras para Mulheres</p>
+</div>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-display-lg text-display-lg font-bold">84,5</span>
+<span class="font-headline-md text-headline-md font-medium text-on-primary-container">mm</span>
+</div>
+</div>
+</section>
+<!-- COLUNA DA DIREITA (40%): PAINEL CLÍNICO DE RESULTADOS EM TEMPO REAL & PRONTUÁRIO -->
+<aside class="lg:col-span-5 flex flex-col gap-pad-md">
+<!-- Card Principal: % de Gordura Corporal & Classificação -->
+<article class="bg-surface-container-lowest rounded-xl p-pad-lg shadow-sm flex flex-col gap-pad-md">
+<div class="flex items-center justify-between">
+<div>
+<span class="font-label-sm text-label-sm text-secondary uppercase font-semibold tracking-wider">Composição Corporal Atual</span>
+<h3 class="font-headline-md text-headline-md text-on-surface font-bold">Percentual de Gordura (%G)</h3>
+</div>
+<span class="px-pad-xs py-1 rounded-full bg-primary/10 text-primary font-label-md text-label-md font-semibold">Equação de Siri</span>
+</div>
+<!-- Indicador Principal com Gráfico SVG Circular e Estatística -->
+<div class="flex items-center justify-between p-pad-md bg-surface-container-low rounded-xl gap-pad-md">
+<div class="flex flex-col">
+<div class="flex items-baseline gap-1">
+<span class="font-display-lg text-display-lg text-primary font-extrabold tracking-tight">18,7%</span>
+<span class="text-secondary font-label-md text-label-md font-medium">de gordura</span>
+</div>
+<div class="flex items-center gap-1.5 mt-1">
+<span class="px-2 py-0.5 rounded-md bg-primary text-on-primary font-label-sm text-label-sm font-semibold">Excelente / Atlético</span>
+<span class="inline-flex items-center text-primary font-label-sm text-label-sm font-bold">
+<span class="material-symbols-outlined text-[16px]">arrow_downward</span> -1,4%
+              </span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary mt-2">
+              Faixa recomendada (Mulheres 20–29): <strong class="text-on-surface font-medium">16,0% a 22,0%</strong>
+</p>
+</div>
+<!-- Mini Gráfico Radial SVG da Porcentagem -->
+<div class="relative w-24 h-24 flex-shrink-0 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+<!-- Background Ring -->
+<path class="text-surface-container-high" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.5"></path>
+<!-- Value Progress Ring (18.7% de 100) -->
+<path class="text-primary" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="18.7, 100" stroke-linecap="round" stroke-width="3.8"></path>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center leading-none">
+<span class="material-symbols-outlined text-primary text-[22px]">fitness_center</span>
+</div>
+</div>
+</div>
+<!-- Tabela de Fracionamento Corporal em 4 Componentes -->
+<div class="flex flex-col gap-pad-xs">
+<span class="font-label-sm text-label-sm text-secondary uppercase font-semibold tracking-wider">Fracionamento de Massa Corporal</span>
+<div class="flex flex-col gap-1.5">
+<!-- Massa Magra -->
+<div class="flex items-center justify-between p-pad-xs bg-surface-container rounded-lg">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+<span class="font-body-md text-body-md font-medium text-on-surface">Massa Livre de Gordura (MLG)</span>
+</div>
+<div class="flex items-center gap-pad-xs">
+<span class="font-label-numeric-md text-label-numeric-md font-bold text-on-surface">52,2 kg</span>
+<span class="font-body-sm text-body-sm text-secondary">(81,3%)</span>
+<span class="text-primary font-label-sm text-label-sm font-semibold flex items-center">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span>+0,6 kg
+                </span>
+</div>
+</div>
+<!-- Massa Gorda -->
+<div class="flex items-center justify-between p-pad-xs bg-surface-container rounded-lg">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary"></span>
+<span class="font-body-md text-body-md font-medium text-on-surface">Massa Gorda Absoluta</span>
+</div>
+<div class="flex items-center gap-pad-xs">
+<span class="font-label-numeric-md text-label-numeric-md font-bold text-on-surface">12,0 kg</span>
+<span class="font-body-sm text-body-sm text-secondary">(18,7%)</span>
+<span class="text-primary font-label-sm text-label-sm font-semibold flex items-center">
+<span class="material-symbols-outlined text-[14px]">arrow_downward</span>-1,1 kg
+                </span>
+</div>
+</div>
+<!-- Peso Total & Densidade -->
+<div class="grid grid-cols-2 gap-pad-xs mt-1">
+<div class="p-pad-xs bg-surface-container rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-secondary">Peso Corporal Total</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface font-semibold">64,2 kg <span class="text-secondary text-body-sm font-normal">(-0,5 kg)</span></span>
+</div>
+<div class="p-pad-xs bg-surface-container rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-secondary">Densidade Corporal (DC)</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface font-semibold">1,0574 <span class="text-secondary text-body-sm font-normal">g/cm³</span></span>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- Card de Evolução Histórica (Timeline & Gráfico Comparativo das 3 últimas consultas) -->
+<article class="bg-surface-container-lowest rounded-xl p-pad-lg shadow-sm flex flex-col gap-pad-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-pad-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">show_chart</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-bold">Evolução do Trimestre</h3>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-semibold bg-primary/10 px-2 py-0.5 rounded-full">-3,7% Total</span>
+</div>
+<!-- Inline SVG Gráfico de Linha e Pontos de Evolução -->
+<div class="w-full bg-surface-container-low p-pad-sm rounded-xl flex flex-col gap-2">
+<div class="h-28 w-full relative">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 300 90">
+<!-- Grid Lines -->
+<line class="text-surface-container-high" stroke="currentColor" stroke-dasharray="2 2" stroke-width="1" x1="0" x2="300" y1="20" y2="20"></line>
+<line class="text-surface-container-high" stroke="currentColor" stroke-dasharray="2 2" stroke-width="1" x1="0" x2="300" y1="50" y2="50"></line>
+<line class="text-surface-container-high" stroke="currentColor" stroke-dasharray="2 2" stroke-width="1" x1="0" x2="300" y1="80" y2="80"></line>
+<!-- Spark Area Gradient Fill -->
+<defs>
+<lineargradient id="primaryGradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#046a38" stop-opacity="0.25"></stop>
+<stop offset="100%" stop-color="#046a38" stop-opacity="0.0"></stop>
+</lineargradient>
+</defs>
+<polygon fill="url(#primaryGradient)" points="30,25 150,45 270,70 270,85 30,85"></polygon>
+<!-- Polyline Data Points -->
+<polyline fill="none" points="30,25 150,45 270,70" stroke="#046a38" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></polyline>
+<!-- Coordinates Points -->
+<circle class="fill-surface-container-lowest stroke-primary stroke-[2.5]" cx="30" cy="25" r="4.5"></circle>
+<circle class="fill-surface-container-lowest stroke-primary stroke-[2.5]" cx="150" cy="45" r="4.5"></circle>
+<circle class="fill-primary stroke-surface-container-lowest stroke-[2]" cx="270" cy="70" r="5.5"></circle>
+</svg>
+</div>
+<!-- Rótulos dos Pontos -->
+<div class="grid grid-cols-3 text-center pt-1">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-secondary">10/Dez/2024</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface font-semibold">22,4%</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-secondary">15/Jan/2025</span>
+<span class="font-label-numeric-md text-label-numeric-md text-on-surface font-semibold">20,1%</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-primary font-bold">Hoje (12/Fev)</span>
+<span class="font-label-numeric-md text-label-numeric-md text-primary font-bold">18,7%</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Campo de Observações Clínicas e Conduta -->
+<article class="bg-surface-container-lowest rounded-xl p-pad-lg shadow-sm flex flex-col gap-pad-xs">
+<div class="flex items-center justify-between">
+<label class="font-headline-sm text-headline-sm text-on-surface font-semibold flex items-center gap-1.5" for="clinical-notes">
+<span class="material-symbols-outlined text-primary text-[18px]">edit_note</span>
+<span>Parecer e Conduta Nutricional</span>
+</label>
+<span class="font-label-sm text-label-sm text-secondary">Visível no laudo</span>
+</div>
+<textarea class="w-full mt-pad-2xs p-pad-sm bg-surface-container rounded-lg font-body-md text-body-md text-on-surface border-0 focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none" id="clinical-notes" placeholder="Insira considerações sobre hidratação, período do ciclo menstrual ou resposta ao plano alimentar..." rows="3">Excelente adesão ao ciclo hipertrófico e déficit calórico moderado. Redução expressiva na dobra supra-ilíaca (-2,1mm) e torácica (-1,2mm). Mantida a conduta hiperproteica (2,0g/kg) e periodização de carboidratos em dias de treino de membros inferiores.</textarea>
+</article>
+<!-- Ações Clínicas de Finalização e Laudo -->
+<div class="flex flex-col gap-pad-xs">
+<button class="w-full h-touch-min rounded-xl bg-primary-container hover:bg-primary text-on-primary font-headline-sm text-headline-sm flex items-center justify-center gap-pad-xs shadow-md transition-all" type="button">
+<span class="material-symbols-outlined text-[20px]">save</span>
+<span>Salvar no Prontuário da Paciente</span>
+</button>
+<div class="grid grid-cols-2 gap-pad-xs">
+<button class="h-11 rounded-lg bg-surface-container-lowest hover:bg-surface-container text-on-surface font-label-md text-label-md flex items-center justify-center gap-pad-xs transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">picture_as_pdf</span>
+<span>Exportar Laudo PDF</span>
+</button>
+<button class="h-11 rounded-lg bg-surface-container-lowest hover:bg-surface-container text-on-surface font-label-md text-label-md flex items-center justify-center gap-pad-xs transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px] text-primary">send</span>
+<span>Enviar WhatsApp</span>
+</button>
+</div>
+</div>
+</aside>
+</div>
+</div></main></div></body></html>

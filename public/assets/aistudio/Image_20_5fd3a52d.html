@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "surface-container": "#e5eeff",
+          "secondary": "#565e74",
+          "secondary-fixed": "#dae2fd",
+          "surface-bright": "#f8f9ff",
+          "on-tertiary-fixed-variant": "#872000",
+          "primary-fixed": "#9ef6b6",
+          "background": "#f8f9ff",
+          "secondary-container": "#dae2fd",
+          "surface-dim": "#cbdbf5",
+          "surface-container-low": "#eff4ff",
+          "on-primary-fixed": "#00210d",
+          "primary-fixed-dim": "#83d99b",
+          "inverse-surface": "#213145",
+          "inverse-on-surface": "#eaf1ff",
+          "on-tertiary": "#ffffff",
+          "on-error": "#ffffff",
+          "tertiary-fixed": "#ffdbd1",
+          "tertiary": "#831f00",
+          "on-surface": "#0b1c30",
+          "outline-variant": "#bec9be",
+          "on-secondary-fixed": "#131b2e",
+          "inverse-primary": "#83d99b",
+          "primary-container": "#046a38",
+          "on-background": "#0b1c30",
+          "tertiary-container": "#a63411",
+          "on-secondary-container": "#5c647a",
+          "on-tertiary-fixed": "#3b0900",
+          "surface-variant": "#d3e4fe",
+          "secondary-fixed-dim": "#bec6e0",
+          "error-container": "#ffdad6",
+          "on-primary-container": "#90e7a8",
+          "on-tertiary-container": "#ffc8b9",
+          "on-error-container": "#93000a",
+          "surface-container-lowest": "#ffffff",
+          "surface-container-highest": "#d3e4fe",
+          "surface-tint": "#0a6d3a",
+          "tertiary-fixed-dim": "#ffb5a0",
+          "on-surface-variant": "#3f4940",
+          "on-primary": "#ffffff",
+          "error": "#ba1a1a",
+          "outline": "#6f7a6f",
+          "primary": "#004f28",
+          "surface-container-high": "#dce9ff",
+          "on-primary-fixed-variant": "#00522a",
+          "on-secondary": "#ffffff",
+          "surface": "#f8f9ff",
+          "on-secondary-fixed-variant": "#3f465c"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "pad-2xl": "2rem",
+          "pad-md": "1rem",
+          "pad-xl": "1.5rem",
+          "margin-mobile": "1rem",
+          "gutter-mobile": "0.75rem",
+          "pad-xs": "0.5rem",
+          "pad-lg": "1.25rem",
+          "margin-tablet": "1.5rem",
+          "pad-sm": "0.75rem",
+          "pad-2xs": "0.25rem",
+          "touch-min": "2.75rem",
+          "gutter-desktop": "1.25rem"
+        },
+        "fontFamily": {
+          "label-numeric-md": ["Inter"],
+          "body-sm": ["Plus Jakarta Sans"],
+          "body-md": ["Plus Jakarta Sans"],
+          "body-lg": ["Plus Jakarta Sans"],
+          "display-lg": ["Plus Jakarta Sans"],
+          "headline-lg-mobile": ["Plus Jakarta Sans"],
+          "headline-md": ["Plus Jakarta Sans"],
+          "headline-sm": ["Plus Jakarta Sans"],
+          "headline-lg": ["Plus Jakarta Sans"],
+          "label-numeric-lg": ["Inter"],
+          "label-md": ["Inter"],
+          "label-sm": ["Inter"]
+        },
+        "fontSize": {
+          "label-numeric-md": ["18px", {"lineHeight": "24px", "fontWeight": "600"}],
+          "body-sm": ["12px", {"lineHeight": "16px", "fontWeight": "400"}],
+          "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+          "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+          "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+          "headline-lg-mobile": ["22px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+          "headline-md": ["20px", {"lineHeight": "26px", "fontWeight": "600"}],
+          "headline-sm": ["16px", {"lineHeight": "22px", "fontWeight": "600"}],
+          "headline-lg": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.015em", "fontWeight": "700"}],
+          "label-numeric-lg": ["24px", {"lineHeight": "28px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+          "label-md": ["13px", {"lineHeight": "16px", "letterSpacing": "0.01em", "fontWeight": "500"}],
+          "label-sm": ["11px", {"lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "600"}]
+        }
+      }
+    }
+  }</script></head><body class="bg-inverse-surface text-inverse-on-surface font-body-md text-body-md"><main class="w-full"><div class="flex flex-col w-full text-inverse-on-surface pb-pad-2xl">
+<!-- Top App Bar / Clinical Photogrammetry Header -->
+<header class="w-full bg-inverse-surface/95 backdrop-blur-md px-margin-mobile py-pad-sm flex flex-col gap-pad-xs sticky top-0 z-30 shadow-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-pad-xs">
+<button aria-label="Fechar modal" class="w-touch-min h-touch-min flex items-center justify-center rounded-full bg-surface-variant/20 active:bg-surface-variant/40 text-inverse-on-surface transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+<div class="flex flex-col"><div class="flex items-center gap-pad-2xs"><span class="font-headline-sm text-headline-sm text-surface-bright tracking-tight">Lucas Mendes</span><span class="font-label-sm text-label-sm text-primary-fixed bg-primary-container/60 px-pad-xs py-0.5 rounded-full">#09214</span></div><div class="flex items-center gap-pad-2xs text-secondary-fixed text-body-sm"><span class="material-symbols-outlined text-[14px] text-primary-fixed" style="font-variation-settings: 'FILL' 1;">verified</span><span class="font-label-sm text-label-sm tracking-wide">ISAK II Compliant</span><span class="text-surface-variant/40">•</span><span class="font-body-sm text-body-sm text-surface-variant">Recomposição T0 / T1</span></div></div>
+</div>
+<div class="flex items-center gap-pad-2xs">
+<button class="w-9 h-9 rounded-full bg-surface-variant/20 flex items-center justify-center text-primary-fixed active:bg-surface-variant/40" title="Informações Clínicas" type="button">
+<span class="material-symbols-outlined text-[18px]">info</span>
+</button>
+</div>
+</div>
+<!-- Mode Selector Tabs -->
+<div class="w-full grid grid-cols-3 gap-1 bg-surface-variant/15 p-1 rounded-xl">
+<button class="py-1.5 px-pad-xs rounded-lg text-center font-label-md text-label-md text-surface-dim hover:text-surface-bright transition-colors" type="button">
+        Split Arraste
+      </button>
+<button class="py-1.5 px-pad-xs rounded-lg text-center font-label-md text-label-md bg-primary-container text-on-primary-container shadow-sm flex items-center justify-center gap-1" type="button">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-fixed animate-pulse"></span>
+<span>Ghosting</span>
+</button>
+<button class="py-1.5 px-pad-xs rounded-lg text-center font-label-md text-label-md text-surface-dim hover:text-surface-bright transition-colors" type="button">
+        4 Ângulos
+      </button>
+</div>
+<!-- Quick Tools Horizontal Chips with Zoom & Lupa Active -->
+<div class="w-full flex items-center gap-pad-xs overflow-x-auto py-1 scrollbar-none">
+<button class="flex items-center gap-1.5 px-pad-sm py-1 rounded-full bg-cyan-950/80 text-cyan-300 border border-cyan-500/40 font-label-sm text-label-sm whitespace-nowrap shadow-sm" id="btn-toggle-zoom-tool" type="button">
+<span class="material-symbols-outlined text-[16px] text-cyan-300" style="font-variation-settings: 'FILL' 1;">pinch</span>
+<span class="font-semibold">Zoom &amp; Lupa (Pinça)</span>
+<span class="px-1 py-0.2 bg-cyan-900/90 text-cyan-200 text-[9px] rounded font-label-numeric-md">ISAK ±0.5mm</span>
+</button>
+<button class="flex items-center gap-1.5 px-pad-sm py-1 rounded-full bg-surface-variant/20 text-inverse-on-surface font-label-sm text-label-sm whitespace-nowrap active:bg-surface-variant/40" type="button">
+<span class="material-symbols-outlined text-[16px] text-surface-dim">grid_on</span>
+<span>Grade Postural</span>
+</button>
+<button class="flex items-center gap-1.5 px-pad-sm py-1 rounded-full bg-primary-container/40 text-primary-fixed font-label-sm text-label-sm whitespace-nowrap shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px] text-primary-fixed" style="font-variation-settings: 'FILL' 1;">polyline</span>
+<span>Vetores Anatômicos</span>
+</button>
+<button class="flex items-center gap-1.5 px-pad-sm py-1 rounded-full bg-primary-container/40 text-primary-fixed font-label-sm text-label-sm whitespace-nowrap shadow-sm" type="button">
+<span class="material-symbols-outlined text-[16px] text-primary-fixed" style="font-variation-settings: 'FILL' 1;">adjust</span>
+<span>Ancoragem (ISAK)</span>
+</button>
+<button class="flex items-center gap-1.5 px-pad-sm py-1 rounded-full bg-surface-variant/20 text-surface-dim font-label-sm text-label-sm whitespace-nowrap active:bg-surface-variant/40" type="button">
+<span class="material-symbols-outlined text-[16px]">visibility_off</span>
+<span>Privacidade</span>
+</button>
+</div>
+</header>
+<!-- Content Stream -->
+<div class="px-margin-mobile flex flex-col gap-pad-md mt-pad-sm">
+<!-- Viewport Fotogramétrico Móvel (Ghosting Area with Precision Pinch/Pan & Zoom) -->
+<section class="relative w-full rounded-2xl overflow-hidden bg-inverse-surface shadow-xl flex flex-col">
+<!-- Image Overlay Canvas Container with gesture listeners -->
+<div class="relative w-full aspect-[3/4] overflow-hidden bg-black select-none touch-none cursor-grab active:cursor-grabbing" id="photogrammetry-viewport">
+<!-- Transformable Container hosting both synchronized photos and anatomical vector overlays -->
+<div class="absolute inset-0 w-full h-full origin-center will-change-transform" id="zoom-stage" style="transform: translate(0px, 0px) scale(1);">
+<!-- Base Layer T0 -->
+<img alt="Foto T0 10/Dez/2024 Avaliação Postural Masculina Inicial" class="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none" id="img-t0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBf9ZZncXAHpnuccId9qa9QQaVc7NhcKUMdhirB_XLsL3uHKaCu2szwZVcDRBwREu0hKvimbK2pdblg5-Hom938JXUUPzC4iCfjkoAULDCncRHahvQNi0ukyJgb16idlIIhOmbA6P_Si2LqPuoI0wswY87kCPmYVbz4iqHOdl1-R3-4JCeqjEuF3TqhbcRkI1x7KPwsl2cCTjfefz0eKRM75jRVPPozNapTXXpGWTXXnOG1hR9uJzY"/>
+<!-- Ghost Layer T1 with dynamic opacity -->
+<img alt="Foto T1 12/Fev/2025 Reavaliação Antropométrica Masculina" class="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none transition-opacity duration-150" id="img-t1-ghost" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBf9ZZncXAHpnuccId9qa9QQaVc7NhcKUMdhirB_XLsL3uHKaCu2szwZVcDRBwREu0hKvimbK2pdblg5-Hom938JXUUPzC4iCfjkoAULDCncRHahvQNi0ukyJgb16idlIIhOmbA6P_Si2LqPuoI0wswY87kCPmYVbz4iqHOdl1-R3-4JCeqjEuF3TqhbcRkI1x7KPwsl2cCTjfefz0eKRM75jRVPPozNapTXXpGWTXXnOG1hR9uJzY" style="opacity: 0.5;"/>
+<!-- Postural Vector Visual Overlays (SVG) - Zoomed & Panned in sync -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none z-10" fill="none" viewbox="0 0 360 480" xmlns="http://www.w3.org/2000/svg"><line opacity="0.45" stroke="#06b6d4" stroke-dasharray="3 3" stroke-width="1" x1="180" x2="180" y1="15" y2="465"></line><circle cx="105" cy="155" fill="#10b981" fill-opacity="0.3" r="5" stroke="#9ef6b6" stroke-width="1.5"></circle><circle cx="105" cy="155" fill="#ffffff" r="2"></circle><circle cx="255" cy="155" fill="#10b981" fill-opacity="0.3" r="5" stroke="#9ef6b6" stroke-width="1.5"></circle><circle cx="255" cy="155" fill="#ffffff" r="2"></circle><text fill="#9ef6b6" font-family="Plus Jakarta Sans" font-size="8" font-weight="600" text-anchor="middle" x="180" y="150">Bi-acromial (ISAK)</text><circle cx="180" cy="185" fill="#06b6d4" fill-opacity="0.3" r="5" stroke="#06b6d4" stroke-width="1.5"></circle><circle cx="180" cy="185" fill="#ffffff" r="2"></circle><circle cx="180" cy="265" fill="#ffb5a0" fill-opacity="0.25" r="6" stroke="#ffb5a0" stroke-width="1.5"></circle><circle cx="180" cy="265" fill="#ffffff" r="2.5"></circle><text fill="#ffdbd1" font-family="Plus Jakarta Sans" font-size="9" font-weight="600" text-anchor="middle" x="180" y="255">Ponto Umbilical</text><path d="M 124 235 Q 138 255 132 278" stroke="#06b6d4" stroke-dasharray="2 3" stroke-linecap="round" stroke-width="2"></path><path d="M 236 235 Q 222 255 228 278" stroke="#06b6d4" stroke-dasharray="2 3" stroke-linecap="round" stroke-width="2"></path><path d="M 130 282 Q 124 315 132 345" stroke="#10b981" stroke-dasharray="3 2" stroke-width="2"></path><path d="M 230 282 Q 236 315 228 345" stroke="#10b981" stroke-dasharray="3 2" stroke-width="2"></path></svg>
+<!-- Floating Waist Delta Tag -->
+<div class="absolute left-3 top-[51%] z-20 bg-inverse-surface/90 backdrop-blur-sm px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm pointer-events-none"><span class="material-symbols-outlined text-[13px] text-cyan-300">straighten</span><span class="font-label-sm text-label-sm text-cyan-200">Cintura: Δ -4,5 cm</span></div>
+<!-- Floating Hip Delta Tag -->
+<div class="absolute right-3 top-[60%] z-20 bg-inverse-surface/90 backdrop-blur-sm px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm pointer-events-none"><span class="material-symbols-outlined text-[13px] text-primary-fixed">straighten</span><span class="font-label-sm text-label-sm text-primary-fixed">Abdômen: Δ -5,0 cm</span></div>
+</div>
+<!-- Dynamic Floating Landmark Badges (Fixed overlay outside transform stage) -->
+<div class="absolute left-2 top-2 z-20 flex flex-col gap-1 pointer-events-none"><div class="bg-inverse-surface/85 backdrop-blur-md px-pad-xs py-1 rounded-lg flex items-center gap-1.5 shadow-md border border-surface-variant/20"><span class="w-2 h-2 rounded-full bg-secondary-fixed"></span><span class="font-label-sm text-label-sm text-surface-bright">T0 • 10/Dez</span><span class="font-label-numeric-md text-body-sm text-surface-dim">(85,2 kg)</span></div></div>
+<div class="absolute right-2 top-2 z-20 flex flex-col gap-1 items-end pointer-events-none"><div class="bg-primary-container/90 backdrop-blur-md px-pad-xs py-1 rounded-lg flex items-center gap-1.5 shadow-md text-on-primary border border-primary/40"><span class="w-2 h-2 rounded-full bg-primary-fixed animate-pulse"></span><span class="font-label-sm text-label-sm text-white font-semibold">T1 • 12/Fev</span><span class="font-label-numeric-md text-body-sm text-primary-fixed">(81,4 kg)</span><span class="font-label-sm text-label-sm bg-primary/80 px-1 py-0.5 rounded text-primary-fixed font-bold">Δ -3,8kg</span></div></div>
+<!-- Floating Tactile Zoom Toolbar (Top-Right / Floating Dock) -->
+<div class="absolute right-2.5 top-12 z-20 flex flex-col items-center gap-1.5 bg-black/75 backdrop-blur-md p-1 rounded-2xl shadow-xl border border-white/10">
+<!-- Zoom In Button -->
+<button aria-label="Ampliar Zoom" class="w-8 h-8 rounded-xl bg-surface-variant/20 hover:bg-surface-variant/40 active:scale-90 text-surface-bright flex items-center justify-center transition-all" id="btn-zoom-in" title="Aumentar zoom (+)" type="button">
+<span class="material-symbols-outlined text-[18px]">zoom_in</span>
+</button>
+<!-- Zoom Out Button -->
+<button aria-label="Reduzir Zoom" class="w-8 h-8 rounded-xl bg-surface-variant/20 hover:bg-surface-variant/40 active:scale-90 text-surface-bright flex items-center justify-center transition-all" id="btn-zoom-out" title="Reduzir zoom (-)" type="button">
+<span class="material-symbols-outlined text-[18px]">zoom_out</span>
+</button>
+<!-- Reset 1:1 Scale Button -->
+<button aria-label="Resetar Zoom para 1:1" class="w-8 h-8 rounded-xl bg-cyan-950/80 hover:bg-cyan-900/80 active:scale-90 text-cyan-300 flex items-center justify-center font-label-numeric-md text-[11px] font-bold transition-all" id="btn-zoom-reset" title="Restaurar visualização 1x" type="button">
+        1x
+      </button>
+<!-- Precision Center / Recenter Button -->
+<button aria-label="Centralizar Enquadramento" class="w-8 h-8 rounded-xl bg-surface-variant/20 hover:bg-surface-variant/40 active:scale-90 text-surface-dim flex items-center justify-center transition-all" id="btn-zoom-recenter" title="Centralizar visualização" type="button">
+<span class="material-symbols-outlined text-[17px]">filter_center_focus</span>
+</button>
+</div>
+<!-- Zoom Scale Badge & Pan State HUD -->
+<div class="absolute left-2.5 top-12 z-20 flex items-center gap-1 pointer-events-none">
+<div class="bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-full border border-cyan-500/40 flex items-center gap-1.5 shadow-lg">
+<span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
+<span class="font-label-numeric-md text-label-sm font-bold text-cyan-300" id="zoom-level-badge">1.0x</span>
+<span class="text-[10px] text-surface-variant/60">|</span>
+<span class="font-label-sm text-[10px] text-surface-dim" id="zoom-status-text">Pinça / Pan Ativo</span>
+</div>
+</div>
+<!-- Mini-Map / Picture-in-Picture Navigator HUD (Shown dynamically when zoom > 1.0x) -->
+<div class="absolute bottom-11 right-2.5 z-20 w-16 h-22 rounded-lg border border-cyan-400/50 bg-black/85 backdrop-blur-md overflow-hidden shadow-2xl transition-opacity duration-300 pointer-events-none opacity-0" id="zoom-minimap">
+<div class="relative w-full h-full">
+<img alt="Miniatura de Referência Masculina" class="w-full h-full object-cover opacity-60" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBf9ZZncXAHpnuccId9qa9QQaVc7NhcKUMdhirB_XLsL3uHKaCu2szwZVcDRBwREu0hKvimbK2pdblg5-Hom938JXUUPzC4iCfjkoAULDCncRHahvQNi0ukyJgb16idlIIhOmbA6P_Si2LqPuoI0wswY87kCPmYVbz4iqHOdl1-R3-4JCeqjEuF3TqhbcRkI1x7KPwsl2cCTjfefz0eKRM75jRVPPozNapTXXpGWTXXnOG1hR9uJzY"/>
+<!-- Viewport indicator rect inside minimap -->
+<div class="absolute border-2 border-cyan-400 bg-cyan-400/20 transition-all duration-75" id="minimap-viewport-indicator" style="top: 0%; left: 0%; width: 100%; height: 100%;"></div>
+<div class="absolute bottom-0 inset-x-0 bg-black/80 text-[8px] font-label-numeric-md text-cyan-300 text-center py-0.5">
+          RADAR
+        </div>
+</div>
+</div>
+<!-- Mode Watermark & ISAK Notice -->
+<div class="absolute bottom-2 left-2 z-20 bg-black/75 backdrop-blur-sm px-pad-xs py-0.5 rounded text-[10px] text-surface-dim font-label-sm flex items-center gap-1 pointer-events-none border border-white/5">
+<span class="material-symbols-outlined text-[12px] text-primary-fixed">layers</span>
+<span>SOBREPOSIÇÃO FOTOGRAMÉTRICA 1:1</span>
+</div>
+<!-- Pinch & Gesture Tip Badge -->
+<div class="absolute bottom-2 right-2 z-20 bg-black/75 backdrop-blur-sm px-2 py-0.5 rounded text-[10px] text-cyan-200 font-label-sm flex items-center gap-1 pointer-events-none border border-cyan-500/20" id="gesture-hint">
+<span class="material-symbols-outlined text-[13px] text-cyan-400">pinch</span>
+<span>Pinça com 2 dedos ou duplo toque</span>
+</div>
+</div>
+<!-- Photographic Angle Sub-Selector -->
+<div class="w-full bg-surface-container-highest/20 px-pad-xs py-2 flex items-center justify-between gap-1 overflow-x-auto">
+<button class="flex-1 py-1.5 px-2 rounded-lg bg-primary-container text-white font-label-sm text-label-sm flex items-center justify-center gap-1 shadow-sm whitespace-nowrap" type="button">
+<span class="material-symbols-outlined text-[14px]">photo_camera</span>
+<span>1. Frontal</span>
+</button>
+<button class="flex-1 py-1.5 px-2 rounded-lg bg-surface-variant/20 text-surface-dim font-label-sm text-label-sm flex items-center justify-center gap-1 whitespace-nowrap" type="button">
+<span>2. Perfil D</span>
+</button>
+<button class="flex-1 py-1.5 px-2 rounded-lg bg-surface-variant/20 text-surface-dim font-label-sm text-label-sm flex items-center justify-center gap-1 whitespace-nowrap" type="button">
+<span>3. Perfil E</span>
+</button>
+<button class="flex-1 py-1.5 px-2 rounded-lg bg-surface-variant/20 text-surface-dim font-label-sm text-label-sm flex items-center justify-center gap-1 whitespace-nowrap" type="button">
+<span>4. Posterior</span>
+</button>
+</div>
+</section>
+<!-- Ghosting Opacity Tactile Control Panel -->
+<section class="w-full rounded-2xl bg-surface-container-lowest/5 p-pad-md flex flex-col gap-pad-sm shadow-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-pad-xs">
+<span class="material-symbols-outlined text-primary-fixed text-[20px]">opacity</span>
+<span class="font-headline-sm text-headline-sm text-surface-bright">Opacidade da Sobreposição</span>
+</div>
+<span class="font-label-numeric-md text-label-sm px-2.5 py-1 rounded-full bg-primary-container text-primary-fixed" id="opacity-badge">
+          50% Fusão Ghost
+        </span>
+</div>
+<!-- Slider Tactile Bar with Step Buttons -->
+<div class="flex items-center gap-pad-sm pt-1">
+<button aria-label="Diminuir opacidade" class="w-10 h-10 rounded-xl bg-surface-variant/20 active:bg-surface-variant/40 text-surface-bright flex items-center justify-center text-lg font-bold" id="btn-step-minus" type="button">
+          -
+        </button>
+<div class="flex-1 relative flex items-center">
+<input aria-label="Controle de opacidade T1 sobre T0" class="w-full h-3 bg-surface-variant/30 rounded-full appearance-none cursor-pointer accent-primary-container" id="ghost-slider" max="100" min="0" type="range" value="50"/>
+</div>
+<button aria-label="Aumentar opacidade" class="w-10 h-10 rounded-xl bg-surface-variant/20 active:bg-surface-variant/40 text-surface-bright flex items-center justify-center text-lg font-bold" id="btn-step-plus" type="button">
+          +
+        </button>
+</div>
+<!-- Slider Extremity Legend -->
+<div class="flex items-center justify-between font-label-sm text-label-sm text-secondary-fixed">
+<span class="flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-fixed"></span>
+          T0: 100% Base (10/Dez)
+        </span>
+<span class="flex items-center gap-1">
+          T1: 100% Atual (12/Fev)
+          <span class="w-1.5 h-1.5 rounded-full bg-primary-fixed"></span>
+</span>
+</div>
+<!-- Presets & Fade Loop Action -->
+<div class="pt-pad-xs flex items-center justify-between gap-1.5">
+<div class="flex items-center gap-1 flex-1">
+<button class="preset-btn flex-1 py-1.5 rounded-lg bg-surface-variant/20 text-surface-dim font-label-sm text-label-sm active:scale-95 transition-transform" data-val="0" type="button">0%</button>
+<button class="preset-btn flex-1 py-1.5 rounded-lg bg-surface-variant/20 text-surface-dim font-label-sm text-label-sm active:scale-95 transition-transform" data-val="25" type="button">25%</button>
+<button class="preset-btn flex-1 py-1.5 rounded-lg bg-primary-container text-white font-label-sm text-label-sm active:scale-95 transition-transform shadow-sm" data-val="50" type="button">50%</button>
+<button class="preset-btn flex-1 py-1.5 rounded-lg bg-surface-variant/20 text-surface-dim font-label-sm text-label-sm active:scale-95 transition-transform" data-val="75" type="button">75%</button>
+<button class="preset-btn flex-1 py-1.5 rounded-lg bg-surface-variant/20 text-surface-dim font-label-sm text-label-sm active:scale-95 transition-transform" data-val="100" type="button">100%</button>
+</div>
+<button class="px-pad-sm py-1.5 rounded-lg bg-cyan-950/60 text-cyan-300 font-label-sm text-label-sm flex items-center gap-1 active:bg-cyan-900/60 transition-colors whitespace-nowrap" id="btn-fade-loop" type="button">
+<span class="material-symbols-outlined text-[16px]" id="loop-icon">play_arrow</span>
+<span id="loop-text">Loop Animado</span>
+</button>
+</div>
+</section>
+<!-- Telemetry & Biometric Delta Panel -->
+<section class="w-full flex flex-col gap-pad-xs">
+<div class="flex items-center justify-between px-1">
+<span class="font-headline-sm text-headline-sm text-surface-bright">Telemetria de Recomposição</span>
+<span class="font-label-sm text-label-sm text-primary-fixed bg-primary-container/30 px-2 py-0.5 rounded-full">
+          64 Dias Entre Ensaios
+        </span>
+</div>
+<!-- 2-Column Metrics Bento Grid -->
+<div class="grid grid-cols-2 gap-pad-xs"><div class="bg-surface-container-lowest/5 rounded-xl p-pad-sm flex flex-col justify-between gap-1 shadow-sm"><span class="font-label-sm text-label-sm text-secondary-fixed flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">scale</span>Peso Corporal</span><div class="flex items-baseline gap-1.5"><span class="font-label-numeric-lg text-label-numeric-lg text-surface-bright">81,4</span><span class="font-body-sm text-body-sm text-surface-dim">kg</span></div><div class="flex items-center gap-1 text-primary-fixed font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px]">trending_down</span><span>-3,8 kg (-4,5%)</span></div></div><div class="bg-surface-container-lowest/5 rounded-xl p-pad-sm flex flex-col justify-between gap-1 shadow-sm"><span class="font-label-sm text-label-sm text-secondary-fixed flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">donut_small</span>Gordura Corporal</span><div class="flex items-baseline gap-1.5"><span class="font-label-numeric-lg text-label-numeric-lg text-surface-bright">14,2</span><span class="font-body-sm text-body-sm text-surface-dim">%</span></div><div class="flex items-center gap-1 text-primary-fixed font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px]">trending_down</span><span>-3,5 p.p. (Jackson 7)</span></div></div><div class="bg-surface-container-lowest/5 rounded-xl p-pad-sm flex flex-col justify-between gap-1 shadow-sm"><span class="font-label-sm text-label-sm text-secondary-fixed flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">fitness_center</span>Massa Magra Livre</span><div class="flex items-baseline gap-1.5"><span class="font-label-numeric-lg text-label-numeric-lg text-primary-fixed">69,8</span><span class="font-body-sm text-body-sm text-surface-dim">kg</span></div><div class="flex items-center gap-1 text-primary-fixed-dim font-label-sm text-label-sm"><span class="material-symbols-outlined text-[14px]">check_circle</span><span>100% Preservada (Hipertrofia)</span></div></div><div class="bg-surface-container-lowest/5 rounded-xl p-pad-sm flex flex-col justify-between gap-1 shadow-sm"><span class="font-label-sm text-label-sm text-secondary-fixed flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">straighten</span>Perímetros Chave</span><div class="flex flex-col gap-0.5"><div class="flex items-center justify-between text-body-sm"><span class="text-surface-dim text-[11px]">Tórax:</span><span class="font-label-numeric-md text-surface-bright text-[12px]">104,0 cm</span></div><div class="flex items-center justify-between text-body-sm"><span class="text-surface-dim text-[11px]">Cintura:</span><span class="font-label-numeric-md text-surface-bright text-[12px]">82,5 cm <span class="text-primary-fixed text-label-sm">(Δ -4,5)</span></span></div><div class="flex items-center justify-between text-body-sm"><span class="text-surface-dim text-[11px]">Abdômen:</span><span class="font-label-numeric-md text-surface-bright text-[12px]">84,0 cm <span class="text-primary-fixed text-label-sm">(Δ -5,0)</span></span></div></div></div></div>
+<!-- Highlight Banner: Recomposição Positiva -->
+<div class="w-full bg-primary-container/20 rounded-xl px-pad-md py-pad-sm flex items-center gap-pad-sm"><div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-primary-fixed shrink-0"><span class="material-symbols-outlined text-[18px]">verified</span></div><div class="flex flex-col"><span class="font-headline-sm text-label-md text-primary-fixed">Recomposição Notável • Hipertrofia Funcional Preservada</span><span class="font-body-sm text-body-sm text-surface-variant">Redução expressiva de gordura visceral e subcutânea abdominal com integridade de massa magra muscular.</span></div></div>
+</section>
+</div>
+<!-- Persistent Bottom Action Dock -->
+<div class="sticky bottom-0 z-30 w-full bg-inverse-surface/95 backdrop-blur-md px-margin-mobile py-pad-sm shadow-xl flex items-center gap-pad-sm mt-pad-lg">
+<button class="flex-1 h-touch-min rounded-xl bg-surface-variant/20 hover:bg-surface-variant/30 active:scale-[0.98] text-surface-bright font-headline-sm text-body-md flex items-center justify-center gap-2 transition-all" type="button">
+<span class="material-symbols-outlined text-[20px]">ios_share</span>
+<span>Exportar Frame</span>
+</button>
+<button class="flex-[1.5] h-touch-min rounded-xl bg-primary-container hover:bg-primary-container/90 active:scale-[0.98] text-white font-headline-sm text-body-md flex items-center justify-center gap-2 shadow-lg transition-all" type="button">
+<span class="material-symbols-outlined text-[20px]">assignment_turned_in</span>
+<span>Salvar no Laudo</span>
+</button>
+</div>
+<!-- Micro-Interactions Script for Ghosting Slider, Presets & Photogrammetric Precision Pinch-To-Zoom / Pan Engine -->
+<script>
+    (function() {
+      // --- Ghosting Opacity Controls ---
+      const slider = document.getElementById('ghost-slider');
+      const ghostImg = document.getElementById('img-t1-ghost');
+      const badge = document.getElementById('opacity-badge');
+      const btnMinus = document.getElementById('btn-step-minus');
+      const btnPlus = document.getElementById('btn-step-plus');
+      const presetBtns = document.querySelectorAll('.preset-btn');
+      const btnLoop = document.getElementById('btn-fade-loop');
+      const loopIcon = document.getElementById('loop-icon');
+      const loopText = document.getElementById('loop-text');
+
+      let loopInterval = null;
+      let loopDirection = 1;
+
+      function updateOpacity(val) {
+        val = Math.max(0, Math.min(100, Math.round(val)));
+        slider.value = val;
+        ghostImg.style.opacity = (val / 100).toString();
+        badge.textContent = `${val}% Fusão Ghost`;
+
+        // Update preset buttons visual active state
+        presetBtns.forEach(btn => {
+          if (parseInt(btn.getAttribute('data-val'), 10) === val) {
+            btn.className = 'preset-btn flex-1 py-1.5 rounded-lg bg-primary-container text-white font-label-sm text-label-sm active:scale-95 transition-transform shadow-sm';
+          } else {
+            btn.className = 'preset-btn flex-1 py-1.5 rounded-lg bg-surface-variant/20 text-surface-dim font-label-sm text-label-sm active:scale-95 transition-transform';
+          }
+        });
+      }
+
+      slider.addEventListener('input', (e) => {
+        stopLoop();
+        updateOpacity(e.target.value);
+      });
+
+      btnMinus.addEventListener('click', () => {
+        stopLoop();
+        updateOpacity(parseInt(slider.value, 10) - 5);
+      });
+
+      btnPlus.addEventListener('click', () => {
+        stopLoop();
+        updateOpacity(parseInt(slider.value, 10) + 5);
+      });
+
+      presetBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          stopLoop();
+          updateOpacity(parseInt(btn.getAttribute('data-val'), 10));
+        });
+      });
+
+      function stopLoop() {
+        if (loopInterval) {
+          clearInterval(loopInterval);
+          loopInterval = null;
+          loopIcon.textContent = 'play_arrow';
+          loopText.textContent = 'Loop Animado';
+          btnLoop.classList.remove('bg-primary-container', 'text-white');
+          btnLoop.classList.add('bg-cyan-950/60', 'text-cyan-300');
+        }
+      }
+
+      btnLoop.addEventListener('click', () => {
+        if (loopInterval) {
+          stopLoop();
+        } else {
+          loopIcon.textContent = 'pause';
+          loopText.textContent = 'Pausar';
+          btnLoop.classList.remove('bg-cyan-950/60', 'text-cyan-300');
+          btnLoop.classList.add('bg-primary-container', 'text-white');
+
+          loopInterval = setInterval(() => {
+            let current = parseInt(slider.value, 10);
+            if (current >= 100) loopDirection = -2;
+            if (current <= 0) loopDirection = 2;
+            updateOpacity(current + loopDirection);
+          }, 35);
+        }
+      });
+
+      // --- Photogrammetric Pinch-to-Zoom & Precision Pan Engine ---
+      const viewport = document.getElementById('photogrammetry-viewport');
+      const stage = document.getElementById('zoom-stage');
+      const zoomBadge = document.getElementById('zoom-level-badge');
+      const zoomStatusText = document.getElementById('zoom-status-text');
+      const minimap = document.getElementById('zoom-minimap');
+      const minimapIndicator = document.getElementById('minimap-viewport-indicator');
+      const gestureHint = document.getElementById('gesture-hint');
+
+      const btnZoomIn = document.getElementById('btn-zoom-in');
+      const btnZoomOut = document.getElementById('btn-zoom-out');
+      const btnZoomReset = document.getElementById('btn-zoom-reset');
+      const btnZoomRecenter = document.getElementById('btn-zoom-recenter');
+      const btnToggleTool = document.getElementById('btn-toggle-zoom-tool');
+
+      let scale = 1;
+      const minScale = 1;
+      const maxScale = 4.0;
+      let panX = 0;
+      let panY = 0;
+
+      // Touch gesture trackers
+      let initialPinchDistance = 0;
+      let initialScale = 1;
+      let isDragging = false;
+      let startPointerX = 0;
+      let startPointerY = 0;
+      let startPanX = 0;
+      let startPanY = 0;
+      let lastTapTime = 0;
+
+      function clampPan() {
+        const vpRect = viewport.getBoundingClientRect();
+        const maxPanX = (vpRect.width * (scale - 1)) / 2;
+        const maxPanY = (vpRect.height * (scale - 1)) / 2;
+        panX = Math.max(-maxPanX, Math.min(maxPanX, panX));
+        panY = Math.max(-maxPanY, Math.min(maxPanY, panY));
+      }
+
+      function updateStageTransform(animate = false) {
+        clampPan();
+        if (animate) {
+          stage.style.transition = 'transform 0.25s cubic-bezier(0.2, 0, 0, 1)';
+        } else {
+          stage.style.transition = 'none';
+        }
+        stage.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+        zoomBadge.textContent = `${scale.toFixed(1)}x`;
+
+        // Update HUD & Mini-map
+        if (scale > 1.05) {
+          zoomStatusText.textContent = 'Inspeção Ativa';
+          minimap.classList.remove('opacity-0');
+          minimap.classList.add('opacity-100');
+          gestureHint.classList.add('opacity-0');
+
+          // Calculate Mini-Map bounding box
+          const vpRect = viewport.getBoundingClientRect();
+          const viewPortW = 100 / scale;
+          const viewPortH = 100 / scale;
+          const maxPanX = (vpRect.width * (scale - 1)) / 2;
+          const maxPanY = (vpRect.height * (scale - 1)) / 2;
+
+          const normPanX = maxPanX > 0 ? (panX / maxPanX) : 0;
+          const normPanY = maxPanY > 0 ? (panY / maxPanY) : 0;
+
+          const left = 50 - (viewPortW / 2) - (normPanX * (50 - viewPortW / 2));
+          const top = 50 - (viewPortH / 2) - (normPanY * (50 - viewPortH / 2));
+
+          minimapIndicator.style.width = `${Math.min(100, Math.max(15, viewPortW))}%`;
+          minimapIndicator.style.height = `${Math.min(100, Math.max(15, viewPortH))}%`;
+          minimapIndicator.style.left = `${Math.min(100 - viewPortW, Math.max(0, left))}%`;
+          minimapIndicator.style.top = `${Math.min(100 - viewPortH, Math.max(0, top))}%`;
+        } else {
+          zoomStatusText.textContent = 'Pinça / Pan Ativo';
+          minimap.classList.remove('opacity-100');
+          minimap.classList.add('opacity-0');
+          gestureHint.classList.remove('opacity-0');
+        }
+      }
+
+      function setZoom(newScale, animate = true) {
+        scale = Math.max(minScale, Math.min(maxScale, newScale));
+        if (scale === 1) {
+          panX = 0;
+          panY = 0;
+        }
+        updateStageTransform(animate);
+      }
+
+      // Touch Listeners (Pinch & Pan)
+      viewport.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 2) {
+          // Pinch start
+          isDragging = false;
+          initialPinchDistance = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+          initialScale = scale;
+        } else if (e.touches.length === 1) {
+          // Double Tap detection
+          const now = Date.now();
+          if (now - lastTapTime < 300) {
+            // Double-tapped!
+            if (scale > 1.2) {
+              setZoom(1.0, true);
+            } else {
+              setZoom(2.5, true);
+            }
+            lastTapTime = 0;
+            return;
+          }
+          lastTapTime = now;
+
+          // Pan start
+          if (scale > 1) {
+            isDragging = true;
+            startPointerX = e.touches[0].clientX;
+            startPointerY = e.touches[0].clientY;
+            startPanX = panX;
+            startPanY = panY;
+          }
+        }
+      }, { passive: false });
+
+      viewport.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 2) {
+          e.preventDefault();
+          const dist = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+          );
+          if (initialPinchDistance > 0) {
+            const factor = dist / initialPinchDistance;
+            scale = Math.max(minScale, Math.min(maxScale, initialScale * factor));
+            updateStageTransform(false);
+          }
+        } else if (e.touches.length === 1 && isDragging && scale > 1) {
+          e.preventDefault();
+          const dx = e.touches[0].clientX - startPointerX;
+          const dy = e.touches[0].clientY - startPointerY;
+          panX = startPanX + dx;
+          panY = startPanY + dy;
+          updateStageTransform(false);
+        }
+      }, { passive: false });
+
+      viewport.addEventListener('touchend', (e) => {
+        if (e.touches.length < 2) {
+          initialPinchDistance = 0;
+        }
+        if (e.touches.length === 0) {
+          isDragging = false;
+          updateStageTransform(true);
+        }
+      });
+
+      // Desktop Mouse Click & Drag Pan
+      viewport.addEventListener('mousedown', (e) => {
+        if (scale > 1) {
+          isDragging = true;
+          startPointerX = e.clientX;
+          startPointerY = e.clientY;
+          startPanX = panX;
+          startPanY = panY;
+          viewport.style.cursor = 'grabbing';
+        }
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (isDragging && scale > 1) {
+          const dx = e.clientX - startPointerX;
+          const dy = e.clientY - startPointerY;
+          panX = startPanX + dx;
+          panY = startPanY + dy;
+          updateStageTransform(false);
+        }
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (isDragging) {
+          isDragging = false;
+          viewport.style.cursor = scale > 1 ? 'grab' : 'default';
+          updateStageTransform(true);
+        }
+      });
+
+      // Mouse Wheel Zoom
+      viewport.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const delta = e.deltaY < 0 ? 0.25 : -0.25;
+        setZoom(scale + delta, true);
+      }, { passive: false });
+
+      // Tactile Buttons Handlers
+      btnZoomIn.addEventListener('click', () => {
+        setZoom(scale + 0.5, true);
+      });
+
+      btnZoomOut.addEventListener('click', () => {
+        setZoom(scale - 0.5, true);
+      });
+
+      btnZoomReset.addEventListener('click', () => {
+        setZoom(1.0, true);
+      });
+
+      btnZoomRecenter.addEventListener('click', () => {
+        panX = 0;
+        panY = 0;
+        updateStageTransform(true);
+      });
+
+      btnToggleTool.addEventListener('click', () => {
+        if (scale === 1.0) {
+          setZoom(2.2, true);
+        } else {
+          setZoom(1.0, true);
+        }
+      });
+    })();
+  </script>
+</div></main></body></html>
