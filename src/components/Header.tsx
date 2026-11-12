@@ -15,7 +15,8 @@ import {
   Moon,
   Users,
   Focus,
-  Menu
+  Menu,
+  Fingerprint
 } from 'lucide-react';
 import { Professional } from '../types';
 import { ROLE_METADATA } from '../domain/permissions';
@@ -43,6 +44,8 @@ interface HeaderProps {
   pushNotificationPermission?: NotificationPermission;
   onRequestPushPermission?: () => Promise<boolean>;
   onToggleMobileMenu?: () => void;
+  onOpenBiometrics?: () => void;
+  isBiometricEnrolled?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -65,23 +68,37 @@ export const Header: React.FC<HeaderProps> = ({
   consultationMode = false,
   onToggleConsultationMode,
   pushNotificationPermission,
-  onRequestPushPermission
+  onRequestPushPermission,
+  onToggleMobileMenu,
+  onOpenBiometrics,
+  isBiometricEnrolled
 }) => {
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const [profDropdownOpen, setProfDropdownOpen] = React.useState(false);
 
   return (
     <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 shadow-xs">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
+            {/* Mobile Menu Hamburger Button */}
+            {!consultationMode && onToggleMobileMenu && (
+              <button
+                onClick={onToggleMobileMenu}
+                className="lg:hidden p-2 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors shrink-0"
+                title="Abrir menu de módulos clínicos"
+              >
+                <Menu className="w-5 h-5" />
+              </button>
+            )}
+
             {!consultationMode && (
               <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-lg bg-[#004f28] text-white flex items-center justify-center font-bold text-sm shadow-xs">
+                <div className="w-8 h-8 rounded-lg bg-[#004f28] text-white flex items-center justify-center font-bold text-sm shadow-xs shrink-0">
                   NP
                 </div>
-                <div>
+                <div className="hidden sm:block">
                   <span className="text-sm font-black text-[#004f28] dark:text-emerald-400 tracking-tight uppercase">NUTRI PRO</span>
                 </div>
               </div>
@@ -170,6 +187,21 @@ export const Header: React.FC<HeaderProps> = ({
 
             {/* PWA Install Button */}
             <PWAInstallButton />
+
+            {/* WebAuthn Biometric Security Button */}
+            {onOpenBiometrics && (
+              <button
+                onClick={onOpenBiometrics}
+                title={isBiometricEnrolled ? 'Segurança Biométrica Ativa (Touch ID / Face ID)' : 'Configurar Autenticação Biométrica no PWA'}
+                className="p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center space-x-1.5 text-xs font-semibold relative"
+              >
+                <Fingerprint className="w-4 h-4 text-[#004f28] dark:text-emerald-400" />
+                {isBiometricEnrolled && (
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 absolute top-1.5 right-1.5 ring-2 ring-white dark:ring-slate-900" />
+                )}
+                <span className="hidden xl:inline text-[11px]">Biometria</span>
+              </button>
+            )}
 
             {/* Dark Mode Toggle */}
             <button

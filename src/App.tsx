@@ -45,6 +45,8 @@ import { ModuloFinanceiroView } from './components/ModuloFinanceiroView';
 import { AgendaClinicaView } from './components/AgendaClinicaView';
 import { SmsRemindersView } from './components/SmsRemindersView';
 import { GeradorPrescricoesView } from './components/GeradorPrescricoesView';
+import { FormulacaoMagistralView } from './components/FormulacaoMagistralView';
+import { ProntuarioEletronicoView } from './components/ProntuarioEletronicoView';
 import { MeuProfessorView } from './components/MeuProfessorView';
 import { QuickMacroCalculator } from './components/QuickMacroCalculator';
 import { DietasRastreamentoView } from './components/DietasRastreamentoView';
@@ -67,6 +69,9 @@ import { LaudoModal } from './components/LaudoModal';
 import { LembretesNotificacoesModal } from './components/LembretesNotificacoesModal';
 import { NotificationToastBanner } from './components/NotificationToastBanner';
 import { OfflineSyncBanner } from './components/OfflineSyncBanner';
+import { MobileBottomNav } from './components/MobileBottomNav';
+import { BiometricAuthModal } from './components/BiometricAuthModal';
+import { isBiometricEnrolled, isBiometricLockEnabled } from './lib/webauthn';
 import { playClinicalChime } from './utils/audioNotification';
 import { apiClient } from './lib/api';
 import { usePushNotifications } from './hooks/usePushNotifications';
@@ -79,27 +84,58 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
   const [privacyMode, setPrivacyMode] = useState<boolean>(false);
   const [darkMode, setDarkMode] = useState<boolean>(() => {
-    const saved = localStorage.getItem('nutritrack_dark_mode');
-    if (saved !== null) {
-      return saved === 'true';
+    try {
+      const saved = localStorage.getItem('nutritrack_dark_mode');
+      if (saved !== null) {
+        return saved === 'true';
+      }
+      return typeof window !== 'undefined' && typeof window.matchMedia === 'function' 
+        ? window.matchMedia('(prefers-color-scheme: dark)').matches 
+        : false;
+    } catch {
+      return false;
     }
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
   const [isLaudoOpen, setIsLaudoOpen] = useState<boolean>(false);
   const [collapsedMobile, setCollapsedMobile] = useState<boolean>(true);
   const [consultationMode, setConsultationMode] = useState<boolean>(false);
 
+  // Biometric WebAuthn Authentication State
+  const [isBiometricModalOpen, setIsBiometricModalOpen] = useState<boolean>(() => {
+    try {
+      return isBiometricLockEnabled() && isBiometricEnrolled();
+    } catch {
+      return false;
+    }
+  });
+  const [isBiometricEnrolling, setIsBiometricEnrolling] = useState<boolean>(false);
+  const [isAppBiometricEnrolled, setIsAppBiometricEnrolled] = useState<boolean>(() => {
+    try {
+      return isBiometricEnrolled();
+    } catch {
+      return false;
+    }
+  });
+
   // Desktop Sidebar Collapsible & Automatic Responsive Mode State
   const [isCollapsedDesktop, setIsCollapsedDesktop] = useState<boolean>(() => {
-    const saved = localStorage.getItem('nutritrack_sidebar_collapsed');
-    if (saved !== null) return saved === 'true';
-    return typeof window !== 'undefined' && window.innerWidth < 1280;
+    try {
+      const saved = localStorage.getItem('nutritrack_sidebar_collapsed');
+      if (saved !== null) return saved === 'true';
+      return typeof window !== 'undefined' && window.innerWidth < 1280;
+    } catch {
+      return true;
+    }
   });
 
   const [isAutoResponsive, setIsAutoResponsive] = useState<boolean>(() => {
-    const saved = localStorage.getItem('nutritrack_sidebar_auto');
-    if (saved !== null) return saved === 'true';
-    return true; // Auto mode ON by default
+    try {
+      const saved = localStorage.getItem('nutritrack_sidebar_auto');
+      if (saved !== null) return saved === 'true';
+      return true; // Auto mode ON by default
+    } catch {
+      return true;
+    }
   });
 
   // Sync Dark Mode state with document HTML class element
@@ -384,6 +420,8 @@ export default function App() {
     switch (tab) {
       case 'dashboard':
         return 'Dashboard de Progresso e Visão Geral do Paciente';
+      case 'prontuario':
+        return 'Prontuário Eletrônico Nutricional Inteligente (PEN) - Central Clínica';
       case 'dashboard_admin':
         return 'Painel de Indicadores Administrativos, Metas & Faturamento';
       case 'financeiro':
@@ -410,8 +448,10 @@ export default function App() {
         return 'Gerador de Tabela Nutricional & Lupa Frontal ANVISA';
       case 'relatorio_evolutivo':
         return 'Relatório Evolutivo: Tendências de Peso, Gordura & Metas Futuras';
-      case 'exames_suplementos':
-        return 'Requisição Inteligente de Exames & Suplementação';
+      case 'prescricoes':
+        return 'Gerador de Prescrições Eletrônicas e Fitoterápicos';
+      case 'formulacao_magistral':
+        return 'Módulo de Formulação Magistral, 50 Protocolos & Farmacologia Clínica';
       case 'pacientes':
         return patientToEdit ? 'Editar Prontuário do Paciente' : 'Novo Cadastro de Paciente';
       case 'profissionais':
@@ -452,6 +492,12 @@ export default function App() {
         onToggleConsultationMode={() => setConsultationMode(!consultationMode)}
         pushNotificationPermission={permission}
         onRequestPushPermission={requestPermission}
+        onToggleMobileMenu={() => setCollapsedMobile(prev => !prev)}
+        onOpenBiometrics={() => {
+          setIsBiometricEnrolling(!isAppBiometricEnrolled);
+          setIsBiometricModalOpen(true);
+        }}
+        isBiometricEnrolled={isAppBiometricEnrolled}
       />
 
       <div className="flex-1 flex overflow-hidden">
@@ -465,16 +511,13 @@ export default function App() {
             onCloseMobile={() => setCollapsedMobile(true)}
             currentRole={currentProfessional.role}
             isCollapsedDesktop={isCollapsedDesktop}
-            onToggleCollapseDesktop={handleToggleCollapseDesktop}
-            isAutoResponsive={isAutoResponsive}
-            onToggleAutoResponsive={handleToggleAutoResponsive}
           />
         )}
 
         {/* Main Clinical Viewport */}
         <main className={`flex-1 transition-all duration-300 ease-in-out ${
           consultationMode ? 'lg:pl-0' : (isCollapsedDesktop ? 'lg:pl-16' : 'lg:pl-64')
-        } overflow-y-auto custom-scrollbar p-4 sm:p-6 lg:p-8`}>
+        } overflow-y-auto custom-scrollbar p-4 sm:p-6 lg:p-8 pb-28 lg:pb-8`}>
           
           {/* Mobile Menu Toggle Button */}
           <div className="lg:hidden mb-4 flex items-center justify-between">
@@ -509,6 +552,16 @@ export default function App() {
                     setPatientToEdit(currentPatient);
                     setActiveTab('pacientes');
                   }}
+                />
+              )}
+
+              {activeTab === 'prontuario' && (
+                <ProntuarioEletronicoView
+                  currentPatient={currentPatient}
+                  currentProfessional={currentProfessional}
+                  patients={patients}
+                  onSelectPatient={setCurrentPatient}
+                  privacyMode={privacyMode}
                 />
               )}
 
@@ -607,6 +660,24 @@ export default function App() {
                     patients={patients}
                     currentPatient={currentPatient}
                     onSelectPatient={setCurrentPatient}
+                    currentProfessional={currentProfessional}
+                    privacyMode={privacyMode}
+                  />
+                )
+              )}
+
+              {activeTab === 'formulacao_magistral' && (
+                isClinicalDenied ? (
+                  <ClinicalAccessDenied
+                    moduleName="Módulo de Formulação Magistral & Farmacologia"
+                    currentProfessional={currentProfessional}
+                    professionals={professionals}
+                    onSwitchProfessional={setCurrentProfessional}
+                    onNavigateToSchedule={() => setActiveTab('agenda')}
+                  />
+                ) : (
+                  <FormulacaoMagistralView
+                    currentPatient={currentPatient}
                     currentProfessional={currentProfessional}
                     privacyMode={privacyMode}
                   />
@@ -845,6 +916,25 @@ export default function App() {
 
       {/* Floating Offline Sync Indicator & Queue Banner */}
       <OfflineSyncBanner />
+
+      {/* Mobile Bottom Navigation Bar (Fast Thumb Access on Mobile Devices) */}
+      <MobileBottomNav
+        activeTab={activeTab}
+        onSelectTab={setActiveTab}
+        onOpenSidebar={() => setCollapsedMobile(false)}
+      />
+
+      {/* Web Authentication API (WebAuthn) Biometric Unlock Modal */}
+      <BiometricAuthModal
+        isOpen={isBiometricModalOpen}
+        onClose={() => setIsBiometricModalOpen(false)}
+        onSuccess={() => {
+          setIsBiometricModalOpen(false);
+          setIsAppBiometricEnrolled(isBiometricEnrolled());
+        }}
+        professional={currentProfessional}
+        isEnrolling={isBiometricEnrolling}
+      />
 
     </div>
   );

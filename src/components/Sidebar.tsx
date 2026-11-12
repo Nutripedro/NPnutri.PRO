@@ -29,12 +29,14 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   SlidersHorizontal,
-  Droplet
+  Droplet,
+  FlaskConical
 } from 'lucide-react';
 import { UserRole } from '../types';
 
 export type ActiveTab = 
   | 'dashboard'
+  | 'prontuario'
   | 'dashboard_admin'
   | 'financeiro'
   | 'meu_professor'
@@ -42,6 +44,7 @@ export type ActiveTab =
   | 'sms_lembretes'
   | 'documentos'
   | 'prescricoes'
+  | 'formulacao_magistral'
   | 'dietas'
   | 'pediatria'
   | 'calculadora_macros'
@@ -65,9 +68,6 @@ interface SidebarProps {
   onCloseMobile: () => void;
   currentRole?: UserRole;
   isCollapsedDesktop?: boolean;
-  onToggleCollapseDesktop?: () => void;
-  isAutoResponsive?: boolean;
-  onToggleAutoResponsive?: () => void;
 }
 
 interface NavItem {
@@ -84,10 +84,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onSelectTab,
   collapsedMobile,
   onCloseMobile,
-  isCollapsedDesktop = false,
-  onToggleCollapseDesktop,
-  isAutoResponsive = true,
-  onToggleAutoResponsive
+  isCollapsedDesktop = false
 }) => {
   const navItems: NavItem[] = [
     {
@@ -96,6 +93,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
       sublabel: 'Visão Geral do Paciente',
       icon: LayoutDashboard,
       badge: 'Geral',
+      highlight: true
+    },
+    {
+      id: 'prontuario',
+      label: 'Prontuário Eletrônico (PEN)',
+      sublabel: 'Central Clínica & IA',
+      icon: Stethoscope,
+      badge: 'PEN',
       highlight: true
     },
     {
@@ -152,6 +157,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
       sublabel: 'Suplementos, Fitoterápicos & PDF',
       icon: Pill,
       badge: 'Receituário',
+      highlight: true
+    },
+    {
+      id: 'formulacao_magistral',
+      label: 'Formulação Magistral',
+      sublabel: '50 Protocolos, ADME & IA',
+      icon: FlaskConical,
+      badge: 'CFN',
       highlight: true
     },
     {
@@ -258,6 +271,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
     }
   ];
 
+  const [isHovered, setIsHovered] = React.useState(false);
+  const effectivelyCollapsed = isCollapsedDesktop && !isHovered;
+
   return (
     <>
       {/* Mobile backdrop */}
@@ -269,60 +285,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
       )}
 
       <aside
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
         className={`fixed top-16 bottom-0 left-0 bg-slate-900 text-slate-200 z-40 transition-all duration-300 ease-in-out lg:translate-x-0 ${
           collapsedMobile ? '-translate-x-full' : 'translate-x-0'
         } ${
-          isCollapsedDesktop ? 'lg:w-16' : 'lg:w-64'
+          effectivelyCollapsed ? 'lg:w-16' : 'lg:w-64'
         } w-64 flex flex-col border-r border-slate-800 shadow-xl`}
       >
-        {/* Navigation Category Label & Desktop Controls */}
-        <div className="px-3 pt-3 pb-2 border-b border-slate-800/80 flex items-center justify-between">
-          {!isCollapsedDesktop ? (
-            <>
-              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 truncate">
-                Módulos de Avaliação
-              </span>
-
-              <div className="flex items-center space-x-1 shrink-0">
-                {/* Auto Mode Toggle */}
-                {onToggleAutoResponsive && (
-                  <button
-                    onClick={onToggleAutoResponsive}
-                    title={`Modo Retrátil Automático: ${isAutoResponsive ? 'Ativo (recolhe automaticamente em notebooks)' : 'Manual'}`}
-                    className={`p-1.5 rounded-md text-[10px] font-mono transition-colors flex items-center space-x-1 ${
-                      isAutoResponsive
-                        ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/80'
-                        : 'bg-slate-800 text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    <Zap className="w-3 h-3" />
-                    <span className="hidden xl:inline text-[9px] font-bold">AUTO</span>
-                  </button>
-                )}
-
-                {/* Collapse Button */}
-                {onToggleCollapseDesktop && (
-                  <button
-                    onClick={onToggleCollapseDesktop}
-                    title="Recolher Menu Lateral (Modo Retrátil)"
-                    className="p-1.5 rounded-md bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
-                  >
-                    <PanelLeftClose className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
-            </>
+        {/* Navigation Category Label */}
+        <div className="px-3 pt-3 pb-2 border-b border-slate-800/80 flex items-center justify-between min-h-[36px]">
+          {!effectivelyCollapsed ? (
+            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 truncate">
+              Módulos de Avaliação
+            </span>
           ) : (
-            <div className="w-full flex items-center justify-center space-x-1">
-              {onToggleCollapseDesktop && (
-                <button
-                  onClick={onToggleCollapseDesktop}
-                  title="Expandir Menu Lateral"
-                  className="p-1.5 rounded-md bg-slate-800 text-emerald-400 hover:text-white hover:bg-slate-700 transition-colors mx-auto"
-                >
-                  <PanelLeftOpen className="w-4 h-4" />
-                </button>
-              )}
+            <div className="w-full text-center">
+              <span className="text-[9px] uppercase font-mono font-bold text-slate-500">AUTO</span>
             </div>
           )}
         </div>
@@ -348,7 +327,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 }`}
               >
                 {/* Icon and label container */}
-                <div className={`flex items-center space-x-3 ${isCollapsedDesktop ? 'justify-center' : 'min-w-0'}`}>
+                <div className={`flex items-center space-x-3 ${effectivelyCollapsed ? 'justify-center' : 'min-w-0'}`}>
                   <div
                     className={`w-8 h-8 rounded-md flex items-center justify-center shrink-0 transition-colors ${
                       isActive
@@ -359,7 +338,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     <Icon className="w-4 h-4" />
                   </div>
 
-                  {!isCollapsedDesktop && (
+                  {!effectivelyCollapsed && (
                     <div className="truncate">
                       <div className="text-xs truncate flex items-center space-x-1.5">
                         <span>{item.label}</span>
@@ -378,7 +357,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   )}
                 </div>
 
-                {!isCollapsedDesktop && (
+                {!effectivelyCollapsed && (
                   <div className="shrink-0 flex items-center space-x-1 ml-1.5">
                     {item.badge && (
                       <span
@@ -396,7 +375,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 )}
 
                 {/* Floating Tooltip for Mini Collapsed Mode */}
-                {isCollapsedDesktop && (
+                {effectivelyCollapsed && (
                   <div className="absolute left-14 top-1/2 -translate-y-1/2 hidden group-hover:flex flex-col bg-slate-900 text-white rounded-lg p-2.5 shadow-2xl border border-slate-700 whitespace-nowrap z-50 pointer-events-none min-w-[190px] animate-in fade-in slide-in-from-left-2 duration-150">
                     <div className="text-xs font-bold text-slate-100 flex items-center justify-between gap-2">
                       <span>{item.label}</span>
@@ -415,18 +394,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </nav>
 
         {/* Footer info box: Clinical Norms & Standards */}
-        {!isCollapsedDesktop ? (
+        {!effectivelyCollapsed ? (
           <div className="p-3 m-2 rounded-lg bg-slate-800/80 border border-slate-700/80 text-[11px] text-slate-400 space-y-1">
             <div className="flex items-center justify-between font-semibold text-slate-300 text-xs">
               <div className="flex items-center space-x-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
                 <span>Padrões Ativos</span>
               </div>
-              {isAutoResponsive && (
-                <span className="text-[9px] font-mono text-emerald-400 uppercase bg-emerald-950 px-1 rounded border border-emerald-800/60">
-                  Auto
-                </span>
-              )}
+              <span className="text-[9px] font-mono text-emerald-400 uppercase bg-emerald-950 px-1 rounded border border-emerald-800/60">
+                Auto
+              </span>
             </div>
             <ul className="space-y-0.5 text-[10px] font-mono text-slate-400">
               <li>• ISAK II (1996 / 2001)</li>

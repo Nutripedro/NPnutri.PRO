@@ -22,6 +22,19 @@ export const MebCalculatorCard: React.FC<MebCalculatorCardProps> = ({
   const [eos, setEos] = useState<number>(eosinophilsPercent);
   const [baso, setBaso] = useState<number>(basophilsPercent);
 
+  // Sincroniza o estado interno com as propriedades do Hemograma sempre que atualizadas
+  React.useEffect(() => {
+    setMono(monocytesPercent);
+  }, [monocytesPercent]);
+
+  React.useEffect(() => {
+    setEos(eosinophilsPercent);
+  }, [eosinophilsPercent]);
+
+  React.useEffect(() => {
+    setBaso(basophilsPercent);
+  }, [basophilsPercent]);
+
   const [isSymptomsOpen, setIsSymptomsOpen] = useState(false);
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>(['Distensão abdominal / Estufamento', 'Gases excessivos / Flatulência']);
   const [activeTab, setActiveTab] = useState<'calculator' | 'evolution'>('calculator');
@@ -141,9 +154,15 @@ export const MebCalculatorCard: React.FC<MebCalculatorCardProps> = ({
         <div className="space-y-4">
           {/* Seção de Entrada dos Dados do Hemograma (Monócitos, Eosinófilos, Basófilos) */}
           <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-3">
-            <div className="flex items-center gap-2 text-xs font-bold text-slate-800 uppercase tracking-wider">
-              <Sliders className="w-4 h-4 text-[#4A6B5D]" />
-              Entrada de Dados do Hemograma para o Cálculo MEB (%)
+            <div className="flex items-center justify-between gap-2 text-xs font-bold text-slate-800 uppercase tracking-wider">
+              <span className="flex items-center gap-2">
+                <Sliders className="w-4 h-4 text-[#4A6B5D]" />
+                Entrada de Dados do Hemograma para o Cálculo MEB (%)
+              </span>
+              <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-300">
+                <Sparkles className="w-3 h-3 text-emerald-600" />
+                Sincronizado com Hemograma em Avaliação
+              </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
