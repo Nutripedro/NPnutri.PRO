@@ -31,6 +31,8 @@ import {
   Activity,
   Check
 } from 'lucide-react';
+import { InfoHelpButton } from './help/InfoHelpButton';
+import { ClinicalTooltip } from './help/ClinicalTooltip';
 
 interface GeradorPrescricoesViewProps {
   patients: Patient[];
@@ -453,13 +455,18 @@ export const GeradorPrescricoesView: React.FC<GeradorPrescricoesViewProps> = ({
             </select>
           </div>
 
-          <button
-            onClick={handleExportPDF}
-            className="px-4 py-2 bg-[#004f28] hover:bg-[#003c1e] text-white rounded-lg text-xs font-bold flex items-center space-x-2 transition-colors shadow-xs"
-          >
-            <Download className="w-4 h-4" />
-            <span>Exportar Receituário PDF Assinado</span>
-          </button>
+          <div className="flex items-center space-x-2">
+            <InfoHelpButton helpId="suplementacao_clinica" size="sm" variant="emerald" title="Guia clínico de prescrição e fitoterápicos" />
+            <ClinicalTooltip helpId="prescricoes" position="left">
+              <button
+                onClick={handleExportPDF}
+                className="px-4 py-2 bg-[#004f28] hover:bg-[#003c1e] text-white rounded-lg text-xs font-bold flex items-center space-x-2 transition-colors shadow-xs cursor-pointer"
+              >
+                <Download className="w-4 h-4" />
+                <span>Exportar Receituário PDF Assinado</span>
+              </button>
+            </ClinicalTooltip>
+          </div>
         </div>
       </div>
 

@@ -8,6 +8,7 @@ import {
   Apple
 } from 'lucide-react';
 import { ActiveTab } from './Sidebar';
+import { InfoHelpButton } from './help/InfoHelpButton';
 
 interface MobileBottomNavProps {
   activeTab: ActiveTab;
@@ -38,20 +39,34 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
           return (
-            <button
-              key={tab.id}
-              onClick={() => onSelectTab(tab.id)}
-              className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-lg transition-all ${
-                isActive
-                  ? 'text-[#004f28] dark:text-emerald-400 font-bold'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-medium'
-              }`}
-            >
-              <div className={`p-1 rounded-md ${isActive ? 'bg-[#004f28]/10 dark:bg-emerald-500/20' : ''}`}>
-                <Icon className="w-5 h-5" />
-              </div>
-              <span className="text-[10px] mt-0.5 tracking-tight">{tab.label}</span>
-            </button>
+            <div key={tab.id} className="relative flex flex-col items-center">
+              <button
+                onClick={() => onSelectTab(tab.id)}
+                className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-lg transition-all ${
+                  isActive
+                    ? 'text-[#004f28] dark:text-emerald-400 font-bold'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-medium'
+                }`}
+              >
+                <div className={`p-1 rounded-md relative ${isActive ? 'bg-[#004f28]/10 dark:bg-emerald-500/20' : ''}`}>
+                  <Icon className="w-5 h-5" />
+                </div>
+                <span className="text-[10px] mt-0.5 tracking-tight">{tab.label}</span>
+              </button>
+
+              {/* Discreet Mobile Info Trigger when tab is active */}
+              {isActive && (
+                <div className="absolute -top-1 -right-1">
+                  <InfoHelpButton
+                    helpId={tab.id}
+                    size="xs"
+                    variant="emerald"
+                    withTooltip={false}
+                    title={`Guia clínico de ${tab.label}`}
+                  />
+                </div>
+              )}
+            </div>
           );
         })}
 

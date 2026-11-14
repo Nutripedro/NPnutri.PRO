@@ -18,6 +18,8 @@ import {
   Loader2,
   BrainCircuit
 } from 'lucide-react';
+import { InfoHelpButton } from './help/InfoHelpButton';
+import { ClinicalTooltip } from './help/ClinicalTooltip';
 
 interface FotosComparativasViewProps {
   patient: Patient;
@@ -112,6 +114,7 @@ export const FotosComparativasView: React.FC<FotosComparativasViewProps> = ({
             <div className="flex items-center space-x-2">
               <h2 className="text-xl font-bold tracking-tight text-white">{patient.name}</h2>
               <span className="text-xs font-mono text-slate-400">{patient.recordNumber}</span>
+              <InfoHelpButton helpId="fotos" size="xs" variant="ghost" title="Explicativo sobre fotogrametria comparativa e modo ghosting" />
             </div>
             <p className="text-xs text-slate-400 mt-0.5 flex items-center space-x-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />

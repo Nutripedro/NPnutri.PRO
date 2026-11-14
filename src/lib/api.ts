@@ -326,5 +326,142 @@ export const apiClient = {
       throw new Error(err.error || 'Erro ao alternar usuário ativo');
     }
     return await res.json();
+  },
+
+  // NUTRITION LABEL AI (ANVISA RDC 429/2020 & IN 75/2020)
+  async getNutritionRecipes(): Promise<{ recipes: any[]; customFoods: any[] }> {
+    const res = await fetch('/api/nutrition-label/recipes');
+    if (!res.ok) throw new Error('Falha ao carregar receitas e banco customizado.');
+    return await res.json();
+  },
+
+  async saveNutritionRecipe(recipe: any): Promise<any> {
+    const res = await fetch('/api/nutrition-label/recipes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(recipe)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Erro ao salvar receita nutricional.');
+    }
+    return await res.json();
+  },
+
+  async updateNutritionRecipe(id: string, recipe: any): Promise<any> {
+    const res = await fetch(`/api/nutrition-label/recipes/${encodeURIComponent(id)}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(recipe)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Erro ao atualizar receita nutricional.');
+    }
+    return await res.json();
+  },
+
+  async deleteNutritionRecipe(id: string): Promise<void> {
+    const res = await fetch(`/api/nutrition-label/recipes/${encodeURIComponent(id)}`, {
+      method: 'DELETE'
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Erro ao excluir receita nutricional.');
+    }
+  },
+
+  async createCustomFood(food: any): Promise<any> {
+    const res = await fetch('/api/nutrition-label/foods', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(food)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Erro ao cadastrar alimento no banco.');
+    }
+    return await res.json();
+  },
+
+  async interpretRecipeWithAI(payload: {
+    recipeText?: string;
+    documentBase64?: string;
+    mimeType?: string;
+    fileName?: string;
+  }): Promise<any> {
+    const res = await fetch('/api/nutrition-label/interpret-recipe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Erro na interpretação inteligente da receita.');
+    }
+    return await res.json();
+  },
+
+  // HEMO INTELLIGENCE PRO
+  async getHemoRecords(patientId: string): Promise<any[]> {
+    const res = await fetch(`/api/hemo/records/${encodeURIComponent(patientId)}`);
+    if (!res.ok) {
+      throw new Error('Falha ao carregar histórico de hemogramas do paciente.');
+    }
+    return await res.json();
+  },
+
+  async saveHemoRecord(record: any): Promise<any> {
+    const res = await fetch('/api/hemo/records', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(record)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Erro ao salvar hemograma no prontuário.');
+    }
+    return await res.json();
+  },
+
+  async deleteHemoRecord(patientId: string, recordId: string): Promise<void> {
+    const res = await fetch(
+      `/api/hemo/records/${encodeURIComponent(patientId)}/${encodeURIComponent(recordId)}`,
+      { method: 'DELETE' }
+    );
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Erro ao excluir hemograma do histórico.');
+    }
+  },
+
+  async extractHemogramDocument(payload: {
+    documentBase64: string;
+    mimeType: string;
+    fileName: string;
+  }): Promise<any> {
+    const res = await fetch('/api/hemo/extract-document', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Erro na leitura OCR do hemograma.');
+    }
+    return await res.json();
+  },
+
+  async analyzeHemogramWithAI(payload: any): Promise<any> {
+    const res = await fetch('/api/gemini/analyze-hemogram', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Erro ao gerar parecer clínico por IA.');
+    }
+    return await res.json();
   }
 };

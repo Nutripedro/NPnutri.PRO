@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { 
   Patient, 
   DietPlan, 
   DailyFoodLog, 
-  FoodItem, 
   EnergyFormula, 
   DietObjective, 
   MealFoodEntry,
@@ -12,6 +11,16 @@ import {
 import { calculateBMR, calculateTDEE } from '../domain/calculations';
 import { CalculadoraMacrosAvancadaView } from './CalculadoraMacrosAvancadaView';
 import { TACO_FOOD_DATABASE } from '../data/clinicalData';
+import {
+  normalizeTacoSearchText,
+  TACO_4A_CATEGORIES,
+  TACO_COMPLETE_DIET_FOODS,
+  TacoDietFoodItem
+} from '../data/tacoCompleteDatabase';
+import { GLYCEMIC_INDEX_DATABASE } from '../data/glycemicIndexDatabase';
+import { GlycemicIndexChartSection } from './GlycemicIndexChartSection';
+import { InfoHelpButton } from './help/InfoHelpButton';
+import { ClinicalTooltip } from './help/ClinicalTooltip';
 import { 
   Flame, 
   Droplets, 
@@ -41,7 +50,8 @@ import {
   TrendingDown,
   Wand2,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Database
 } from 'lucide-react';
 
 export interface GeminiAdjustedItem {
@@ -108,11 +118,14 @@ export const DietasRastreamentoView: React.FC<DietasRastreamentoViewProps> = ({
   onOpenRemindersModal,
   onTriggerInstantToast
 }) => {
-  const [activeTab, setActiveTab] = useState<'tracker' | 'calculator' | 'cardapio'>('tracker');
+  const [activeTab, setActiveTab] = useState<'tracker' | 'calculator' | 'cardapio' | 'glycemic'>('tracker');
   const [searchTerm, setSearchTerm] = useState('');
+  const [tacoCategoryFilter, setTacoCategoryFilter] = useState<string>('Todas');
+  const [visibleFoodLimit, setVisibleFoodLimit] = useState<number>(60);
+  const [showTacoMicronutrients, setShowTacoMicronutrients] = useState<boolean>(true);
   const [selectedMealIndex, setSelectedMealIndex] = useState<number>(0);
   const [foodGrams, setFoodGrams] = useState<number>(100);
-  const [selectedFood, setSelectedFood] = useState<FoodItem | null>(TACO_FOOD_DATABASE[0]);
+  const [selectedFood, setSelectedFood] = useState<TacoDietFoodItem | null>(TACO_FOOD_DATABASE[0]);
 
   // Gemini Portion Rebalance States (Deviation > 15%)
   const [isAdjusting, setIsAdjusting] = useState<boolean>(false);
@@ -238,23 +251,10 @@ export const DietasRastreamentoView: React.FC<DietasRastreamentoViewProps> = ({
     });
   };
 
-  // Add food to meal
-  const handleAddFoodToMeal = () => {
-    if (!selectedFood) return;
-    const factor = foodGrams / selectedFood.portionGrams;
-    const newEntry: MealFoodEntry = {
-      id: `entry-${Date.now()}`,
-      foodId: selectedFood.id,
-      name: selectedFood.name,
-      grams: foodGrams,
-      caloriesKcal: Math.round(selectedFood.caloriesKcal * factor),
-      proteinG: Math.round(selectedFood.proteinG * factor * 10) / 10,
-      carbsG: Math.round(selectedFood.carbsG * factor * 10) / 10,
-      fatG: Math.round(selectedFood.fatG * factor * 10) / 10,
-      fiberG: Math.round(selectedFood.fiberG * factor * 10) / 10
-    };
-
-    const targetMeal = dietPlan.meals[selectedMealIndex];
+  // Add custom MealFoodEntry (shared by TACO builder & IG/CG lookup table)
+  const handleAddCustomFoodEntryToMeal = (mealIdx: number, newEntry: MealFoodEntry) => {
+    const targetMeal = dietPlan.meals[mealIdx];
+    if (!targetMeal) return;
     const updatedItems = [...targetMeal.items, newEntry];
 
     const mealCals = updatedItems.reduce((acc, i) => acc + i.caloriesKcal, 0);
@@ -264,7 +264,7 @@ export const DietasRastreamentoView: React.FC<DietasRastreamentoViewProps> = ({
     const mealFib = Math.round(updatedItems.reduce((acc, i) => acc + i.fiberG, 0));
 
     const updatedMeals = dietPlan.meals.map((m, idx) => {
-      if (idx === selectedMealIndex) {
+      if (idx === mealIdx) {
         return {
           ...m,
           items: updatedItems,
@@ -282,6 +282,25 @@ export const DietasRastreamentoView: React.FC<DietasRastreamentoViewProps> = ({
       ...dietPlan,
       meals: updatedMeals
     });
+  };
+
+  // Add food to meal
+  const handleAddFoodToMeal = () => {
+    if (!selectedFood) return;
+    const factor = foodGrams / selectedFood.portionGrams;
+    const newEntry: MealFoodEntry = {
+      id: `entry-${Date.now()}`,
+      foodId: selectedFood.id,
+      name: selectedFood.name,
+      grams: foodGrams,
+      caloriesKcal: Math.round(selectedFood.caloriesKcal * factor),
+      proteinG: Math.round(selectedFood.proteinG * factor * 10) / 10,
+      carbsG: Math.round(selectedFood.carbsG * factor * 10) / 10,
+      fatG: Math.round(selectedFood.fatG * factor * 10) / 10,
+      fiberG: Math.round(selectedFood.fiberG * factor * 10) / 10
+    };
+
+    handleAddCustomFoodEntryToMeal(selectedMealIndex, newEntry);
   };
 
   // Remove food from meal
@@ -316,10 +335,36 @@ export const DietasRastreamentoView: React.FC<DietasRastreamentoViewProps> = ({
     });
   };
 
-  // Filtered food list
-  const filteredFoods = TACO_FOOD_DATABASE.filter(f =>
-    f.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    f.category.toLowerCase().includes(searchTerm.toLowerCase())
+  // Filtered TACO food list (accent-insensitive + code + official 15 TACO categories)
+  const tacoCategoriesWithCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const f of TACO_FOOD_DATABASE) {
+      counts.set(f.category, (counts.get(f.category) || 0) + 1);
+    }
+    return TACO_4A_CATEGORIES.map((cat) => ({
+      name: cat,
+      count: counts.get(cat) || 0
+    }));
+  }, []);
+
+  const filteredFoods = useMemo(() => {
+    const q = normalizeTacoSearchText(searchTerm.trim());
+    const terms = q ? q.split(/\s+/).filter(Boolean) : [];
+    return TACO_FOOD_DATABASE.filter((f) => {
+      if (tacoCategoryFilter !== 'Todas' && f.category !== tacoCategoryFilter) {
+        return false;
+      }
+      if (terms.length === 0) return true;
+      const haystack = normalizeTacoSearchText(
+        `${f.name} ${f.category} ${f.tacoCode} ${f.sourceLabel}`
+      );
+      return terms.every((t) => haystack.includes(t));
+    });
+  }, [searchTerm, tacoCategoryFilter]);
+
+  const visibleFoods = useMemo(
+    () => filteredFoods.slice(0, visibleFoodLimit),
+    [filteredFoods, visibleFoodLimit]
   );
 
   const calProgress = Math.min(100, Math.round((dailyLog.consumedCaloriesKcal / dietPlan.calorieTargetKcal) * 100));
@@ -447,43 +492,76 @@ export const DietasRastreamentoView: React.FC<DietasRastreamentoViewProps> = ({
             </p>
           </div>
 
-          {/* Tab switcher buttons */}
-          <div className="inline-flex p-1 bg-slate-100 rounded-lg self-start sm:self-auto border border-slate-200 text-xs">
-            <button
-              onClick={() => setActiveTab('tracker')}
-              className={`px-3.5 py-1.5 rounded-md font-medium transition-all ${
-                activeTab === 'tracker'
-                  ? 'bg-white text-slate-900 shadow-xs font-semibold'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Diário de Ingestão Hoje
-            </button>
-            <button
-              onClick={() => setActiveTab('calculator')}
-              className={`px-3.5 py-1.5 rounded-md font-medium transition-all ${
-                activeTab === 'calculator'
-                  ? 'bg-white text-slate-900 shadow-xs font-semibold'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Calculadora TMB & Macros
-            </button>
-            <button
-              onClick={() => setActiveTab('cardapio')}
-              className={`px-3.5 py-1.5 rounded-md font-medium transition-all ${
-                activeTab === 'cardapio'
-                  ? 'bg-white text-slate-900 shadow-xs font-semibold'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Montador de Cardápio (TACO)
-            </button>
+          {/* Tab switcher buttons with Interactive Clinical Tooltips */}
+          <div className="inline-flex flex-wrap items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-lg self-start sm:self-auto border border-slate-200 dark:border-slate-700 text-xs">
+            <ClinicalTooltip helpId="recordatorio_24h" position="bottom">
+              <button
+                onClick={() => setActiveTab('tracker')}
+                className={`px-3 py-1.5 rounded-md font-medium transition-all flex items-center space-x-1.5 cursor-pointer whitespace-nowrap shrink-0 ${
+                  activeTab === 'tracker'
+                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-xs font-semibold'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                }`}
+              >
+                <span>Diário de Ingestão Hoje</span>
+                <InfoHelpButton helpId="recordatorio_24h" size="xs" variant="subtle" withTooltip={false} as="span" />
+              </button>
+            </ClinicalTooltip>
+
+            <ClinicalTooltip helpId="calculo_nutricional" position="bottom">
+              <button
+                onClick={() => setActiveTab('calculator')}
+                className={`px-3 py-1.5 rounded-md font-medium transition-all flex items-center space-x-1.5 cursor-pointer whitespace-nowrap shrink-0 ${
+                  activeTab === 'calculator'
+                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-xs font-semibold'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                }`}
+              >
+                <span>Calculadora TMB & Macros</span>
+                <InfoHelpButton helpId="calculo_nutricional" size="xs" variant="subtle" withTooltip={false} as="span" />
+              </button>
+            </ClinicalTooltip>
+
+            <ClinicalTooltip helpId="planejamento_alimentar" position="bottom">
+              <button
+                onClick={() => setActiveTab('cardapio')}
+                title={`Tabela TACO Completa (${TACO_COMPLETE_DIET_FOODS.length} alimentos oficiais NEPA/UNICAMP)`}
+                className={`px-3 py-1.5 rounded-md font-medium transition-all flex items-center space-x-1.5 cursor-pointer whitespace-nowrap shrink-0 ${
+                  activeTab === 'cardapio'
+                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-xs font-semibold'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                }`}
+              >
+                <span>Montador de Cardápio (TACO)</span>
+                <span className="text-[10px] font-mono tabular-nums px-1.5 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/60 text-[#004f28] dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                  {TACO_COMPLETE_DIET_FOODS.length}
+                </span>
+                <InfoHelpButton helpId="planejamento_alimentar" size="xs" variant="subtle" withTooltip={false} as="span" />
+              </button>
+            </ClinicalTooltip>
+
+            <ClinicalTooltip helpId="indice_glicemico" position="bottom">
+              <button
+                onClick={() => setActiveTab('glycemic')}
+                title={`Tabela de Índice Glicêmico e Carga Glicêmica (${GLYCEMIC_INDEX_DATABASE.length} alimentos)`}
+                className={`px-3 py-1.5 rounded-md font-medium transition-all flex items-center space-x-1.5 cursor-pointer whitespace-nowrap shrink-0 ${
+                  activeTab === 'glycemic'
+                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-xs font-semibold'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                }`}
+              >
+                <span>Índice & Carga Glicêmica (IG/CG)</span>
+                <span className="text-[10px] font-mono tabular-nums px-1.5 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/60 text-[#004f28] dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                  {GLYCEMIC_INDEX_DATABASE.length}
+                </span>
+                <InfoHelpButton helpId="indice_glicemico" size="xs" variant="subtle" withTooltip={false} as="span" />
+              </button>
+            </ClinicalTooltip>
 
             {onOpenRemindersModal && (
               <button
                 onClick={onOpenRemindersModal}
-                className="px-3 py-1.5 rounded-md font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-all flex items-center space-x-1.5 ml-1"
+                className="px-3 py-1.5 rounded-md font-semibold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition-all flex items-center space-x-1.5 ml-1 whitespace-nowrap shrink-0"
                 title="Configurar lembretes de refeições e água"
               >
                 <BellRing className="w-3.5 h-3.5 text-[#004f28]" />
@@ -1157,73 +1235,300 @@ export const DietasRastreamentoView: React.FC<DietasRastreamentoViewProps> = ({
       {activeTab === 'cardapio' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
-          {/* Left: Food Database Search & Addition */}
+          {/* Left: Complete TACO 4th Edition Food Database Search & Addition */}
           <div className="lg:col-span-5 space-y-4">
-            <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-bold text-slate-900">Tabela TACO (Alimentos Brasileiros)</h3>
-                <span className="text-[10px] font-mono text-[#004f28] bg-emerald-50 px-2 py-0.5 rounded">
+            <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-xs space-y-3">
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 flex items-center gap-1.5">
+                    <Database className="w-4 h-4 text-[#004f28] dark:text-emerald-400 shrink-0" />
+                    <span>Tabela TACO Completa (4ª Edição)</span>
+                  </h3>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 font-mono tabular-nums">
+                    {TACO_COMPLETE_DIET_FOODS.length} alimentos oficiais · {TACO_4A_CATEGORIES.length} grupos
+                  </p>
+                </div>
+                <span className="text-[10px] font-mono text-[#004f28] dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded shrink-0">
                   NEPA / UNICAMP
                 </span>
               </div>
 
-              {/* Search Bar */}
-              <div className="relative mb-3">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
-                <input
-                  type="text"
-                  placeholder="Buscar alimento (frango, arroz, ovos, whey...)"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#004f28]/30"
-                />
+              {/* Search & Category Filters */}
+              <div className="space-y-2">
+                <div className="relative">
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                  <input
+                    type="text"
+                    aria-label="Buscar alimento na Tabela TACO completa"
+                    placeholder="Buscar por nome ou código (ex.: arroz cozido, TACO-001, patinho)..."
+                    value={searchTerm}
+                    onChange={(e) => {
+                      setSearchTerm(e.target.value);
+                      setVisibleFoodLimit(60);
+                    }}
+                    className="w-full pl-9 pr-3 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#004f28]/30"
+                  />
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <select
+                    aria-label="Filtrar por grupo da Tabela TACO"
+                    value={tacoCategoryFilter}
+                    onChange={(e) => {
+                      setTacoCategoryFilter(e.target.value);
+                      setVisibleFoodLimit(60);
+                    }}
+                    className="flex-1 px-2.5 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#004f28]/30"
+                  >
+                    <option value="Todas">
+                      Todas as categorias ({TACO_FOOD_DATABASE.length})
+                    </option>
+                    {tacoCategoriesWithCounts.map((cat) => (
+                      <option key={cat.name} value={cat.name}>
+                        {cat.name} ({cat.count})
+                      </option>
+                    ))}
+                  </select>
+
+                  {(searchTerm || tacoCategoryFilter !== 'Todas') && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchTerm('');
+                        setTacoCategoryFilter('Todas');
+                        setVisibleFoodLimit(60);
+                      }}
+                      className="px-2.5 py-1.5 text-[11px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer shrink-0"
+                    >
+                      Limpar
+                    </button>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 font-mono tabular-nums">
+                  <span>
+                    {filteredFoods.length} resultado{filteredFoods.length === 1 ? '' : 's'}
+                  </span>
+                  <span>Valores de referência por 100g</span>
+                </div>
               </div>
 
               {/* Food List */}
-              <div className="max-h-60 overflow-y-auto custom-scrollbar space-y-1.5 border border-slate-100 rounded-lg p-1.5">
-                {filteredFoods.map(food => (
+              <div className="max-h-64 overflow-y-auto custom-scrollbar space-y-1 border border-slate-200 dark:border-slate-800 rounded-lg p-1.5">
+                {visibleFoods.length === 0 ? (
+                  <div className="py-6 px-3 text-center text-xs text-slate-500 dark:text-slate-400">
+                    Nenhum alimento encontrado na Tabela TACO para os filtros atuais.
+                  </div>
+                ) : (
+                  visibleFoods.map((food) => {
+                    const isSelected = selectedFood?.id === food.id;
+                    return (
+                      <button
+                        key={food.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedFood(food);
+                          setFoodGrams(food.portionGrams);
+                        }}
+                        className={`w-full text-left p-2 rounded-lg text-xs transition-colors flex items-center justify-between gap-2 cursor-pointer ${
+                          isSelected
+                            ? 'bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-400 dark:border-emerald-700 text-slate-900 dark:text-slate-100'
+                            : 'hover:bg-slate-50 dark:hover:bg-slate-800/60 text-slate-700 dark:text-slate-200 border border-transparent'
+                        }`}
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className="font-semibold truncate">{food.name}</div>
+                          <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                            <span className="font-mono text-slate-600 dark:text-slate-300">
+                              {food.tacoCode}
+                            </span>{' '}
+                            · {food.category}
+                          </div>
+                        </div>
+                        <div className="text-right font-mono tabular-nums text-[11px] text-slate-700 dark:text-slate-200 shrink-0">
+                          <div className="font-semibold">{food.caloriesKcal} kcal</div>
+                          <div className="text-[10px] text-slate-500 dark:text-slate-400">
+                            P:{food.proteinG}g C:{food.carbsG}g G:{food.fatG}g
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })
+                )}
+
+                {filteredFoods.length > visibleFoods.length && (
                   <button
-                    key={food.id}
-                    onClick={() => setSelectedFood(food)}
-                    className={`w-full text-left p-2 rounded-lg text-xs transition-all flex items-center justify-between ${
-                      selectedFood?.id === food.id
-                        ? 'bg-emerald-50 border border-emerald-300 text-slate-900'
-                        : 'hover:bg-slate-50 text-slate-700'
-                    }`}
+                    type="button"
+                    onClick={() => setVisibleFoodLimit((prev) => prev + 80)}
+                    className="w-full py-2 mt-1 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer"
                   >
-                    <div>
-                      <div className="font-semibold">{food.name}</div>
-                      <div className="text-[10px] text-slate-400">{food.category} • {food.servingUnit}</div>
-                    </div>
-                    <div className="text-right font-mono text-[11px] text-slate-600">
-                      <div>{food.caloriesKcal} kcal</div>
-                      <div className="text-[10px] text-slate-400">P:{food.proteinG}g C:{food.carbsG}g</div>
-                    </div>
+                    Carregar mais ({filteredFoods.length - visibleFoods.length} restantes)
                   </button>
-                ))}
+                )}
               </div>
 
-              {/* Portion and Add Action */}
+              {/* Selected TACO Food Details & Portion Calculation */}
               {selectedFood && (
-                <div className="mt-4 pt-3 border-t border-slate-100 space-y-3">
-                  <div className="p-2.5 bg-slate-50 rounded-lg text-xs font-mono">
-                    <span className="font-bold text-slate-800">{selectedFood.name}</span>
-                    <div className="flex justify-between text-[11px] text-slate-500 mt-1">
-                      <span>{selectedFood.caloriesKcal} kcal / 100g</span>
-                      <span>P: {selectedFood.proteinG}g | C: {selectedFood.carbsG}g | G: {selectedFood.fatG}g</span>
-                    </div>
-                  </div>
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-3">
+                  {(() => {
+                    const factor = foodGrams / selectedFood.portionGrams;
+                    const calcKcal = Math.round(selectedFood.caloriesKcal * factor);
+                    const calcProt = Math.round(selectedFood.proteinG * factor * 10) / 10;
+                    const calcCarb = Math.round(selectedFood.carbsG * factor * 10) / 10;
+                    const calcFat = Math.round(selectedFood.fatG * factor * 10) / 10;
+                    const calcFib = Math.round(selectedFood.fiberG * factor * 10) / 10;
+                    const fmtOpt = (v: number | null, unit: string, isNa?: boolean) => {
+                      if (isNa) return 'N/A';
+                      if (v === null || v === undefined) return 'N/I';
+                      return `${v} ${unit}`;
+                    };
+
+                    return (
+                      <>
+                        <div className="p-3 bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 rounded-lg space-y-2">
+                          <div className="flex items-start justify-between gap-2">
+                            <div>
+                              <span className="text-[10px] font-mono font-bold text-[#004f28] dark:text-emerald-400">
+                                {selectedFood.tacoCode} · {selectedFood.sourceLabel}
+                              </span>
+                              <div className="text-xs font-bold text-slate-900 dark:text-slate-100">
+                                {selectedFood.name}
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => setShowTacoMicronutrients((v) => !v)}
+                              className="text-[10px] font-semibold text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white underline cursor-pointer shrink-0"
+                            >
+                              {showTacoMicronutrients ? 'Ocultar micros' : 'Ver micros TACO'}
+                            </button>
+                          </div>
+
+                          <div className="grid grid-cols-4 gap-1.5 text-center font-mono tabular-nums pt-1">
+                            <div className="bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-700 p-1.5">
+                              <div className="text-[9px] font-sans text-slate-500">
+                                Energia ({foodGrams}g)
+                              </div>
+                              <div className="text-xs font-bold text-slate-900 dark:text-white">
+                                {calcKcal} kcal
+                              </div>
+                            </div>
+                            <div className="bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-700 p-1.5">
+                              <div className="text-[9px] font-sans text-slate-500">Prot</div>
+                              <div className="text-xs font-bold text-slate-900 dark:text-white">
+                                {calcProt} g
+                              </div>
+                            </div>
+                            <div className="bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-700 p-1.5">
+                              <div className="text-[9px] font-sans text-slate-500">Carb</div>
+                              <div className="text-xs font-bold text-slate-900 dark:text-white">
+                                {calcCarb} g
+                              </div>
+                            </div>
+                            <div className="bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-700 p-1.5">
+                              <div className="text-[9px] font-sans text-slate-500">Gord</div>
+                              <div className="text-xs font-bold text-slate-900 dark:text-white">
+                                {calcFat} g
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center justify-between text-[10px] font-mono tabular-nums text-slate-500 dark:text-slate-400">
+                            <span>
+                              Base ({selectedFood.portionGrams}g): {selectedFood.caloriesKcal} kcal
+                              {selectedFood.energyKj !== null ? ` (${selectedFood.energyKj} kJ)` : ''}
+                            </span>
+                            <span>Fibra ({foodGrams}g): {calcFib} g</span>
+                          </div>
+
+                          {showTacoMicronutrients && (
+                            <div className="pt-2 border-t border-slate-200 dark:border-slate-700 grid grid-cols-3 gap-x-2 gap-y-1 text-[10px] font-mono tabular-nums text-slate-600 dark:text-slate-300">
+                              <div className="flex justify-between">
+                                <span className="font-sans text-slate-500">Saturada:</span>
+                                <span>{fmtOpt(selectedFood.saturatedFatG, 'g')}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-sans text-slate-500">Mono:</span>
+                                <span>{fmtOpt(selectedFood.monounsaturatedFatG, 'g')}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-sans text-slate-500">Poli:</span>
+                                <span>{fmtOpt(selectedFood.polyunsaturatedFatG, 'g')}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-sans text-slate-500">Colest.:</span>
+                                <span>{fmtOpt(selectedFood.cholesterolMg, 'mg')}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-sans text-slate-500">Sódio:</span>
+                                <span>{fmtOpt(selectedFood.sodiumMg ?? null, 'mg')}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-sans text-slate-500">Fibra 100g:</span>
+                                <span>
+                                  {fmtOpt(selectedFood.fiberG, 'g', selectedFood.fiberNotApplicable)}
+                                </span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-sans text-slate-500">Cálcio:</span>
+                                <span>{fmtOpt(selectedFood.calciumMg, 'mg')}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-sans text-slate-500">Ferro:</span>
+                                <span>{fmtOpt(selectedFood.ironMg, 'mg')}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-sans text-slate-500">Potássio:</span>
+                                <span>{fmtOpt(selectedFood.potassiumMg, 'mg')}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-sans text-slate-500">Magnésio:</span>
+                                <span>{fmtOpt(selectedFood.magnesiumMg, 'mg')}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-sans text-slate-500">Zinco:</span>
+                                <span>{fmtOpt(selectedFood.zincMg, 'mg')}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="font-sans text-slate-500">Vit. C:</span>
+                                <span>{fmtOpt(selectedFood.vitaminCMg, 'mg')}</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[10px] font-semibold text-slate-500">Atalhos:</span>
+                          {[50, 100, 150, 200].map((g) => (
+                            <button
+                              key={g}
+                              type="button"
+                              onClick={() => setFoodGrams(g)}
+                              className={`px-2 py-1 rounded border text-[11px] font-mono tabular-nums cursor-pointer ${
+                                foodGrams === g
+                                  ? 'border-[#004f28] bg-emerald-50 text-[#004f28] font-bold'
+                                  : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+                              }`}
+                            >
+                              {g}g
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    );
+                  })()}
 
                   <div className="flex items-center space-x-2">
                     <div className="w-1/2">
                       <label className="text-[10px] font-semibold text-slate-500 block mb-1">
-                        GRAMAS (g)
+                        QUANTIDADE (g)
                       </label>
                       <input
                         type="number"
+                        min={1}
                         value={foodGrams}
-                        onChange={(e) => setFoodGrams(Math.max(1, parseInt(e.target.value) || 0))}
-                        className="w-full px-2.5 py-1.5 text-xs font-mono font-bold rounded-lg border border-slate-200"
+                        onChange={(e) => setFoodGrams(Math.max(1, parseInt(e.target.value, 10) || 1))}
+                        className="w-full px-2.5 py-1.5 text-xs font-mono tabular-nums font-bold rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
                       />
                     </div>
 
@@ -1233,8 +1538,8 @@ export const DietasRastreamentoView: React.FC<DietasRastreamentoViewProps> = ({
                       </label>
                       <select
                         value={selectedMealIndex}
-                        onChange={(e) => setSelectedMealIndex(parseInt(e.target.value))}
-                        className="w-full px-2 py-1.5 text-xs rounded-lg border border-slate-200 bg-white"
+                        onChange={(e) => setSelectedMealIndex(parseInt(e.target.value, 10))}
+                        className="w-full px-2 py-1.5 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
                       >
                         {dietPlan.meals.map((m, idx) => (
                           <option key={m.id} value={idx}>
@@ -1246,8 +1551,9 @@ export const DietasRastreamentoView: React.FC<DietasRastreamentoViewProps> = ({
                   </div>
 
                   <button
+                    type="button"
                     onClick={handleAddFoodToMeal}
-                    className="w-full py-2 bg-[#004f28] hover:bg-[#003c1e] text-white rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors shadow-xs"
+                    className="w-full py-2 bg-[#004f28] hover:bg-[#003c1e] text-white rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5 transition-colors shadow-xs cursor-pointer"
                   >
                     <Plus className="w-4 h-4" />
                     <span>Adicionar à Refeição</span>
@@ -1310,6 +1616,14 @@ export const DietasRastreamentoView: React.FC<DietasRastreamentoViewProps> = ({
           </div>
 
         </div>
+      )}
+
+      {/* TAB 4: GLYCEMIC INDEX & GLYCEMIC LOAD CONSULTATION TABLE */}
+      {activeTab === 'glycemic' && (
+        <GlycemicIndexChartSection
+          meals={dietPlan.meals}
+          onAddFoodToMeal={handleAddCustomFoodEntryToMeal}
+        />
       )}
 
     </div>

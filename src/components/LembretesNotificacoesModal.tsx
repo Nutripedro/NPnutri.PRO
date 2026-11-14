@@ -117,7 +117,7 @@ export const LembretesNotificacoesModal: React.FC<LembretesNotificacoesModalProp
     const active = reminders.filter(r => r.enabled);
     const list = active.map(r => `• *${r.time}* - ${r.title}: ${r.customMessage}`).join('%0A');
     const text = `*Cronograma de Lembretes Diários - NUTRI PRO*%0A` +
-      `Olá, *${patient.name.split(' ')[0]}*!%0A` +
+      `Olá, *${(patient?.name || 'Paciente').split(' ')[0]}*!%0A` +
       `Aqui está sua rotina programada de refeições e hidratação para hoje:%0A%0A` +
       `${list}%0A%0A` +
       `*Dica da Nutricionista:* O cumprimento dos horários evita picos de insulina e preserva a síntese proteica!`;

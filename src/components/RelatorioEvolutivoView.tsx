@@ -20,17 +20,29 @@ import {
   Scale, 
   Activity, 
   Info,
-  ChevronRight
+  ChevronRight,
+  BarChart3,
+  Users
 } from 'lucide-react';
 import { Patient, WeightEvolutionPoint } from '../types';
 import { format, parseISO, addMonths, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { DashboardEvolucaoClinica } from './DashboardEvolucaoClinica';
 
 interface RelatorioEvolutivoViewProps {
   patient: Patient;
+  allPatients?: Patient[];
+  privacyMode?: boolean;
+  onUpdatePatientWeightHistory?: (newHistory: WeightEvolutionPoint[]) => void;
 }
 
-export const RelatorioEvolutivoView: React.FC<RelatorioEvolutivoViewProps> = ({ patient }) => {
+export const RelatorioEvolutivoView: React.FC<RelatorioEvolutivoViewProps> = ({ 
+  patient,
+  allPatients = [],
+  privacyMode = false,
+  onUpdatePatientWeightHistory
+}) => {
+  const [activeSubTab, setActiveSubTab] = React.useState<'benchmark_clinica' | 'projecao_metas'>('benchmark_clinica');
   const history = useMemo(() => patient.weightHistory || [], [patient.weightHistory]);
 
   // Linear Regression Logic for Projection
@@ -149,14 +161,56 @@ export const RelatorioEvolutivoView: React.FC<RelatorioEvolutivoViewProps> = ({ 
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      {/* Header & Overview Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="md:col-span-1 bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{patient.name}</h2>
-            <p className="text-xs text-slate-500 font-mono mt-1">{patient.recordNumber}</p>
-          </div>
+    <div className="space-y-6 animate-in fade-in duration-300">
+      {/* View Switcher: Benchmark da Clínica vs. Projeção Linear */}
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/90 dark:border-slate-800 p-2 shadow-xs flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center space-x-1.5">
+          <button
+            onClick={() => setActiveSubTab('benchmark_clinica')}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              activeSubTab === 'benchmark_clinica'
+                ? 'bg-[#004f28] text-white shadow-xs'
+                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+            }`}
+          >
+            <Users className="w-3.5 h-3.5" />
+            <span>Dashboard de Evolução & Benchmark Clínico</span>
+          </button>
+
+          <button
+            onClick={() => setActiveSubTab('projecao_metas')}
+            className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              activeSubTab === 'projecao_metas'
+                ? 'bg-[#004f28] text-white shadow-xs'
+                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+            }`}
+          >
+            <BarChart3 className="w-3.5 h-3.5" />
+            <span>Projeção Linear & Análise de Metas</span>
+          </button>
+        </div>
+
+        <span className="text-[11px] font-mono font-bold text-emerald-800 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2.5 py-1 rounded-lg border border-emerald-200 dark:border-emerald-800 hidden md:inline">
+          Recharts Multi-Axis Engine
+        </span>
+      </div>
+
+      {activeSubTab === 'benchmark_clinica' ? (
+        <DashboardEvolucaoClinica
+          patient={patient}
+          allPatients={allPatients}
+          privacyMode={privacyMode}
+          onUpdatePatientWeightHistory={onUpdatePatientWeightHistory}
+        />
+      ) : (
+        <div className="space-y-8">
+          {/* Header & Overview Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="md:col-span-1 bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">{patient.name}</h2>
+                <p className="text-xs text-slate-500 font-mono mt-1">{patient.recordNumber}</p>
+              </div>
           <div className="mt-6 space-y-3">
             <div className="flex items-center justify-between text-xs">
               <span className="text-slate-500">Início:</span>
@@ -494,5 +548,7 @@ export const RelatorioEvolutivoView: React.FC<RelatorioEvolutivoViewProps> = ({ 
         </div>
       </div>
     </div>
+  )}
+</div>
   );
 };

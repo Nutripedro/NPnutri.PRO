@@ -18,6 +18,8 @@ import {
 import { validatePhaseAngle, validateEdemaIndex } from '../domain/validation';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
+import { InfoHelpButton } from './help/InfoHelpButton';
+import { ClinicalTooltip } from './help/ClinicalTooltip';
 import { 
   XAxis, 
   YAxis, 
@@ -89,6 +91,7 @@ export const BioimpedanciaView: React.FC<BioimpedanciaViewProps> = ({
                 BIA Multifrequencial 8 Eletrodos
               </span>
               <span className="text-xs text-slate-400 font-mono">1 kHz a 500 kHz Tetrapolar</span>
+              <InfoHelpButton helpId="bioimpedancia" size="xs" variant="emerald" title="Explicativo sobre Bioimpedância 4C e Ângulo de Fase" />
             </div>
             <h2 className="text-xl font-bold text-slate-900 mt-1">
               Bioimpedância & Modelo de 4 Compartimentos (4C)
@@ -99,18 +102,20 @@ export const BioimpedanciaView: React.FC<BioimpedanciaViewProps> = ({
           </div>
 
           <div className="flex items-center space-x-2">
-            <button
-              onClick={handleExportPDF}
-              disabled={isExporting}
-              className="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-[#004f28] text-xs font-bold rounded-lg flex items-center space-x-2 transition-all shadow-xs disabled:opacity-50"
-            >
-              {isExporting ? (
-                <RefreshCcw className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <Download className="w-3.5 h-3.5" />
-              )}
-              <span>{isExporting ? 'Gerando...' : 'Exportar Laudo Bioimpedância'}</span>
-            </button>
+            <ClinicalTooltip helpId="bioimpedancia" position="left">
+              <button
+                onClick={handleExportPDF}
+                disabled={isExporting}
+                className="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-[#004f28] text-xs font-bold rounded-lg flex items-center space-x-2 transition-all shadow-xs disabled:opacity-50 cursor-pointer"
+              >
+                {isExporting ? (
+                  <RefreshCcw className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Download className="w-3.5 h-3.5" />
+                )}
+                <span>{isExporting ? 'Gerando...' : 'Exportar Laudo Bioimpedância'}</span>
+              </button>
+            </ClinicalTooltip>
 
             {/* Core Phase Angle Score */}
             <div className={`px-4 py-2.5 rounded-xl border flex items-center space-x-3 transition-all duration-300 ${

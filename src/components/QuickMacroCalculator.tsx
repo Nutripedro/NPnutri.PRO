@@ -22,6 +22,8 @@ import {
   calculateTDEE 
 } from '../domain/calculations';
 import { BiologicalSex, EnergyFormula, DietObjective } from '../types';
+import { InfoHelpButton } from './help/InfoHelpButton';
+import { ClinicalTooltip } from './help/ClinicalTooltip';
 import { 
   PieChart, 
   Pie, 
@@ -121,11 +123,14 @@ export const QuickMacroCalculator: React.FC<QuickMacroCalculatorProps> = ({
         {/* Left Column: Inputs */}
         <div className="xl:col-span-4 space-y-6">
           <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
-            <div className="flex items-center space-x-2 mb-6">
-              <div className="p-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg">
-                <Calculator className="w-5 h-5 text-[#004f28] dark:text-emerald-400" />
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-2">
+                <div className="p-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg">
+                  <Calculator className="w-5 h-5 text-[#004f28] dark:text-emerald-400" />
+                </div>
+                <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 uppercase tracking-tight">Parâmetros de Simulação</h3>
               </div>
-              <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 uppercase tracking-tight">Parâmetros de Simulação</h3>
+              <InfoHelpButton helpId="calculadora_macros" size="xs" variant="emerald" title="Explicativo sobre a calculadora de macros e fórmulas de TMB/GET" />
             </div>
 
             <div className="space-y-5">

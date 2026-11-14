@@ -27,6 +27,8 @@ import {
 } from 'lucide-react';
 import { validateBodyFat } from '../domain/validation';
 import { GraficoEvolucaoPeso } from './GraficoEvolucaoPeso';
+import { InfoHelpButton } from './help/InfoHelpButton';
+import { ClinicalTooltip } from './help/ClinicalTooltip';
 
 interface CalculadoraDobrasViewProps {
   patient: Patient;
@@ -176,48 +178,59 @@ export const CalculadoraDobrasView: React.FC<CalculadoraDobrasViewProps> = ({
         </div>
 
         {/* Sub-tab Navigation */}
-        <div className="flex flex-wrap items-center justify-between gap-3 mt-4 pt-3 border-t border-slate-100 text-xs">
-          <div className="inline-flex p-1 bg-slate-100 rounded-lg border border-slate-200">
-            <button
-              onClick={() => setSubTab('dobras')}
-              className={`px-3 py-1.5 rounded-md font-medium transition-all ${
-                subTab === 'dobras'
-                  ? 'bg-white text-slate-900 shadow-xs font-semibold'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Medições ISAK (7 Dobras)
-            </button>
-            <button
-              onClick={() => setSubTab('grafico')}
-              className={`px-3 py-1.5 rounded-md font-medium transition-all flex items-center space-x-1.5 ${
-                subTab === 'grafico'
-                  ? 'bg-white text-slate-900 shadow-xs font-semibold'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <ChartLine className="w-3.5 h-3.5 text-[#004f28]" />
-              <span>Gráfico de Evolução de Peso</span>
-              <span className="text-[9px] px-1.5 py-0.2 bg-emerald-100 text-[#004f28] rounded font-bold">
-                Recharts
-              </span>
-            </button>
-            <button
-              onClick={() => setSubTab('completo')}
-              className={`px-3 py-1.5 rounded-md font-medium transition-all ${
-                subTab === 'completo'
-                  ? 'bg-white text-slate-900 shadow-xs font-semibold'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Visão Completa
-            </button>
+        <div className="flex flex-wrap items-center justify-between gap-3 mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 text-xs">
+          <div className="inline-flex items-center p-1 bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+            <ClinicalTooltip helpId="dobras" position="bottom">
+              <button
+                onClick={() => setSubTab('dobras')}
+                className={`px-3 py-1.5 rounded-md font-medium transition-all flex items-center space-x-1.5 cursor-pointer ${
+                  subTab === 'dobras'
+                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-xs font-semibold'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                }`}
+              >
+                <span>Medições ISAK (7 Dobras)</span>
+                <InfoHelpButton helpId="dobras" size="xs" variant="subtle" withTooltip={false} as="span" />
+              </button>
+            </ClinicalTooltip>
+
+            <ClinicalTooltip helpId="evolucao_nutricional" position="bottom">
+              <button
+                onClick={() => setSubTab('grafico')}
+                className={`px-3 py-1.5 rounded-md font-medium transition-all flex items-center space-x-1.5 cursor-pointer ${
+                  subTab === 'grafico'
+                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-xs font-semibold'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                }`}
+              >
+                <ChartLine className="w-3.5 h-3.5 text-[#004f28] dark:text-emerald-400" />
+                <span>Gráfico de Evolução de Peso</span>
+                <span className="text-[9px] px-1.5 py-0.2 bg-emerald-100 dark:bg-emerald-950 text-[#004f28] dark:text-emerald-300 rounded font-bold">
+                  Recharts
+                </span>
+                <InfoHelpButton helpId="evolucao_nutricional" size="xs" variant="subtle" withTooltip={false} as="span" />
+              </button>
+            </ClinicalTooltip>
+
+            <ClinicalTooltip helpId="avaliacao_antropometrica" position="bottom">
+              <button
+                onClick={() => setSubTab('completo')}
+                className={`px-3 py-1.5 rounded-md font-medium transition-all flex items-center space-x-1.5 cursor-pointer ${
+                  subTab === 'completo'
+                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-xs font-semibold'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'
+                }`}
+              >
+                <span>Visão Completa</span>
+                <InfoHelpButton helpId="avaliacao_antropometrica" size="xs" variant="subtle" withTooltip={false} as="span" />
+              </button>
+            </ClinicalTooltip>
           </div>
 
-          <div className="text-[11px] font-mono text-slate-500 flex items-center space-x-1">
+          <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400 flex items-center space-x-1">
             <span>Histórico Ponderal:</span>
-            <span className="font-bold text-slate-800">{patient.initialWeightKg} kg → {patient.currentWeightKg} kg</span>
-            <span className="text-emerald-700 font-bold">
+            <span className="font-bold text-slate-800 dark:text-slate-200">{patient.initialWeightKg} kg → {patient.currentWeightKg} kg</span>
+            <span className="text-emerald-700 dark:text-emerald-400 font-bold">
               ({(patient.currentWeightKg - patient.initialWeightKg).toFixed(1)} kg)
             </span>
           </div>

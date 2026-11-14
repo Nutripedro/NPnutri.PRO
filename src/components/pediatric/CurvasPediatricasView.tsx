@@ -34,6 +34,8 @@ import {
   Users,
   AlertCircle
 } from 'lucide-react';
+import { InfoHelpButton } from '../help/InfoHelpButton';
+import { ClinicalTooltip } from '../help/ClinicalTooltip';
 
 interface CurvasPediatricasViewProps {
   currentPatient: Patient;
@@ -284,17 +286,21 @@ export const CurvasPediatricasView: React.FC<CurvasPediatricasViewProps> = ({
             </select>
           </div>
 
-          <button
-            onClick={() => setIsNewMeasurementOpen(true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-[#16A34A] hover:bg-[#15803D] text-white rounded-xl text-xs font-bold transition-all shadow-xs"
-          >
-            <PlusCircle className="w-4 h-4" />
-            <span>Nova Medição</span>
-          </button>
+          <InfoHelpButton helpId="pediatria" size="sm" variant="emerald" title="Explicativo sobre Curvas Pediátricas e Escore-Z OMS" />
+
+          <ClinicalTooltip helpId="pediatria" position="left">
+            <button
+              onClick={() => setIsNewMeasurementOpen(true)}
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-[#16A34A] hover:bg-[#15803D] text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
+            >
+              <PlusCircle className="w-4 h-4" />
+              <span>Nova Medição</span>
+            </button>
+          </ClinicalTooltip>
 
           <button
             onClick={handlePrintReport}
-            className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold transition-all shadow-2xs"
+            className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer"
             title="Imprimir Curvas & Diagnóstico"
           >
             <Printer className="w-4 h-4" />
@@ -320,7 +326,7 @@ export const CurvasPediatricasView: React.FC<CurvasPediatricasViewProps> = ({
                 onClick={() => onSelectPatient(ped)}
                 className="px-2.5 py-1.5 bg-amber-100 hover:bg-amber-200 text-amber-950 font-bold rounded-lg text-xs transition-colors border border-amber-300"
               >
-                Mudar para {ped.name.split(' ')[0]} ({ped.age}a)
+                Mudar para {(ped?.name || 'Paciente').split(' ')[0]} ({ped?.age ?? 0}a)
               </button>
             ))}
           </div>

@@ -21,9 +21,10 @@ import {
   ArrowRight,
   ShieldCheck,
   AlertTriangle,
-  Info,
   DollarSign
 } from 'lucide-react';
+import { InfoHelpButton } from '../help/InfoHelpButton';
+import { ClinicalTooltip } from '../help/ClinicalTooltip';
 import { 
   Patient, 
   Professional, 
@@ -672,6 +673,7 @@ export const DocumentsHub: React.FC<DocumentsHubProps> = ({
                 <span className="bg-[#4A6B5D]/10 text-[#4A6B5D] text-[11px] font-semibold px-2 py-0.5 rounded-full border border-[#4A6B5D]/20">
                   Clean Sage
                 </span>
+                <InfoHelpButton helpId="relatorios_clinicos" size="xs" variant="emerald" title="Explicativo sobre emissão de relatórios, declarações e atestados" />
               </div>
               <p className="text-xs text-slate-500 mt-0.5">
                 Emissão formal, assinatura digital, conformidade com CFN e exportação em alta resolução (A4).

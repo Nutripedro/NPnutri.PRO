@@ -4,6 +4,7 @@
  */
 
 import { LabExamItem, SupplementItem } from '../types';
+import { TACO_COMPLETE_DIET_FOODS, TacoDietFoodItem } from './tacoCompleteDatabase';
 
 export const CLINICAL_LAB_EXAMS: LabExamItem[] = [
   // 1. Perfil Metabólico & Glicêmico
@@ -834,7 +835,9 @@ export const INITIAL_ANVISA_LABEL = {
   sodium100gMg: 120,
   highAddedSugar: false,
   highSaturatedFat: false,
-  highSodium: false
+  highSodium: false,
+  ingredientsList: 'Aveia em flocos, flocos de arroz, castanha-de-caju, castanha-do-pará, açúcar mascavo, óleo de coco, semente de girassol e cacau em pó.',
+  allergensWarning: 'ALÉRGICOS: CONTÉM DERIVADOS DE AVEIA E CASTANHAS. PODE CONTER SOJA E LEITE. CONTÉM GLÚTEN.'
 };
 
 export const INITIAL_APPOINTMENTS = [
@@ -1006,14 +1009,19 @@ export const INITIAL_PROFESSIONALS = [
   }
 ];
 
-export const TACO_FOOD_DATABASE = [
-  { id: 'f-1', name: 'Ovos mexidos', category: 'Proteínas', portionGrams: 100, servingUnit: '100g', caloriesKcal: 145, proteinG: 13, carbsG: 1, fatG: 10, fiberG: 0, sodiumMg: 140 },
-  { id: 'f-2', name: 'Pão de fermentação natural (Levain)', category: 'Cereais', portionGrams: 60, servingUnit: '2 fatias', caloriesKcal: 160, proteinG: 6, carbsG: 32, fatG: 1.5, fiberG: 3, sodiumMg: 280 },
-  { id: 'f-3', name: 'Abacate Hass', category: 'Gorduras', portionGrams: 50, servingUnit: '2 colheres', caloriesKcal: 80, proteinG: 1, carbsG: 4, fatG: 7, fiberG: 3, sodiumMg: 2 },
-  { id: 'f-4', name: 'Filé de Patinho grelhado', category: 'Carnes', portionGrams: 140, servingUnit: '1 filé médio', caloriesKcal: 280, proteinG: 38, carbsG: 0, fatG: 12, fiberG: 0, sodiumMg: 85 },
-  { id: 'f-5', name: 'Arroz Integral Cateto', category: 'Cereais', portionGrams: 120, servingUnit: '4 colheres', caloriesKcal: 150, proteinG: 3, carbsG: 32, fatG: 1, fiberG: 3, sodiumMg: 5 },
-  { id: 'f-6', name: 'Feijão Preto', category: 'Leguminosas', portionGrams: 90, servingUnit: '1 concha', caloriesKcal: 110, proteinG: 7, carbsG: 20, fatG: 0.5, fiberG: 6, sodiumMg: 12 },
-  { id: 'f-7', name: 'Brócolis cozido', category: 'Vegetais', portionGrams: 150, servingUnit: '1 xícara', caloriesKcal: 75, proteinG: 3, carbsG: 6, fatG: 5, fiberG: 4, sodiumMg: 35 }
+const LEGACY_TACO_QUICK_ITEMS: TacoDietFoodItem[] = [
+  { id: 'f-1', tacoNumber: 0, tacoCode: 'PRATO-001', name: 'Ovos mexidos', category: 'Ovos e derivados', portionGrams: 100, servingUnit: '100g', caloriesKcal: 145, proteinG: 13, carbsG: 1, fatG: 10, fiberG: 0, sodiumMg: 140, energyKj: 607, humidityPercent: null, saturatedFatG: 3.1, monounsaturatedFatG: null, polyunsaturatedFatG: null, transFatG: null, cholesterolMg: 360, calciumMg: 54, ironMg: 1.8, magnesiumMg: 12, phosphorusMg: 190, potassiumMg: 130, zincMg: 1.1, vitaminCMg: 0, sourceLabel: 'Preparação Clínica' },
+  { id: 'f-2', tacoNumber: 0, tacoCode: 'PRATO-002', name: 'Pão de fermentação natural (Levain)', category: 'Cereais e derivados', portionGrams: 60, servingUnit: '2 fatias (60g)', caloriesKcal: 160, proteinG: 6, carbsG: 32, fatG: 1.5, fiberG: 3, sodiumMg: 280, energyKj: 669, humidityPercent: null, saturatedFatG: 0.3, monounsaturatedFatG: null, polyunsaturatedFatG: null, transFatG: 0, cholesterolMg: 0, calciumMg: 18, ironMg: 1.5, magnesiumMg: 22, phosphorusMg: 75, potassiumMg: 95, zincMg: 0.6, vitaminCMg: 0, sourceLabel: 'Preparação Clínica' },
+  { id: 'f-3', tacoNumber: 0, tacoCode: 'PRATO-003', name: 'Abacate Hass', category: 'Frutas e derivados', portionGrams: 50, servingUnit: '2 colheres (50g)', caloriesKcal: 80, proteinG: 1, carbsG: 4, fatG: 7, fiberG: 3, sodiumMg: 2, energyKj: 335, humidityPercent: null, saturatedFatG: 1.1, monounsaturatedFatG: 4.9, polyunsaturatedFatG: 0.9, transFatG: 0, cholesterolMg: 0, calciumMg: 6, ironMg: 0.3, magnesiumMg: 14, phosphorusMg: 26, potassiumMg: 242, zincMg: 0.3, vitaminCMg: 5, sourceLabel: 'Preparação Clínica' },
+  { id: 'f-4', tacoNumber: 0, tacoCode: 'PRATO-004', name: 'Filé de Patinho grelhado', category: 'Carnes e derivados', portionGrams: 140, servingUnit: '1 filé médio (140g)', caloriesKcal: 280, proteinG: 38, carbsG: 0, fatG: 12, fiberG: 0, sodiumMg: 85, energyKj: 1172, humidityPercent: null, saturatedFatG: 4.5, monounsaturatedFatG: null, polyunsaturatedFatG: null, transFatG: null, cholesterolMg: 110, calciumMg: 8, ironMg: 3.4, magnesiumMg: 30, phosphorusMg: 280, potassiumMg: 460, zincMg: 6.2, vitaminCMg: 0, sourceLabel: 'Preparação Clínica' },
+  { id: 'f-5', tacoNumber: 0, tacoCode: 'PRATO-005', name: 'Arroz Integral Cateto', category: 'Cereais e derivados', portionGrams: 120, servingUnit: '4 colheres (120g)', caloriesKcal: 150, proteinG: 3, carbsG: 32, fatG: 1, fiberG: 3, sodiumMg: 5, energyKj: 628, humidityPercent: null, saturatedFatG: 0.3, monounsaturatedFatG: 0.4, polyunsaturatedFatG: 0.3, transFatG: 0, cholesterolMg: 0, calciumMg: 6, ironMg: 0.4, magnesiumMg: 70, phosphorusMg: 127, potassiumMg: 90, zincMg: 0.8, vitaminCMg: 0, sourceLabel: 'Preparação Clínica' },
+  { id: 'f-6', tacoNumber: 0, tacoCode: 'PRATO-006', name: 'Feijão Preto', category: 'Leguminosas e derivados', portionGrams: 90, servingUnit: '1 concha (90g)', caloriesKcal: 110, proteinG: 7, carbsG: 20, fatG: 0.5, fiberG: 6, sodiumMg: 12, energyKj: 460, humidityPercent: null, saturatedFatG: 0.1, monounsaturatedFatG: null, polyunsaturatedFatG: null, transFatG: 0, cholesterolMg: 0, calciumMg: 26, ironMg: 1.4, magnesiumMg: 38, phosphorusMg: 80, potassiumMg: 230, zincMg: 0.7, vitaminCMg: 0, sourceLabel: 'Preparação Clínica' },
+  { id: 'f-7', tacoNumber: 0, tacoCode: 'PRATO-007', name: 'Brócolis cozido', category: 'Verduras, hortaliças e derivados', portionGrams: 150, servingUnit: '1 xícara (150g)', caloriesKcal: 75, proteinG: 3, carbsG: 6, fatG: 5, fiberG: 4, sodiumMg: 35, energyKj: 314, humidityPercent: null, saturatedFatG: 0.7, monounsaturatedFatG: null, polyunsaturatedFatG: null, transFatG: 0, cholesterolMg: 0, calciumMg: 76, ironMg: 0.8, magnesiumMg: 22, phosphorusMg: 65, potassiumMg: 280, zincMg: 0.5, vitaminCMg: 62, sourceLabel: 'Preparação Clínica' }
+];
+
+export const TACO_FOOD_DATABASE: TacoDietFoodItem[] = [
+  ...TACO_COMPLETE_DIET_FOODS,
+  ...LEGACY_TACO_QUICK_ITEMS
 ];
 
 export const ISAK_SKINFOLD_SITES = [

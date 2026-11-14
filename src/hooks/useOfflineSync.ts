@@ -13,8 +13,13 @@ export function useOfflineSync() {
     return await offlineSyncEngine.triggerSync();
   };
 
+  const clearLogs = async () => {
+    await offlineSyncEngine.clearLogs();
+  };
+
   return {
     ...syncState,
     triggerSync,
+    clearLogs
   };
 }

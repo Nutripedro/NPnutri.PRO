@@ -92,6 +92,13 @@
 
 /* Print styles for clinical reports */
 @media print {
+  html, body, #root {
+    position: static !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    width: 100% !important;
+  }
   aside, header, nav, .no-print {
     display: none !important;
   }
@@ -100,6 +107,8 @@
     color: black !important;
     padding: 0 !important;
     margin: 0 !important;
+    overflow: visible !important;
+    height: auto !important;
   }
   .print-only {
     display: block !important;

@@ -1,16 +1,34 @@
 /**
  * NUTRI PRO - Clinical Offline Sync & Local Cache Engine
- * Manages local persistence, offline patient edits, and automatic background queue sync on network recovery.
+ * Manages IndexedDB persistence, Service Worker Background Sync registration,
+ * and automatic cloud replication to Firebase Firestore upon network recovery.
  */
 
-import { Patient, AppSettings } from '../types';
+import { Patient } from '../types';
+import {
+  ClinicalMutation,
+  ClinicalPriority,
+  SyncAuditLogEntry,
+  idbSaveMutation,
+  idbGetPendingMutations,
+  idbGetAllMutations,
+  idbUpdateMutation,
+  idbDeleteMutation,
+  idbSavePatients,
+  idbSaveSinglePatient,
+  idbGetPatients,
+  idbDeleteSinglePatient,
+  idbAddAuditLog,
+  idbGetAuditLogs,
+  idbClearAuditLogs
+} from './indexedDbStorage';
 
-export interface PendingMutation {
-  id: string;
-  type: 'CREATE_PATIENT' | 'UPDATE_PATIENT' | 'DELETE_PATIENT' | 'ADD_PEDIATRIC_MEASUREMENT' | 'UPDATE_SETTINGS';
-  patientId?: string;
-  payload: any;
-  timestamp: number;
+export interface QueueBreakdown {
+  patients: number;
+  anthropometry: number;
+  diets: number;
+  settings: number;
+  firebasePending: number;
 }
 
 export interface SyncState {
@@ -19,13 +37,15 @@ export interface SyncState {
   isSyncing: boolean;
   lastSyncedAt: number | null;
   syncError: string | null;
+  hasBackgroundSyncSupport: boolean;
+  queueBreakdown: QueueBreakdown;
+  recentAuditLogs: SyncAuditLogEntry[];
 }
 
 const STORAGE_KEYS = {
-  PATIENTS: 'nutripro_offline_patients',
-  SETTINGS: 'nutripro_offline_settings',
-  QUEUE: 'nutripro_offline_queue',
+  PATIENTS_FALLBACK: 'nutripro_offline_patients',
   LAST_SYNC: 'nutripro_last_sync_time',
+  BG_SYNC_SUPPORTED: 'nutripro_bg_sync_supported',
 };
 
 type SyncSubscriber = (state: SyncState) => void;
@@ -34,47 +54,140 @@ class OfflineSyncEngine {
   private subscribers: Set<SyncSubscriber> = new Set();
   private isSyncing = false;
   private syncError: string | null = null;
+  private hasBackgroundSyncSupport = false;
+  private recentAuditLogs: SyncAuditLogEntry[] = [];
+  private cachedPendingMutations: ClinicalMutation[] = [];
 
   constructor() {
     if (typeof window !== 'undefined') {
-      window.addEventListener('online', () => {
-        this.notifySubscribers();
-        this.triggerSync();
-      });
-      window.addEventListener('offline', () => {
-        this.notifySubscribers();
-      });
+      try {
+        this.hasBackgroundSyncSupport = 'serviceWorker' in navigator && 'SyncManager' in window;
+      } catch {
+        this.hasBackgroundSyncSupport = false;
+      }
 
-      // Periodically attempt sync every 15 seconds if online and items exist
-      setInterval(() => {
-        if (navigator.onLine && this.getPendingMutations().length > 0 && !this.isSyncing) {
-          this.triggerSync();
+      // Initialize state from IndexedDB safely
+      try {
+        this.refreshFromStorage().catch(() => {});
+      } catch {}
+
+      // Listen for network changes
+      try {
+        window.addEventListener('online', () => {
+          this.notifySubscribers();
+          this.triggerSync().catch(() => {});
+          this.requestBackgroundSyncRegistration('clinical-sync-queue').catch(() => {});
+        });
+
+        window.addEventListener('offline', () => {
+          this.notifySubscribers();
+        });
+      } catch (_) {}
+
+      // Listen for Service Worker messages (Background Sync events)
+      try {
+        if ('serviceWorker' in navigator && navigator.serviceWorker) {
+          navigator.serviceWorker.addEventListener('message', (event) => {
+            if (!event.data) return;
+
+            if (event.data.type === 'NUTRI_BACKGROUND_SYNC_TRIGGERED') {
+              this.isSyncing = true;
+              this.notifySubscribers();
+            } else if (event.data.type === 'NUTRI_BACKGROUND_SYNC_SUCCESS') {
+              this.isSyncing = false;
+              const now = Date.now();
+              try {
+                localStorage.setItem(STORAGE_KEYS.LAST_SYNC, String(now));
+              } catch (_) {}
+              this.refreshFromStorage().catch(() => {});
+
+              try {
+                window.dispatchEvent(
+                  new CustomEvent('nutripro:sync-complete', {
+                    detail: { syncedCount: event.data.syncedCount, via: 'SERVICE_WORKER' },
+                  })
+                );
+              } catch (_) {}
+            }
+          });
         }
-      }, 15000);
+      } catch (_) {}
+
+      // Proactive periodic sync attempt if online and items exist
+      try {
+        setInterval(() => {
+          if (typeof navigator !== 'undefined' && navigator.onLine && this.cachedPendingMutations.length > 0 && !this.isSyncing) {
+            this.triggerSync().catch(() => {});
+          }
+        }, 15000);
+      } catch (_) {}
     }
   }
 
-  // --- Patients Local Cache ---
-  public getLocalPatients(): Patient[] | null {
+  // --- Background Sync Registration via Service Worker ---
+  public async requestBackgroundSyncRegistration(tag = 'clinical-sync-queue'): Promise<boolean> {
+    if (typeof window === 'undefined') return false;
+
+    if ('serviceWorker' in navigator && 'SyncManager' in window) {
+      try {
+        const registration = await navigator.serviceWorker.ready;
+        if ('sync' in registration) {
+          await (registration as any).sync.register(tag);
+          // Also register Firebase cloud replication tag
+          await (registration as any).sync.register('firebase-replication-queue');
+          return true;
+        }
+      } catch (err) {
+        console.debug('[OfflineSyncEngine] Note on SyncManager registration:', err);
+      }
+    }
+    return false;
+  }
+
+  // --- Patients Local Cache (IndexedDB with LocalStorage Fallback) ---
+  public async getLocalPatientsAsync(): Promise<Patient[] | null> {
     try {
-      const data = localStorage.getItem(STORAGE_KEYS.PATIENTS);
-      return data ? JSON.parse(data) : null;
+      const idbPatients = await idbGetPatients();
+      if (idbPatients && idbPatients.length > 0) {
+        return idbPatients;
+      }
     } catch (err) {
-      console.warn('[OfflineSyncEngine] Error reading local patients:', err);
+      console.warn('[OfflineSyncEngine] Error reading from IndexedDB:', err);
+    }
+
+    try {
+      const data = localStorage.getItem(STORAGE_KEYS.PATIENTS_FALLBACK);
+      return data ? JSON.parse(data) : null;
+    } catch {
       return null;
     }
   }
 
-  public saveLocalPatients(patients: Patient[]): void {
+  public getLocalPatients(): Patient[] | null {
     try {
-      localStorage.setItem(STORAGE_KEYS.PATIENTS, JSON.stringify(patients));
-    } catch (err) {
-      console.warn('[OfflineSyncEngine] Error saving local patients:', err);
+      const data = localStorage.getItem(STORAGE_KEYS.PATIENTS_FALLBACK);
+      return data ? JSON.parse(data) : null;
+    } catch {
+      return null;
     }
   }
 
-  public updateSingleLocalPatient(updatedPatient: Patient): void {
-    const current = this.getLocalPatients() || [];
+  public async saveLocalPatients(patients: Patient[]): Promise<void> {
+    try {
+      localStorage.setItem(STORAGE_KEYS.PATIENTS_FALLBACK, JSON.stringify(patients));
+    } catch (err) {
+      console.warn('[OfflineSyncEngine] Error saving localStorage fallback:', err);
+    }
+
+    try {
+      await idbSavePatients(patients);
+    } catch (err) {
+      console.warn('[OfflineSyncEngine] Error saving to IndexedDB:', err);
+    }
+  }
+
+  public async updateSingleLocalPatient(updatedPatient: Patient): Promise<void> {
+    const current = (await this.getLocalPatientsAsync()) || [];
     const index = current.findIndex(p => p.id === updatedPatient.id);
     let next: Patient[];
     if (index >= 0) {
@@ -83,65 +196,89 @@ class OfflineSyncEngine {
     } else {
       next = [updatedPatient, ...current];
     }
-    this.saveLocalPatients(next);
+    await this.saveLocalPatients(next);
   }
 
-  public removeSingleLocalPatient(patientId: string): void {
-    const current = this.getLocalPatients() || [];
+  public async removeSingleLocalPatient(patientId: string): Promise<void> {
+    const current = (await this.getLocalPatientsAsync()) || [];
     const next = current.filter(p => p.id !== patientId);
-    this.saveLocalPatients(next);
+    await this.saveLocalPatients(next);
+    try {
+      await idbDeleteSinglePatient(patientId);
+    } catch {}
   }
 
-  // --- Queue Operations ---
-  public getPendingMutations(): PendingMutation[] {
+  // --- Refresh State from Storage ---
+  public async refreshFromStorage(): Promise<void> {
     try {
-      const data = localStorage.getItem(STORAGE_KEYS.QUEUE);
-      return data ? JSON.parse(data) : [];
-    } catch {
-      return [];
-    }
-  }
-
-  private savePendingMutations(queue: PendingMutation[]): void {
-    try {
-      localStorage.setItem(STORAGE_KEYS.QUEUE, JSON.stringify(queue));
+      this.cachedPendingMutations = await idbGetPendingMutations();
+      this.recentAuditLogs = await idbGetAuditLogs(20);
       this.notifySubscribers();
     } catch (err) {
-      console.warn('[OfflineSyncEngine] Error saving queue:', err);
+      console.warn('[OfflineSyncEngine] Error refreshing storage:', err);
     }
   }
 
-  public queueMutation(type: PendingMutation['type'], payload: any, patientId?: string): PendingMutation {
-    const mutation: PendingMutation = {
-      id: `mut_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+  // --- Queue Clinical Mutation ---
+  public async queueMutation(
+    type: ClinicalMutation['type'],
+    payload: any,
+    patientId?: string,
+    priority: ClinicalPriority = 1,
+    category: ClinicalMutation['category'] = 'patients'
+  ): Promise<ClinicalMutation> {
+    const mutationId = `mut_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    
+    let endpoint = '/api/patients';
+    let method: ClinicalMutation['method'] = 'POST';
+
+    if (type === 'UPDATE_PATIENT') {
+      endpoint = `/api/patients/${encodeURIComponent(patientId || payload.id)}`;
+      method = 'PUT';
+    } else if (type === 'DELETE_PATIENT') {
+      endpoint = `/api/patients/${encodeURIComponent(patientId || payload.id)}`;
+      method = 'DELETE';
+    } else if (type === 'ADD_PEDIATRIC_MEASUREMENT') {
+      endpoint = `/api/patients/${encodeURIComponent(patientId!)}/pediatric-measurements`;
+      method = 'POST';
+      category = 'anthropometry';
+      priority = 2;
+    } else if (type === 'UPDATE_SETTINGS') {
+      endpoint = '/api/settings';
+      method = 'PUT';
+      category = 'settings';
+      priority = 3;
+    }
+
+    const mutation: ClinicalMutation = {
+      id: mutationId,
       type,
+      priority,
+      category,
+      target: 'both', // Both local backend & Firebase Firestore replication
+      endpoint,
+      method,
       patientId,
       payload,
       timestamp: Date.now(),
+      retryCount: 0,
+      status: 'pending',
+      replicatedToFirebase: false
     };
 
-    const current = this.getPendingMutations();
-    // Dedup/coalesce sequential updates to the same patient if possible
-    let updatedQueue: PendingMutation[];
-    if (type === 'UPDATE_PATIENT' && patientId) {
-      const existingIdx = current.findIndex(m => m.type === 'UPDATE_PATIENT' && m.patientId === patientId);
-      if (existingIdx >= 0) {
-        updatedQueue = [...current];
-        updatedQueue[existingIdx] = {
-          ...updatedQueue[existingIdx],
-          payload: { ...updatedQueue[existingIdx].payload, ...payload },
-          timestamp: Date.now(),
-        };
-      } else {
-        updatedQueue = [...current, mutation];
-      }
-    } else {
-      updatedQueue = [...current, mutation];
+    try {
+      await idbSaveMutation(mutation);
+    } catch (err) {
+      console.warn('[OfflineSyncEngine] Failed to save mutation to IndexedDB:', err);
     }
 
-    this.savePendingMutations(updatedQueue);
+    // Refresh memory cache
+    await this.refreshFromStorage();
 
-    // Try immediate background sync if online
+    // Register Background Sync with Service Worker
+    await this.requestBackgroundSyncRegistration();
+
+    // Attempt immediate sync if currently online
     if (navigator.onLine) {
       this.triggerSync();
     }
@@ -155,8 +292,9 @@ class OfflineSyncEngine {
       return false;
     }
 
-    const queue = this.getPendingMutations();
-    if (queue.length === 0) {
+    await this.refreshFromStorage();
+    const pendingList = this.cachedPendingMutations;
+    if (pendingList.length === 0) {
       return true;
     }
 
@@ -164,65 +302,84 @@ class OfflineSyncEngine {
     this.syncError = null;
     this.notifySubscribers();
 
-    const remainingQueue: PendingMutation[] = [];
     let syncedCount = 0;
 
-    for (const item of queue) {
+    for (const item of pendingList) {
+      const startTime = Date.now();
       try {
-        let res: Response;
-        if (item.type === 'CREATE_PATIENT') {
-          res = await fetch('/api/patients', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(item.payload),
-          });
-        } else if (item.type === 'UPDATE_PATIENT') {
-          res = await fetch(`/api/patients/${encodeURIComponent(item.patientId || item.payload.id)}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(item.payload),
-          });
-        } else if (item.type === 'DELETE_PATIENT') {
-          res = await fetch(`/api/patients/${encodeURIComponent(item.patientId || item.payload.id)}`, {
-            method: 'DELETE',
-          });
-        } else if (item.type === 'ADD_PEDIATRIC_MEASUREMENT') {
-          res = await fetch(`/api/patients/${encodeURIComponent(item.patientId!)}/pediatric-measurements`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(item.payload),
-          });
-        } else if (item.type === 'UPDATE_SETTINGS') {
-          res = await fetch('/api/settings', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(item.payload),
-          });
-        } else {
-          continue;
-        }
+        await idbUpdateMutation(item.id, { status: 'syncing' });
+
+        // 1. Replicate to Primary Backend and Firebase via /api/sync/firebase-replication
+        const res = await fetch('/api/sync/firebase-replication', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            mutationId: item.id,
+            type: item.type,
+            target: item.target,
+            patientId: item.patientId,
+            payload: item.payload,
+            timestamp: item.timestamp,
+            source: 'CLIENT_OFFLINE_SYNC_ENGINE'
+          }),
+        });
 
         if (res.ok) {
           syncedCount++;
-          // If server returned updated object, merge into local storage
-          const responseData = await res.json().catch(() => null);
-          if (responseData && (item.type === 'CREATE_PATIENT' || item.type === 'UPDATE_PATIENT')) {
-            this.updateSingleLocalPatient(responseData);
+          const receipt = await res.json().catch(() => ({}));
+
+          // Mark as synced in IndexedDB
+          await idbUpdateMutation(item.id, {
+            status: 'synced',
+            replicatedToFirebase: true,
+            lastAttemptAt: Date.now()
+          });
+
+          // Record clinical audit log for LGPD traceability
+          await idbAddAuditLog({
+            id: `audit_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+            timestamp: Date.now(),
+            mutationId: item.id,
+            action: item.type,
+            patientName: item.payload?.name,
+            patientRecord: item.payload?.recordNumber,
+            status: 'SUCCESS',
+            target: 'Servidor Local & Firebase Firestore',
+            durationMs: Date.now() - startTime,
+            details: `Sincronização de prontuário concluída com sucesso (Fila: ${item.category}).`,
+            firebaseReplicationReceipt: {
+              collection: receipt.collection || 'patients',
+              docId: receipt.docId || item.patientId || item.id,
+              replicatedAt: Date.now()
+            }
+          });
+
+          // If patient updated or created, merge back into local cache
+          if (item.type === 'CREATE_PATIENT' || item.type === 'UPDATE_PATIENT') {
+            await this.updateSingleLocalPatient(item.payload);
           }
         } else {
-          // Keep item in queue if server rejected with transient error
-          remainingQueue.push(item);
+          const errMsg = `HTTP ${res.status}: ${res.statusText}`;
+          await idbUpdateMutation(item.id, {
+            status: item.retryCount >= 4 ? 'failed' : 'pending',
+            retryCount: (item.retryCount || 0) + 1,
+            lastAttemptAt: Date.now(),
+            lastError: errMsg
+          });
         }
       } catch (err: any) {
-        console.warn(`[OfflineSyncEngine] Failed sync item ${item.id}:`, err);
+        console.warn(`[OfflineSyncEngine] Network error syncing mutation ${item.id}:`, err);
         this.syncError = err?.message || 'Falha na conexão durante sincronização';
-        remainingQueue.push(item);
-        // Break early on network connection failure
-        break;
+        await idbUpdateMutation(item.id, {
+          status: 'pending',
+          retryCount: (item.retryCount || 0) + 1,
+          lastAttemptAt: Date.now(),
+          lastError: this.syncError || undefined
+        });
+        break; // Break early on network failure
       }
     }
 
-    this.savePendingMutations(remainingQueue);
     this.isSyncing = false;
 
     if (syncedCount > 0) {
@@ -230,25 +387,41 @@ class OfflineSyncEngine {
       localStorage.setItem(STORAGE_KEYS.LAST_SYNC, String(now));
     }
 
-    this.notifySubscribers();
+    await this.refreshFromStorage();
 
-    // Dispatch global custom event so UI views re-fetch server state if needed
     if (typeof window !== 'undefined' && syncedCount > 0) {
-      window.dispatchEvent(new CustomEvent('nutripro:sync-complete', { detail: { syncedCount } }));
+      window.dispatchEvent(
+        new CustomEvent('nutripro:sync-complete', { detail: { syncedCount, via: 'CLIENT' } })
+      );
     }
 
-    return remainingQueue.length === 0;
+    return this.cachedPendingMutations.length === 0;
   }
 
-  // --- Subscriptions & Status ---
+  // --- Queue Breakdown Calculation ---
+  private calculateBreakdown(): QueueBreakdown {
+    const list = this.cachedPendingMutations;
+    return {
+      patients: list.filter(m => m.category === 'patients').length,
+      anthropometry: list.filter(m => m.category === 'anthropometry').length,
+      diets: list.filter(m => m.category === 'diets').length,
+      settings: list.filter(m => m.category === 'settings').length,
+      firebasePending: list.filter(m => !m.replicatedToFirebase).length
+    };
+  }
+
+  // --- Subscriptions & State ---
   public getState(): SyncState {
-    const lastSync = localStorage.getItem(STORAGE_KEYS.LAST_SYNC);
+    const lastSync = typeof localStorage !== 'undefined' ? localStorage.getItem(STORAGE_KEYS.LAST_SYNC) : null;
     return {
       isOnline: typeof navigator !== 'undefined' ? navigator.onLine : true,
-      pendingCount: this.getPendingMutations().length,
+      pendingCount: this.cachedPendingMutations.length,
       isSyncing: this.isSyncing,
       lastSyncedAt: lastSync ? Number(lastSync) : null,
       syncError: this.syncError,
+      hasBackgroundSyncSupport: this.hasBackgroundSyncSupport,
+      queueBreakdown: this.calculateBreakdown(),
+      recentAuditLogs: this.recentAuditLogs
     };
   }
 
@@ -263,6 +436,11 @@ class OfflineSyncEngine {
   private notifySubscribers(): void {
     const state = this.getState();
     this.subscribers.forEach(cb => cb(state));
+  }
+
+  public async clearLogs(): Promise<void> {
+    await idbClearAuditLogs();
+    await this.refreshFromStorage();
   }
 }
 

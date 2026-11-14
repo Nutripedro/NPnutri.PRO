@@ -15,6 +15,8 @@ import {
   Pill,
   SlidersHorizontal
 } from 'lucide-react';
+import { InfoHelpButton } from './help/InfoHelpButton';
+import { ClinicalTooltip } from './help/ClinicalTooltip';
 
 interface ExamesSuplementosViewProps {
   patient: Patient;
@@ -93,28 +95,35 @@ export const ExamesSuplementosView: React.FC<ExamesSuplementosViewProps> = ({
             </p>
           </div>
 
-          {/* Sub-tab switcher */}
-          <div className="inline-flex p-1 bg-slate-100 rounded-lg border border-slate-200 text-xs self-start sm:self-auto">
-            <button
-              onClick={() => setActiveSubTab('exames')}
-              className={`px-3.5 py-1.5 rounded-md font-medium transition-all ${
-                activeSubTab === 'exames'
-                  ? 'bg-white text-slate-900 shadow-xs font-semibold'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Requisição de Exames ({selectedExamsCount})
-            </button>
-            <button
-              onClick={() => setActiveSubTab('suplementos')}
-              className={`px-3.5 py-1.5 rounded-md font-medium transition-all ${
-                activeSubTab === 'suplementos'
-                  ? 'bg-white text-slate-900 shadow-xs font-semibold'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Receituário de Suplementos ({selectedSuppsCount})
-            </button>
+          {/* Sub-tab switcher with Clinical Tooltips */}
+          <div className="inline-flex items-center p-1 bg-slate-100 rounded-lg border border-slate-200 text-xs self-start sm:self-auto">
+            <ClinicalTooltip helpId="exames_laboratoriais" position="bottom">
+              <button
+                onClick={() => setActiveSubTab('exames')}
+                className={`px-3 py-1.5 rounded-md font-medium transition-all flex items-center space-x-1.5 cursor-pointer ${
+                  activeSubTab === 'exames'
+                    ? 'bg-white text-slate-900 shadow-xs font-semibold'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span>Requisição de Exames ({selectedExamsCount})</span>
+                <InfoHelpButton helpId="exames_laboratoriais" size="xs" variant="subtle" withTooltip={false} as="span" />
+              </button>
+            </ClinicalTooltip>
+
+            <ClinicalTooltip helpId="suplementacao_clinica" position="bottom">
+              <button
+                onClick={() => setActiveSubTab('suplementos')}
+                className={`px-3 py-1.5 rounded-md font-medium transition-all flex items-center space-x-1.5 cursor-pointer ${
+                  activeSubTab === 'suplementos'
+                    ? 'bg-white text-slate-900 shadow-xs font-semibold'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span>Receituário de Suplementos ({selectedSuppsCount})</span>
+                <InfoHelpButton helpId="suplementacao_clinica" size="xs" variant="subtle" withTooltip={false} as="span" />
+              </button>
+            </ClinicalTooltip>
           </div>
         </div>
       </div>

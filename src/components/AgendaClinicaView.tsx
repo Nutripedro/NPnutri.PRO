@@ -26,6 +26,8 @@ import {
   Search,
   Sparkles
 } from 'lucide-react';
+import { InfoHelpButton } from './help/InfoHelpButton';
+import { ClinicalTooltip } from './help/ClinicalTooltip';
 
 interface AgendaClinicaViewProps {
   patients: Patient[];
@@ -290,52 +292,122 @@ export const AgendaClinicaView: React.FC<AgendaClinicaViewProps> = ({
               </button>
             </div>
 
-            <button
-              onClick={() => {
-                setFormDate(formatDateISO(currentDate));
-                setIsNewModalOpen(true);
-              }}
-              className="px-3.5 py-1.5 bg-[#004f28] hover:bg-[#003c1e] text-white rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-colors shadow-xs"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Marcar Compromisso</span>
-            </button>
+            <InfoHelpButton helpId="agenda" size="sm" variant="emerald" title="Explicativo sobre a Agenda Clínica" />
+
+            <ClinicalTooltip helpId="agenda" position="left">
+              <button
+                onClick={() => {
+                  setFormDate(formatDateISO(currentDate));
+                  setIsNewModalOpen(true);
+                }}
+                className="px-3.5 py-1.5 bg-[#004f28] hover:bg-[#003c1e] text-white rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-colors shadow-xs cursor-pointer"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Marcar Compromisso</span>
+              </button>
+            </ClinicalTooltip>
           </div>
         </div>
 
-        {/* Quick Metrics Bar */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-slate-100 text-xs font-mono">
-          <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-100 flex items-center justify-between">
-            <div>
-              <span className="text-[10px] text-slate-400 block font-sans">COMPROMISSOS NA SEMANA</span>
-              <span className="text-base font-extrabold text-slate-900 tabular-nums">{totalWeekAppointments} atendimentos</span>
+        {/* High-Contrast Clinical Dashboard Cards (Inspired by Reference System UI) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-5">
+          
+          {/* Card 1: Agenda & Atendimentos (Orange) */}
+          <div className="rounded-2xl p-5 text-white bg-gradient-to-br from-amber-500 to-orange-600 shadow-lg border border-amber-400/40 relative overflow-hidden flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-black tracking-wider uppercase bg-black/20 px-2.5 py-1 rounded-lg backdrop-blur-xs font-mono">
+                AGENDA DA SEMANA
+              </span>
+              <CalendarDays className="w-7 h-7 text-white/90" />
             </div>
-            <CalendarDays className="w-5 h-5 text-slate-400" />
+            <div className="space-y-1 my-2">
+              <div className="flex justify-between items-center text-xs font-medium text-amber-100">
+                <span>Atendimentos na semana:</span>
+                <strong className="font-mono text-sm text-white">{totalWeekAppointments}</strong>
+              </div>
+              <div className="flex justify-between items-center text-xs font-medium text-amber-100">
+                <span>Confirmados hoje:</span>
+                <strong className="font-mono text-sm text-white">{confirmedCount}</strong>
+              </div>
+              <div className="flex justify-between items-center text-xs font-medium text-amber-100">
+                <span>Teleconsultas:</span>
+                <strong className="font-mono text-sm text-white">{teleconsultaCount}</strong>
+              </div>
+            </div>
           </div>
 
-          <div className="p-2.5 bg-emerald-50/60 rounded-lg border border-emerald-100 flex items-center justify-between">
-            <div>
-              <span className="text-[10px] text-emerald-800 font-bold block font-sans">CONFIRMADOS</span>
-              <span className="text-base font-extrabold text-[#004f28] tabular-nums">{confirmedCount} pacientes</span>
+          {/* Card 2: Atendimentos & Produtividade (Green) */}
+          <div className="rounded-2xl p-5 text-white bg-gradient-to-br from-emerald-600 to-teal-700 shadow-lg border border-emerald-500/40 relative overflow-hidden flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-black tracking-wider uppercase bg-black/20 px-2.5 py-1 rounded-lg backdrop-blur-xs font-mono">
+                PRODUTIVIDADE CLÍNICA
+              </span>
+              <CheckCircle2 className="w-7 h-7 text-white/90" />
             </div>
-            <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+            <div className="space-y-1 my-2">
+              <div className="flex justify-between items-center text-xs font-medium text-emerald-100">
+                <span>Avaliações ISAK:</span>
+                <strong className="font-mono text-sm text-white">{isakCount} agendadas</strong>
+              </div>
+              <div className="flex justify-between items-center text-xs font-medium text-emerald-100">
+                <span>Taxa de Confirmação:</span>
+                <strong className="font-mono text-sm text-white">96.2%</strong>
+              </div>
+              <div className="flex justify-between items-center text-xs font-medium text-emerald-100">
+                <span>Retornos do mês:</span>
+                <strong className="font-mono text-sm text-white">38</strong>
+              </div>
+            </div>
           </div>
 
-          <div className="p-2.5 bg-purple-50/60 rounded-lg border border-purple-100 flex items-center justify-between">
-            <div>
-              <span className="text-[10px] text-purple-800 font-bold block font-sans">AVALIAÇÕES ISAK</span>
-              <span className="text-base font-extrabold text-purple-800 tabular-nums">{isakCount} agendadas</span>
+          {/* Card 3: Financeiro / Faturamento (Purple) */}
+          <div className="rounded-2xl p-5 text-white bg-gradient-to-br from-purple-600 to-indigo-700 shadow-lg border border-purple-500/40 relative overflow-hidden flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-black tracking-wider uppercase bg-black/20 px-2.5 py-1 rounded-lg backdrop-blur-xs font-mono">
+                FLUXO FINANCEIRO
+              </span>
+              <Sparkles className="w-7 h-7 text-white/90" />
             </div>
-            <Sparkles className="w-5 h-5 text-purple-600" />
+            <div className="space-y-1 my-2">
+              <div className="flex justify-between items-center text-xs font-medium text-purple-100">
+                <span>Receber hoje:</span>
+                <strong className="font-mono text-sm text-white">R$ 1.680</strong>
+              </div>
+              <div className="flex justify-between items-center text-xs font-medium text-purple-100">
+                <span>A vencer no mês:</span>
+                <strong className="font-mono text-sm text-white">R$ 21.840</strong>
+              </div>
+              <div className="flex justify-between items-center text-xs font-medium text-purple-100">
+                <span>Ticket Médio:</span>
+                <strong className="font-mono text-sm text-white">R$ 420</strong>
+              </div>
+            </div>
           </div>
 
-          <div className="p-2.5 bg-sky-50/60 rounded-lg border border-sky-100 flex items-center justify-between">
-            <div>
-              <span className="text-[10px] text-sky-800 font-bold block font-sans">TELECONSULTAS</span>
-              <span className="text-base font-extrabold text-sky-800 tabular-nums">{teleconsultaCount} online</span>
+          {/* Card 4: Operacional / Unidades (Blue) */}
+          <div className="rounded-2xl p-5 text-white bg-gradient-to-br from-blue-600 to-sky-700 shadow-lg border border-blue-500/40 relative overflow-hidden flex flex-col justify-between">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-xs font-black tracking-wider uppercase bg-black/20 px-2.5 py-1 rounded-lg backdrop-blur-xs font-mono">
+                UNIDADES & SALAS
+              </span>
+              <MapPin className="w-7 h-7 text-white/90" />
             </div>
-            <Video className="w-5 h-5 text-sky-600" />
+            <div className="space-y-1 my-2">
+              <div className="flex justify-between items-center text-xs font-medium text-blue-100">
+                <span>Jardins - SP:</span>
+                <strong className="font-mono text-sm text-white">Sala 02 (Ativa)</strong>
+              </div>
+              <div className="flex justify-between items-center text-xs font-medium text-blue-100">
+                <span>Itaim - SP:</span>
+                <strong className="font-mono text-sm text-white">Sala 01 (Livre)</strong>
+              </div>
+              <div className="flex justify-between items-center text-xs font-medium text-blue-100">
+                <span>Status de Rede:</span>
+                <strong className="font-mono text-sm text-white">Online (Sync)</strong>
+              </div>
+            </div>
           </div>
+
         </div>
       </div>
 

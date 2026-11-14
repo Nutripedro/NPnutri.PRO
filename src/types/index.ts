@@ -325,6 +325,9 @@ export interface AnvisaProductLabel {
   highAddedSugar: boolean;
   highSaturatedFat: boolean;
   highSodium: boolean;
+  // Ingredients list & allergens (RDC 727/2022 & RDC 26/2015)
+  ingredientsList?: string;
+  allergensWarning?: string;
 }
 
 // Lab Exam Requisition & Supplement Prescription
@@ -556,6 +559,45 @@ export interface FinancialSummary {
   pendingIncome: number;
   pendingExpense: number;
 }
+
+// ---------------------------------------------------------------------------
+// Clinical Evolution & Clinic Benchmark Comparison Types
+// ---------------------------------------------------------------------------
+export type ClinicCohortType = 'todos_adultos' | 'mesmo_sexo' | 'faixa_etaria' | 'mesmo_objetivo';
+
+export interface ClinicCohortMetrics {
+  id: ClinicCohortType;
+  label: string;
+  sublabel: string;
+  sampleSize: number;
+  avgWeightKg: number;
+  weightStdDevKg: number;
+  avgBodyFatPercent: number;
+  bfStdDevPercent: number;
+  avgMonthlyWeightChangeKg: number;
+  avgMonthlyBfChangePercent: number;
+}
+
+export interface EvolutionComparisonPoint {
+  date: string;
+  displayDate: string;
+  eventLabel?: string;
+  patientWeightKg: number;
+  patientBodyFatPercent?: number;
+  patientLeanMassKg?: number;
+  clinicAvgWeightKg: number;
+  clinicAvgBodyFatPercent: number;
+  clinicWeightRangeMin: number;
+  clinicWeightRangeMax: number;
+  clinicBfRangeMin: number;
+  clinicBfRangeMax: number;
+  weightDeltaKg: number;
+  bfDeltaPercent?: number;
+  isProjected?: boolean;
+}
+
+export * from './nutritionLabel';
+export * from './hemo';
 
 
 

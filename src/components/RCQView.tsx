@@ -14,6 +14,8 @@ import {
   FileDown
 } from 'lucide-react';
 import { getRCQHighlight } from '../domain/validation';
+import { InfoHelpButton } from './help/InfoHelpButton';
+import { ClinicalTooltip } from './help/ClinicalTooltip';
 
 interface RCQViewProps {
   patient: Patient;
@@ -59,6 +61,7 @@ export const RCQView: React.FC<RCQViewProps> = ({
             <div className="flex items-center space-x-2">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
               <h2 className="text-xl font-bold tracking-tight text-white">Avaliação RCQ (Cintura-Quadril)</h2>
+              <InfoHelpButton helpId="rcq" size="xs" variant="emerald" title="Explicativo sobre Relação Cintura-Quadril e Risco Coronariano" />
             </div>
             <p className="text-xs text-slate-400 mt-0.5">
               Risco Coronariano & Padrão de Adiposidade Visceral

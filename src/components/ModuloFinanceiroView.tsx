@@ -216,27 +216,6 @@ export const ModuloFinanceiroView: React.FC<ModuloFinanceiroViewProps> = ({
       }));
   }, [transactions]);
 
-  // Chart Data: Fixed vs Variable Expenses
-  const fixedVsVariableExpensePieData = useMemo(() => {
-    let fixedTotal = 0;
-    let variableTotal = 0;
-
-    transactions
-      .filter(t => t.type === 'despesa')
-      .forEach(t => {
-        if (t.category === 'aluguel_consultorio' || t.category === 'software_sistemas') {
-          fixedTotal += t.amount;
-        } else {
-          variableTotal += t.amount;
-        }
-      });
-
-    return [
-      { name: 'Despesas Fixas', value: fixedTotal > 0 ? fixedTotal : 3499, color: '#0ea5e9' },
-      { name: 'Despesas Variáveis', value: variableTotal > 0 ? variableTotal : 1070, color: '#f59e0b' }
-    ].filter(item => item.value > 0);
-  }, [transactions]);
-
   // Chart Data: Monthly Flow
   const monthlyFlowData = [
     { month: 'Jul', receita: 17640, despesa: 4200, lucro: 13440 },
@@ -451,11 +430,11 @@ export const ModuloFinanceiroView: React.FC<ModuloFinanceiroViewProps> = ({
 
       </div>
 
-      {/* Interactive Charts Section (Fluxo de Caixa, Meios de Pagamento & Despesas Fixas/Variáveis) */}
+      {/* Interactive Charts Section (Fluxo de Caixa, Origem das Receitas & Meios de Pagamento) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        {/* Fluxo de Caixa Mensal (6 cols) */}
-        <div className="lg:col-span-6 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-xs space-y-4">
+        {/* Fluxo de Caixa Mensal (7 cols) */}
+        <div className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-xs space-y-4">
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center space-x-2">
               <BarChart3 className="w-4 h-4 text-[#004f28] dark:text-emerald-400" />
@@ -499,14 +478,14 @@ export const ModuloFinanceiroView: React.FC<ModuloFinanceiroViewProps> = ({
           </div>
         </div>
 
-        {/* Formas de Pagamento (3 cols) */}
-        <div className="lg:col-span-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-xs space-y-4">
+        {/* Formas de Pagamento & Origem de Receita (5 cols) */}
+        <div className="lg:col-span-5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-xs space-y-4">
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center space-x-2">
               <PieIcon className="w-4 h-4 text-sky-600 dark:text-sky-400" />
-              <span>Formas de Pagamento</span>
+              <span>Receita por Forma de Pagamento</span>
             </h3>
-            <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500">Pix & Cartão</span>
+            <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500">Pix, Cartão & Espécie</span>
           </div>
 
           <div className="h-44 w-full relative">
@@ -516,8 +495,8 @@ export const ModuloFinanceiroView: React.FC<ModuloFinanceiroViewProps> = ({
                   data={paymentMethodPieData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={42}
-                  outerRadius={65}
+                  innerRadius={45}
+                  outerRadius={68}
                   paddingAngle={4}
                   dataKey="value"
                   stroke="none"
@@ -531,59 +510,14 @@ export const ModuloFinanceiroView: React.FC<ModuloFinanceiroViewProps> = ({
             </ResponsiveContainer>
           </div>
 
-          <div className="space-y-1.5 text-xs font-mono pt-1 border-t border-slate-100 dark:border-slate-800 max-h-36 overflow-y-auto custom-scrollbar">
+          <div className="grid grid-cols-2 gap-2 text-xs font-mono pt-1 border-t border-slate-100 dark:border-slate-800">
             {paymentMethodPieData.map(pm => (
-              <div key={pm.name} className="flex items-center justify-between p-1 bg-slate-50 dark:bg-slate-800/60 rounded">
+              <div key={pm.name} className="flex items-center justify-between p-1.5 bg-slate-50 dark:bg-slate-800/60 rounded">
                 <span className="text-slate-600 dark:text-slate-400 text-[10px] flex items-center">
                   <span className="w-2 h-2 rounded-full mr-1.5 shrink-0" style={{ backgroundColor: pm.color }} />
                   {pm.name}
                 </span>
-                <strong className="text-slate-900 dark:text-slate-100 text-[10px]">R$ {pm.value.toLocaleString('pt-BR')}</strong>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Despesas Fixas vs Variáveis (3 cols) */}
-        <div className="lg:col-span-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-xs space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center space-x-2">
-              <PieIcon className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-              <span>Despesas: Fixas vs Variáveis</span>
-            </h3>
-            <span className="text-[10px] font-mono text-slate-400 dark:text-slate-500">Aluguel & Custos</span>
-          </div>
-
-          <div className="h-44 w-full relative">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={fixedVsVariableExpensePieData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={42}
-                  outerRadius={65}
-                  paddingAngle={4}
-                  dataKey="value"
-                  stroke="none"
-                >
-                  {fixedVsVariableExpensePieData.map((entry, index) => (
-                    <Cell key={`cell-exp-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(val: any) => [`R$ ${Number(val).toLocaleString('pt-BR')}`, '']} />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-
-          <div className="space-y-1.5 text-xs font-mono pt-1 border-t border-slate-100 dark:border-slate-800 max-h-36 overflow-y-auto custom-scrollbar">
-            {fixedVsVariableExpensePieData.map(exp => (
-              <div key={exp.name} className="flex items-center justify-between p-1 bg-slate-50 dark:bg-slate-800/60 rounded">
-                <span className="text-slate-600 dark:text-slate-400 text-[10px] flex items-center">
-                  <span className="w-2 h-2 rounded-full mr-1.5 shrink-0" style={{ backgroundColor: exp.color }} />
-                  {exp.name}
-                </span>
-                <strong className="text-slate-900 dark:text-slate-100 text-[10px]">R$ {exp.value.toLocaleString('pt-BR')}</strong>
+                <strong className="text-slate-900 dark:text-slate-100 text-[11px]">R$ {pm.value.toLocaleString('pt-BR')}</strong>
               </div>
             ))}
           </div>

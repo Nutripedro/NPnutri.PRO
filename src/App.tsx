@@ -45,8 +45,6 @@ import { ModuloFinanceiroView } from './components/ModuloFinanceiroView';
 import { AgendaClinicaView } from './components/AgendaClinicaView';
 import { SmsRemindersView } from './components/SmsRemindersView';
 import { GeradorPrescricoesView } from './components/GeradorPrescricoesView';
-import { FormulacaoMagistralView } from './components/FormulacaoMagistralView';
-import { ProntuarioEletronicoView } from './components/ProntuarioEletronicoView';
 import { MeuProfessorView } from './components/MeuProfessorView';
 import { QuickMacroCalculator } from './components/QuickMacroCalculator';
 import { DietasRastreamentoView } from './components/DietasRastreamentoView';
@@ -69,30 +67,33 @@ import { LaudoModal } from './components/LaudoModal';
 import { LembretesNotificacoesModal } from './components/LembretesNotificacoesModal';
 import { NotificationToastBanner } from './components/NotificationToastBanner';
 import { OfflineSyncBanner } from './components/OfflineSyncBanner';
-import { MobileBottomNav } from './components/MobileBottomNav';
-import { BiometricAuthModal } from './components/BiometricAuthModal';
-import { isBiometricEnrolled, isBiometricLockEnabled } from './lib/webauthn';
 import { playClinicalChime } from './utils/audioNotification';
 import { apiClient } from './lib/api';
 import { usePushNotifications } from './hooks/usePushNotifications';
 import { motion, AnimatePresence } from 'motion/react';
-import { Menu, Bell } from 'lucide-react';
+import { Menu, Bell, Info } from 'lucide-react';
+import { ClinicalHelpProvider, useClinicalHelp } from './context/ClinicalHelpContext';
+import { ClinicalHelpModal } from './components/help/ClinicalHelpModal';
+import { ClinicalTooltip } from './components/help/ClinicalTooltip';
+import { CLINICAL_HELP_REGISTRY } from './data/clinicalHelpRegistry';
 
-export default function App() {
+function AppContent() {
   const [patients, setPatients] = useState<Patient[]>(INITIAL_PATIENTS);
   const [currentPatient, setCurrentPatient] = useState<Patient>(INITIAL_PATIENTS[0]);
   const [activeTab, setActiveTab] = useState<ActiveTab>('dashboard');
   const [privacyMode, setPrivacyMode] = useState<boolean>(false);
   const [darkMode, setDarkMode] = useState<boolean>(() => {
     try {
-      const saved = localStorage.getItem('nutritrack_dark_mode');
-      if (saved !== null) {
-        return saved === 'true';
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const saved = localStorage.getItem('nutritrack_dark_mode');
+        if (saved !== null) {
+          return saved === 'true';
+        }
       }
-      return typeof window !== 'undefined' && typeof window.matchMedia === 'function' 
-        ? window.matchMedia('(prefers-color-scheme: dark)').matches 
-        : false;
-    } catch {
+    } catch (_) {}
+    try {
+      return typeof window !== 'undefined' && window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)')?.matches : false;
+    } catch (_) {
       return false;
     }
   });
@@ -100,75 +101,70 @@ export default function App() {
   const [collapsedMobile, setCollapsedMobile] = useState<boolean>(true);
   const [consultationMode, setConsultationMode] = useState<boolean>(false);
 
-  // Biometric WebAuthn Authentication State
-  const [isBiometricModalOpen, setIsBiometricModalOpen] = useState<boolean>(() => {
-    try {
-      return isBiometricLockEnabled() && isBiometricEnrolled();
-    } catch {
-      return false;
-    }
-  });
-  const [isBiometricEnrolling, setIsBiometricEnrolling] = useState<boolean>(false);
-  const [isAppBiometricEnrolled, setIsAppBiometricEnrolled] = useState<boolean>(() => {
-    try {
-      return isBiometricEnrolled();
-    } catch {
-      return false;
-    }
-  });
-
   // Desktop Sidebar Collapsible & Automatic Responsive Mode State
   const [isCollapsedDesktop, setIsCollapsedDesktop] = useState<boolean>(() => {
     try {
-      const saved = localStorage.getItem('nutritrack_sidebar_collapsed');
-      if (saved !== null) return saved === 'true';
-      return typeof window !== 'undefined' && window.innerWidth < 1280;
-    } catch {
-      return true;
-    }
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const saved = localStorage.getItem('nutritrack_sidebar_collapsed');
+        if (saved !== null) return saved === 'true';
+      }
+    } catch (_) {}
+    return typeof window !== 'undefined' && window.innerWidth < 1280;
   });
 
   const [isAutoResponsive, setIsAutoResponsive] = useState<boolean>(() => {
     try {
-      const saved = localStorage.getItem('nutritrack_sidebar_auto');
-      if (saved !== null) return saved === 'true';
-      return true; // Auto mode ON by default
-    } catch {
-      return true;
-    }
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const saved = localStorage.getItem('nutritrack_sidebar_auto');
+        if (saved !== null) return saved === 'true';
+      }
+    } catch (_) {}
+    return true; // Auto mode ON by default
   });
 
   // Sync Dark Mode state with document HTML class element
   useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    localStorage.setItem('nutritrack_dark_mode', String(darkMode));
+    try {
+      if (darkMode) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem('nutritrack_dark_mode', String(darkMode));
+      }
+    } catch (_) {}
   }, [darkMode]);
 
   // Automatic Responsive Collapse Listener for Notebook/Tablet Viewports
   useEffect(() => {
     const handleResize = () => {
-      if (isAutoResponsive) {
-        if (window.innerWidth < 1280 && window.innerWidth >= 1024) {
-          setIsCollapsedDesktop(true);
-        } else if (window.innerWidth >= 1280) {
-          setIsCollapsedDesktop(false);
+      try {
+        if (isAutoResponsive && typeof window !== 'undefined') {
+          if (window.innerWidth < 1280 && window.innerWidth >= 1024) {
+            setIsCollapsedDesktop(true);
+          } else if (window.innerWidth >= 1280) {
+            setIsCollapsedDesktop(false);
+          }
         }
-      }
+      } catch (_) {}
     };
 
-    window.addEventListener('resize', handleResize);
-    handleResize(); // Initial evaluation on mount
-    return () => window.removeEventListener('resize', handleResize);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', handleResize);
+      handleResize(); // Initial evaluation on mount
+      return () => window.removeEventListener('resize', handleResize);
+    }
   }, [isAutoResponsive]);
 
   const handleToggleCollapseDesktop = () => {
     setIsCollapsedDesktop(prev => {
       const next = !prev;
-      localStorage.setItem('nutritrack_sidebar_collapsed', String(next));
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) {
+          localStorage.setItem('nutritrack_sidebar_collapsed', String(next));
+        }
+      } catch (_) {}
       return next;
     });
   };
@@ -176,7 +172,11 @@ export default function App() {
   const handleToggleAutoResponsive = () => {
     setIsAutoResponsive(prev => {
       const next = !prev;
-      localStorage.setItem('nutritrack_sidebar_auto', String(next));
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) {
+          localStorage.setItem('nutritrack_sidebar_auto', String(next));
+        }
+      } catch (_) {}
       return next;
     });
   };
@@ -199,6 +199,15 @@ export default function App() {
   const [professionals, setProfessionals] = useState<Professional[]>(INITIAL_PROFESSIONALS);
   const [currentProfessional, setCurrentProfessional] = useState<Professional>(INITIAL_PROFESSIONALS[0]);
   const [financialTransactions, setFinancialTransactions] = useState<FinancialTransaction[]>(INITIAL_FINANCIAL_TRANSACTIONS);
+
+  const { openHelp, setNavigateHandler } = useClinicalHelp();
+
+  // Register navigation handler for the clinical help modal
+  useEffect(() => {
+    setNavigateHandler((tabId: string) => {
+      setActiveTab(tabId as ActiveTab);
+    });
+  }, [setNavigateHandler]);
 
   const { permission, requestPermission, sendLocalNotification } = usePushNotifications();
 
@@ -403,7 +412,7 @@ export default function App() {
   // WhatsApp Share Handler
   const handleShareWhatsApp = () => {
     const summary = `*NUTRI PRO - Relatório Clínico de Consulta*%0A` +
-      `*Paciente:* ${privacyMode ? 'Confidencial' : currentPatient.name} (${currentPatient.recordNumber})%0A` +
+      `*Paciente:* ${privacyMode ? 'Confidencial' : (currentPatient?.name || 'Paciente')} (${currentPatient?.recordNumber || ''})%0A` +
       `*Meta Calórica:* ${dietPlan.calorieTargetKcal} kcal/dia%0A` +
       `*Proteínas:* ${dietPlan.proteinGrams}g (${dietPlan.proteinGPerKg} g/kg)%0A` +
       `*Carboidratos:* ${dietPlan.carbsGrams}g | *Gorduras:* ${dietPlan.fatGrams}g%0A` +
@@ -420,8 +429,6 @@ export default function App() {
     switch (tab) {
       case 'dashboard':
         return 'Dashboard de Progresso e Visão Geral do Paciente';
-      case 'prontuario':
-        return 'Prontuário Eletrônico Nutricional Inteligente (PEN) - Central Clínica';
       case 'dashboard_admin':
         return 'Painel de Indicadores Administrativos, Metas & Faturamento';
       case 'financeiro':
@@ -448,10 +455,8 @@ export default function App() {
         return 'Gerador de Tabela Nutricional & Lupa Frontal ANVISA';
       case 'relatorio_evolutivo':
         return 'Relatório Evolutivo: Tendências de Peso, Gordura & Metas Futuras';
-      case 'prescricoes':
-        return 'Gerador de Prescrições Eletrônicas e Fitoterápicos';
-      case 'formulacao_magistral':
-        return 'Módulo de Formulação Magistral, 50 Protocolos & Farmacologia Clínica';
+      case 'exames_suplementos':
+        return 'Requisição Inteligente de Exames & Suplementação';
       case 'pacientes':
         return patientToEdit ? 'Editar Prontuário do Paciente' : 'Novo Cadastro de Paciente';
       case 'profissionais':
@@ -492,12 +497,6 @@ export default function App() {
         onToggleConsultationMode={() => setConsultationMode(!consultationMode)}
         pushNotificationPermission={permission}
         onRequestPushPermission={requestPermission}
-        onToggleMobileMenu={() => setCollapsedMobile(prev => !prev)}
-        onOpenBiometrics={() => {
-          setIsBiometricEnrolling(!isAppBiometricEnrolled);
-          setIsBiometricModalOpen(true);
-        }}
-        isBiometricEnrolled={isAppBiometricEnrolled}
       />
 
       <div className="flex-1 flex overflow-hidden">
@@ -511,13 +510,16 @@ export default function App() {
             onCloseMobile={() => setCollapsedMobile(true)}
             currentRole={currentProfessional.role}
             isCollapsedDesktop={isCollapsedDesktop}
+            onToggleCollapseDesktop={handleToggleCollapseDesktop}
+            isAutoResponsive={isAutoResponsive}
+            onToggleAutoResponsive={handleToggleAutoResponsive}
           />
         )}
 
         {/* Main Clinical Viewport */}
         <main className={`flex-1 transition-all duration-300 ease-in-out ${
           consultationMode ? 'lg:pl-0' : (isCollapsedDesktop ? 'lg:pl-16' : 'lg:pl-64')
-        } overflow-y-auto custom-scrollbar p-4 sm:p-6 lg:p-8 pb-28 lg:pb-8`}>
+        } overflow-y-auto custom-scrollbar p-4 sm:p-6 lg:p-8`}>
           
           {/* Mobile Menu Toggle Button */}
           <div className="lg:hidden mb-4 flex items-center justify-between">
@@ -530,8 +532,44 @@ export default function App() {
             </button>
 
             <span className="text-xs font-mono font-bold text-[#004f28] dark:text-emerald-400">
-              {currentPatient.name.split(' ')[0]} • {currentPatient.currentWeightKg}kg
+              {(currentPatient?.name || 'Paciente').split(' ')[0]} • {currentPatient?.currentWeightKg ?? '--'}kg
             </span>
+          </div>
+
+          {/* Active Module Clinical Header Bar with Interactive Info Guide */}
+          <div className="mb-4 sm:mb-6 flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-slate-900 px-4 py-3 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
+            <div className="flex items-center space-x-2.5 min-w-0">
+              <div className="w-2.5 h-2.5 rounded-full bg-[#004f28] dark:bg-emerald-400 shrink-0" />
+              <div className="truncate">
+                <div className="flex items-center space-x-2">
+                  <h1 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 truncate">
+                    {getModuleName(activeTab)}
+                  </h1>
+                  {CLINICAL_HELP_REGISTRY[activeTab]?.badge && (
+                    <span className="hidden sm:inline text-[9px] px-1.5 py-0.2 rounded font-mono font-bold uppercase bg-emerald-50 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                      {CLINICAL_HELP_REGISTRY[activeTab].badge}
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate hidden sm:block">
+                  {CLINICAL_HELP_REGISTRY[activeTab]?.shortDescription || 'Módulo clínico especializado'}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2 shrink-0">
+              <ClinicalTooltip helpId={activeTab} position="left">
+                <button
+                  type="button"
+                  onClick={() => openHelp(activeTab)}
+                  className="px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:border-emerald-300 dark:hover:border-emerald-800 text-slate-700 dark:text-slate-300 hover:text-emerald-800 dark:hover:text-emerald-300 transition-colors flex items-center space-x-1.5 text-xs font-medium cursor-pointer"
+                  aria-label={`Ver explicação sobre ${getModuleName(activeTab)}`}
+                >
+                  <Info className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <span className="text-[11px] font-semibold">Guia Clínico</span>
+                </button>
+              </ClinicalTooltip>
+            </div>
           </div>
 
           {/* Active Module Renderer with Transitions */}
@@ -548,20 +586,17 @@ export default function App() {
                   patient={currentPatient}
                   anthro={anthroEval}
                   privacyMode={privacyMode}
+                  allPatients={patients}
+                  onUpdatePatientWeightHistory={(newHistory) => {
+                    const updatedPatient = { ...currentPatient, weightHistory: newHistory };
+                    setCurrentPatient(updatedPatient);
+                    setPatients(prev => prev.map(p => p.id === updatedPatient.id ? updatedPatient : p));
+                    apiClient.updatePatient(updatedPatient.id, updatedPatient).catch(() => {});
+                  }}
                   onEdit={() => {
                     setPatientToEdit(currentPatient);
                     setActiveTab('pacientes');
                   }}
-                />
-              )}
-
-              {activeTab === 'prontuario' && (
-                <ProntuarioEletronicoView
-                  currentPatient={currentPatient}
-                  currentProfessional={currentProfessional}
-                  patients={patients}
-                  onSelectPatient={setCurrentPatient}
-                  privacyMode={privacyMode}
                 />
               )}
 
@@ -666,24 +701,6 @@ export default function App() {
                 )
               )}
 
-              {activeTab === 'formulacao_magistral' && (
-                isClinicalDenied ? (
-                  <ClinicalAccessDenied
-                    moduleName="Módulo de Formulação Magistral & Farmacologia"
-                    currentProfessional={currentProfessional}
-                    professionals={professionals}
-                    onSwitchProfessional={setCurrentProfessional}
-                    onNavigateToSchedule={() => setActiveTab('agenda')}
-                  />
-                ) : (
-                  <FormulacaoMagistralView
-                    currentPatient={currentPatient}
-                    currentProfessional={currentProfessional}
-                    privacyMode={privacyMode}
-                  />
-                )
-              )}
-
               {activeTab === 'dietas' && (
                 isClinicalDenied ? (
                   <ClinicalAccessDenied
@@ -709,10 +726,10 @@ export default function App() {
 
               {activeTab === 'calculadora_macros' && (
                 <QuickMacroCalculator
-                  initialWeight={currentPatient.currentWeightKg}
-                  initialHeight={currentPatient.heightCm}
-                  initialAge={currentPatient.age}
-                  initialSex={currentPatient.sex}
+                  initialWeight={currentPatient?.currentWeightKg || 65}
+                  initialHeight={currentPatient?.heightCm || 170}
+                  initialAge={currentPatient?.age || 30}
+                  initialSex={currentPatient?.sex || 'female'}
                 />
               )}
 
@@ -846,6 +863,14 @@ export default function App() {
                 ) : (
                   <RelatorioEvolutivoView
                     patient={currentPatient}
+                    allPatients={patients}
+                    privacyMode={privacyMode}
+                    onUpdatePatientWeightHistory={(newHistory) => {
+                      const updatedPatient = { ...currentPatient, weightHistory: newHistory };
+                      setCurrentPatient(updatedPatient);
+                      setPatients(prev => prev.map(p => p.id === updatedPatient.id ? updatedPatient : p));
+                      apiClient.updatePatient(updatedPatient.id, updatedPatient).catch(() => {});
+                    }}
                   />
                 )
               )}
@@ -874,6 +899,8 @@ export default function App() {
                   professional={currentProfessional}
                   anthroData={anthroEval}
                   biaData={biaEval}
+                  rcqData={rcqEval}
+                  dietData={dietPlan}
                 />
               )}
             </motion.div>
@@ -917,25 +944,17 @@ export default function App() {
       {/* Floating Offline Sync Indicator & Queue Banner */}
       <OfflineSyncBanner />
 
-      {/* Mobile Bottom Navigation Bar (Fast Thumb Access on Mobile Devices) */}
-      <MobileBottomNav
-        activeTab={activeTab}
-        onSelectTab={setActiveTab}
-        onOpenSidebar={() => setCollapsedMobile(false)}
-      />
-
-      {/* Web Authentication API (WebAuthn) Biometric Unlock Modal */}
-      <BiometricAuthModal
-        isOpen={isBiometricModalOpen}
-        onClose={() => setIsBiometricModalOpen(false)}
-        onSuccess={() => {
-          setIsBiometricModalOpen(false);
-          setIsAppBiometricEnrolled(isBiometricEnrolled());
-        }}
-        professional={currentProfessional}
-        isEnrolling={isBiometricEnrolling}
-      />
+      {/* Central Interactive Clinical Help Modal (Guides, Steps, Benefits & Examples) */}
+      <ClinicalHelpModal />
 
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <ClinicalHelpProvider>
+      <AppContent />
+    </ClinicalHelpProvider>
   );
 }

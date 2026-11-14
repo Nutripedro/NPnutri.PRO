@@ -1,43 +1,54 @@
-import React, { useState, useMemo } from 'react';
-import { 
-  Activity, 
-  Droplet, 
-  ShieldAlert, 
-  TrendingUp, 
-  CheckCircle2, 
-  AlertTriangle, 
-  Sparkles, 
-  FileText, 
-  Printer, 
-  Download, 
-  User, 
-  Sliders, 
-  Search, 
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  Activity,
+  AlertTriangle,
+  CheckCircle2,
+  Droplet,
+  FileText,
   HelpCircle,
-  Stethoscope,
-  BarChart3,
-  RefreshCw,
-  Loader2,
-  CheckSquare,
-  Square,
-  ShieldCheck,
-  HeartPulse,
+  History,
   Info,
-  Upload,
-  FileUp,
-  FileCheck,
-  Clipboard,
-  X,
-  AlertCircle,
-  Zap
+  Loader2,
+  Printer,
+  RefreshCw,
+  Save,
+  ShieldAlert,
+  Sparkles,
+  User
 } from 'lucide-react';
-import { Patient, AnthropometryEvaluation, BioimpedanceEvaluation, Professional } from '../types';
+import {
+  AnthropometryEvaluation,
+  BioimpedanceEvaluation,
+  DietPlan,
+  Patient,
+  Professional,
+  WaistHipEvaluation
+} from '../types';
+import {
+  ExtractionValueStatus,
+  HemoAiStructuredReport,
+  HemoClinicalClassification,
+  HemoDocumentMetadata,
+  HemoParameterEntry,
+  HemoPatientClinicalContext,
+  SavedHemogramRecord
+} from '../types/hemo';
+import {
+  DEFAULT_COMPLEMENTARY_LABS,
+  DEFAULT_HEMOGRAM_PARAMETERS,
+  buildEmrContextFromPatient,
+  evaluateCompleteHemogram
+} from '../domain/hemoEngine';
+import { apiClient } from '../lib/api';
 import { ProfessionalContext } from '../types/documents';
-import { exportDocumentToPdf, generateDocumentHash } from '../utils/documentUtils';
+import { generateDocumentHash } from '../utils/documentUtils';
 import { DocumentPreviewModal } from './documents/DocumentPreviewModal';
 import { DocumentHeader } from './documents/DocumentHeader';
 import { DocumentFooter } from './documents/DocumentFooter';
 import { MebCalculatorCard } from './MebCalculatorCard';
+import { HemoDocumentUploadPanel } from './hemo/HemoDocumentUploadPanel';
+import { HemoEmrContextPanel } from './hemo/HemoEmrContextPanel';
+import { HemoLongitudinalPanel } from './hemo/HemoLongitudinalPanel';
 
 interface HemoIntelligenceViewProps {
   currentPatient: Patient;
@@ -46,24 +57,34 @@ interface HemoIntelligenceViewProps {
   professional?: Professional;
   anthroData?: AnthropometryEvaluation;
   biaData?: BioimpedanceEvaluation;
+  rcqData?: WaistHipEvaluation;
+  dietData?: DietPlan;
 }
 
-interface HemogramItem {
-  id: string;
-  category: 'vermelha' | 'branca' | 'plaquetas';
-  name: string;
-  unit: string;
-  result: number;
-  percentResult?: number;
-  refMin: number;
-  refMax: number;
-  refPercentMin?: number;
-  refPercentMax?: number;
-  funcMin: number;
-  funcMax: number;
-  funcPercentMin?: number;
-  funcPercentMax?: number;
-  description: string;
+type HemoWorkspaceTab = 'prontuario_ocr' | 'series' | 'meb_indices' | 'evolucao_ia';
+
+function parseNullableNumber(raw: string): number | null {
+  const cleaned = raw.trim().replace(',', '.');
+  if (!cleaned) return null;
+  const parsed = Number(cleaned);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+}
+
+function getStatusBadgeVisual(classification: HemoClinicalClassification) {
+  switch (classification) {
+    case 'critico_baixo':
+    case 'critico_alto':
+      return { textClass: 'text-red-800', Icon: ShieldAlert };
+    case 'baixo':
+    case 'elevado':
+      return { textClass: 'text-amber-800', Icon: AlertTriangle };
+    case 'ideal':
+      return { textClass: 'text-emerald-800', Icon: CheckCircle2 };
+    case 'referencia':
+      return { textClass: 'text-slate-700', Icon: CheckCircle2 };
+    default:
+      return { textClass: 'text-slate-500', Icon: HelpCircle };
+  }
 }
 
 export const HemoIntelligenceView: React.FC<HemoIntelligenceViewProps> = ({
@@ -72,1140 +93,1039 @@ export const HemoIntelligenceView: React.FC<HemoIntelligenceViewProps> = ({
   onSelectPatient,
   professional,
   anthroData,
-  biaData
+  biaData,
+  rcqData,
+  dietData
 }) => {
-  // Perfil do Paciente conforme Prompt Versão 1.0
-  const [sex, setSex] = useState<'masculino' | 'feminino'>(currentPatient.sex === 'female' ? 'feminino' : 'masculino');
-  const [age, setAge] = useState<number>(currentPatient.age || 35);
-  
-  // Condições Especiais (Múltiplas Seleções)
-  const [specialConditions, setSpecialConditions] = useState<Record<string, boolean>>({
-    gestante: false,
-    lactante: false,
-    crianca: false,
-    adolescente: false,
-    adulto: true,
-    idoso: currentPatient.age > 60,
-    atleta: false,
-    obesidade: false,
-    diabetes: false,
-    hipertensao: false,
-    doencaRenal: false,
-    doencaHepatica: false,
-    oncologico: false,
-    autoimune: false,
-    posOperatorio: false,
-    usoMedicamentos: false,
-    tabagismo: false,
-    etilismo: false,
-    outrasClinicas: false
+  const [activeTab, setActiveTab] = useState<HemoWorkspaceTab>('prontuario_ocr');
+  const [clinicalContext, setClinicalContext] = useState<HemoPatientClinicalContext>(() =>
+    buildEmrContextFromPatient(currentPatient, anthroData, biaData, rcqData, dietData)
+  );
+  const [metadata, setMetadata] = useState<HemoDocumentMetadata>({
+    laboratoryName: 'Não informado',
+    collectionDate: new Date().toISOString().slice(0, 10),
+    examType: 'Hemograma Completo',
+    extractedByOcr: false,
+    ocrWarnings: []
   });
+  const [ocrConfirmed, setOcrConfirmed] = useState<boolean>(true);
+  const [parameters, setParameters] = useState<HemoParameterEntry[]>(() =>
+    DEFAULT_HEMOGRAM_PARAMETERS(currentPatient.sex || 'female', false)
+  );
+  const [complementaryLabs, setComplementaryLabs] = useState<HemoParameterEntry[]>(() =>
+    DEFAULT_COMPLEMENTARY_LABS()
+  );
 
-  const [searchFilter, setSearchFilter] = useState<string>('');
-  const [isPreviewOpen, setIsPreviewOpen] = useState<boolean>(false);
+  const [savedRecords, setSavedRecords] = useState<SavedHemogramRecord[]>([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState<boolean>(false);
+  const [isSavingRecord, setIsSavingRecord] = useState<boolean>(false);
+  const [saveFeedback, setSaveFeedback] = useState<string | null>(null);
+
   const [isAnalyzing, setIsAnalyzing] = useState<boolean>(false);
-  const [aiResult, setAiResult] = useState<any>(null);
+  const [aiError, setAiError] = useState<string | null>(null);
+  const [aiReport, setAiReport] = useState<HemoAiStructuredReport | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState<boolean>(false);
 
-  // Estados de Transcrição Automática & OCR do Hemograma
-  const [isTranscribing, setIsTranscribing] = useState<boolean>(false);
-  const [showTextModal, setShowTextModal] = useState<boolean>(false);
-  const [pastedText, setPastedText] = useState<string>('');
-  const [transcriptionInfo, setTranscriptionInfo] = useState<{
-    laboratorio?: string;
-    dataColeta?: string;
-    observacoes?: string;
-    fileName?: string;
-    timestamp?: string;
-  } | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  // Valores padrão do Hemograma completo (com suporte a Valores Absolutos e Percentuais %)
-  const [hemogramItems, setHemogramItems] = useState<HemogramItem[]>([
-    // Série Vermelha
-    { id: 'eritr', category: 'vermelha', name: 'Hemácias', unit: 'milhões/µL', result: 4.65, refMin: 4.0, refMax: 5.2, funcMin: 4.5, funcMax: 5.0, description: 'Contagem total de glóbulos vermelhos' },
-    { id: 'hgb', category: 'vermelha', name: 'Hemoglobina (Hgb)', unit: 'g/dL', result: 13.2, refMin: 12.0, refMax: 15.5, funcMin: 13.5, funcMax: 15.0, description: 'Proteína transportadora de oxigênio' },
-    { id: 'hct', category: 'vermelha', name: 'Hematócrito (Hct)', unit: '%', result: 39.5, percentResult: 39.5, refMin: 36.0, refMax: 48.0, funcMin: 38.0, funcMax: 45.0, description: 'Volume percentual de hemácias no sangue' },
-    { id: 'rdw', category: 'vermelha', name: 'RDW (Amplitude de Distribuição)', unit: '%', result: 14.2, percentResult: 14.2, refMin: 11.5, refMax: 14.5, funcMin: 11.5, funcMax: 13.0, description: 'Variabilidade no tamanho das hemácias' },
-
-    // Série Branca (Leucograma Completo com Valores Absolutos /µL e Percentuais %)
-    { id: 'leuc', category: 'branca', name: 'Leucócitos Totais', unit: '/µL', result: 6800, percentResult: 100, refMin: 4000, refMax: 11000, funcMin: 5000, funcMax: 8500, description: 'Contagem total de glóbulos brancos' },
-    { id: 'neut', category: 'branca', name: 'Neutrófilos Segmentados', unit: '/µL', result: 4100, percentResult: 60.3, refMin: 1800, refMax: 7700, refPercentMin: 45, refPercentMax: 70, funcMin: 2500, funcMax: 5500, funcPercentMin: 50, funcPercentMax: 65, description: 'Defesa contra bactérias e fungos' },
-    { id: 'bast', category: 'branca', name: 'Neutrófilos Bastonetes', unit: '/µL', result: 150, percentResult: 2.2, refMin: 0, refMax: 400, refPercentMin: 0, refPercentMax: 4, funcMin: 0, funcMax: 200, funcPercentMin: 0, funcPercentMax: 2, description: 'Neutrófilos jovens' },
-    { id: 'linf', category: 'branca', name: 'Linfócitos Totais', unit: '/µL', result: 2100, percentResult: 30.9, refMin: 1000, refMax: 4800, refPercentMin: 20, refPercentMax: 45, funcMin: 1500, funcMax: 3500, funcPercentMin: 25, funcPercentMax: 35, description: 'Imunidade adaptativa e viral' },
-    { id: 'mono', category: 'branca', name: 'Monócitos', unit: '/µL', result: 480, percentResult: 7.1, refMin: 200, refMax: 1000, refPercentMin: 2, refPercentMax: 10, funcMin: 300, funcMax: 700, funcPercentMin: 3, funcPercentMax: 7, description: 'Fagocitose e inflamação crônica' },
-    { id: 'eos', category: 'branca', name: 'Eosinófilos', unit: '/µL', result: 180, percentResult: 2.6, refMin: 0, refMax: 500, refPercentMin: 1, refPercentMax: 5, funcMin: 50, funcMax: 250, funcPercentMin: 1, funcPercentMax: 3, description: 'Alergias e parasitas' },
-    { id: 'baso', category: 'branca', name: 'Basófilos', unit: '/µL', result: 40, percentResult: 0.6, refMin: 0, refMax: 200, refPercentMin: 0, refPercentMax: 2, funcMin: 0, funcMax: 100, funcPercentMin: 0, funcPercentMax: 1, description: 'Processos alérgicos' },
-
-    // Plaquetas
-    { id: 'plt', category: 'plaquetas', name: 'Plaquetas', unit: '/µL', result: 265000, refMin: 150000, refMax: 450000, funcMin: 200000, funcMax: 350000, description: 'Coagulação e cicatrização' },
-    { id: 'vpm', category: 'plaquetas', name: 'VPM (Volume Plaquetário Médio)', unit: 'fL', result: 9.8, refMin: 7.4, refMax: 11.5, funcMin: 8.0, funcMax: 10.5, description: 'Tamanho médio das plaquetas' },
-    { id: 'pdw', category: 'plaquetas', name: 'PDW (Amplitude de Distribuição das Plaquetas)', unit: '%', result: 12.5, percentResult: 12.5, refMin: 9.0, refMax: 17.0, funcMin: 10.0, funcMax: 15.0, description: 'Variabilidade do tamanho plaquetário' },
-    { id: 'pct', category: 'plaquetas', name: 'PCT (Plaquetócrito)', unit: '%', result: 0.26, percentResult: 0.26, refMin: 0.15, refMax: 0.40, funcMin: 0.20, funcMax: 0.35, description: 'Volume total de plaquetas no sangue' }
-  ]);
-
-  // Transcrever Hemograma via Gemini OCR/AI API
-  const executeTranscription = async (payload: {
-    fileName?: string;
-    fileType?: string;
-    rawContent?: string;
-    fileBase64?: string;
-  }) => {
-    setIsTranscribing(true);
-    setErrorMessage(null);
-
+  const loadPatientHistory = useCallback(async (patientId: string) => {
+    setIsLoadingHistory(true);
     try {
-      const res = await fetch('/api/gemini/transcribe-hemogram', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      if (!res.ok) {
-        const errBody = await res.text();
-        console.error('Gemini OCR status error:', res.status, errBody);
-        throw new Error(`Erro na API de OCR (${res.status})`);
-      }
-
-      const data = await res.json();
-
-      // Mapeia e atualiza os analitos extraídos (tanto absolutos quanto percentuais)
-      setHemogramItems(prev => {
-        const leucTotal = data.leucocitos !== undefined ? Number(data.leucocitos) : (prev.find(i => i.id === 'leuc')?.result || 6800);
-
-        return prev.map(item => {
-          let newVal = item.result;
-          let newPct = item.percentResult;
-
-          if (item.id === 'eritr' && data.hemacias !== undefined) newVal = Number(data.hemacias);
-          if (item.id === 'hgb' && data.hemoglobina !== undefined) newVal = Number(data.hemoglobina);
-          if (item.id === 'hct' && data.hematocrito !== undefined) {
-            newVal = Number(data.hematocrito);
-            newPct = newVal;
-          }
-          if (item.id === 'rdw' && data.rdw !== undefined) {
-            newVal = Number(data.rdw);
-            newPct = newVal;
-          }
-          if (item.id === 'leuc' && data.leucocitos !== undefined) {
-            newVal = Number(data.leucocitos);
-            newPct = 100;
-          }
-          if (item.id === 'neut') {
-            if (data.neutrofilos !== undefined) newVal = Number(data.neutrofilos);
-            newPct = data.neutrofilosPercent !== undefined ? Number(data.neutrofilosPercent) : (leucTotal > 0 ? Number(((newVal / leucTotal) * 100).toFixed(1)) : 60.3);
-          }
-          if (item.id === 'bast') {
-            if (data.bastonetes !== undefined) newVal = Number(data.bastonetes);
-            newPct = data.bastonetesPercent !== undefined ? Number(data.bastonetesPercent) : (leucTotal > 0 ? Number(((newVal / leucTotal) * 100).toFixed(1)) : 2.2);
-          }
-          if (item.id === 'linf') {
-            if (data.linfocitos !== undefined) newVal = Number(data.linfocitos);
-            newPct = data.linfocitosPercent !== undefined ? Number(data.linfocitosPercent) : (leucTotal > 0 ? Number(((newVal / leucTotal) * 100).toFixed(1)) : 30.9);
-          }
-          if (item.id === 'mono') {
-            if (data.monocitos !== undefined) newVal = Number(data.monocitos);
-            newPct = data.monocitosPercent !== undefined ? Number(data.monocitosPercent) : (leucTotal > 0 ? Number(((newVal / leucTotal) * 100).toFixed(1)) : 7.1);
-          }
-          if (item.id === 'eos') {
-            if (data.eosinofilos !== undefined) newVal = Number(data.eosinofilos);
-            newPct = data.eosinofilosPercent !== undefined ? Number(data.eosinofilosPercent) : (leucTotal > 0 ? Number(((newVal / leucTotal) * 100).toFixed(1)) : 2.6);
-          }
-          if (item.id === 'baso') {
-            if (data.basofilos !== undefined) newVal = Number(data.basofilos);
-            newPct = data.basofilosPercent !== undefined ? Number(data.basofilosPercent) : (leucTotal > 0 ? Number(((newVal / leucTotal) * 100).toFixed(1)) : 0.6);
-          }
-          if (item.id === 'plt' && data.plaquetas !== undefined) newVal = Number(data.plaquetas);
-          if (item.id === 'vpm' && data.vpm !== undefined) newVal = Number(data.vpm);
-          if (item.id === 'pdw' && data.pdw !== undefined) {
-            newVal = Number(data.pdw);
-            newPct = newVal;
-          }
-          if (item.id === 'pct' && data.pct !== undefined) {
-            newVal = Number(data.pct);
-            newPct = newVal;
-          }
-          return { ...item, result: newVal, percentResult: newPct };
-        });
-      });
-
-      setTranscriptionInfo({
-        laboratorio: data.laboratorio || 'Laboratório Clínico Integrativo',
-        dataColeta: data.dataColeta || new Date().toLocaleDateString('pt-BR'),
-        observacoes: data.observacoesLaudo || 'Transcrição de laudo realizada com validação de parâmetros.',
-        fileName: payload.fileName || 'Laudo transcrito',
-        timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-      });
-
-      setShowTextModal(false);
-      setPastedText('');
-
-      // Auto-executar análise diagnóstica após transcrição
-      setTimeout(() => {
-        handleRunAiAnalysis();
-      }, 300);
-
-    } catch (err: any) {
-      console.error('Erro ao transcrever hemograma:', err);
-      setErrorMessage('Não foi possível transcrever o laudo automaticamente. Tente colar o texto do laudo.');
+      const list = await apiClient.getHemoRecords(patientId);
+      setSavedRecords(Array.isArray(list) ? list : []);
+    } catch {
+      setSavedRecords([]);
     } finally {
-      setIsTranscribing(false);
+      setIsLoadingHistory(false);
     }
-  };
+  }, []);
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      setIsTranscribing(true);
-      setErrorMessage(null);
-
-      const isImage = file.type.startsWith('image/');
-      const isPdf = file.type === 'application/pdf';
-
-      if (isImage || isPdf) {
-        const reader = new FileReader();
-        reader.onload = async () => {
-          const result = reader.result as string;
-          const base64Str = result.split(',')[1] || result;
-          await executeTranscription({
-            fileName: file.name,
-            fileType: file.type || (isPdf ? 'application/pdf' : 'image/png'),
-            fileBase64: base64Str
-          });
-        };
-        reader.readAsDataURL(file);
-      } else {
-        const reader = new FileReader();
-        reader.onload = async () => {
-          const text = reader.result as string;
-          await executeTranscription({
-            fileName: file.name,
-            fileType: 'text/plain',
-            rawContent: text
-          });
-        };
-        reader.readAsText(file);
-      }
-    } catch (err: any) {
-      console.error('File read error:', err);
-      setErrorMessage('Erro ao ler o arquivo selecionado.');
-      setIsTranscribing(false);
-    } finally {
-      if (e.target) e.target.value = '';
-    }
-  };
-
-  const handlePasteTextSubmit = async () => {
-    if (!pastedText.trim()) return;
-    await executeTranscription({
-      fileName: 'texto_copiado.txt',
-      fileType: 'text/plain',
-      rawContent: pastedText
+  // Recarrega prontuário & histórico ao trocar paciente
+  useEffect(() => {
+    const nextCtx = buildEmrContextFromPatient(
+      currentPatient,
+      anthroData,
+      biaData,
+      rcqData,
+      dietData
+    );
+    setClinicalContext(nextCtx);
+    setParameters(DEFAULT_HEMOGRAM_PARAMETERS(currentPatient.sex || 'female', false));
+    setComplementaryLabs(DEFAULT_COMPLEMENTARY_LABS());
+    setMetadata({
+      laboratoryName: 'Não informado',
+      collectionDate: new Date().toISOString().slice(0, 10),
+      examType: 'Hemograma Completo',
+      extractedByOcr: false,
+      ocrWarnings: []
     });
-  };
+    setOcrConfirmed(true);
+    setAiReport(null);
+    setAiError(null);
+    setSaveFeedback(null);
+    loadPatientHistory(currentPatient.id);
+  }, [currentPatient.id, loadPatientHistory]);
 
-  // Manipuladores de alteração de valores absolutos e percentuais (%) sincronizados
-  const handleAbsoluteResultChange = (id: string, val: number) => {
-    setHemogramItems(prev => {
-      const leucTotalItem = prev.find(i => i.id === 'leuc');
-      const leucTotal = id === 'leuc' ? val : (leucTotalItem?.result || 6800);
-
-      return prev.map(item => {
-        if (item.id === id) {
-          let updatedPct = item.percentResult;
-          if (item.category === 'branca' && item.id !== 'leuc' && leucTotal > 0) {
-            updatedPct = Number(((val / leucTotal) * 100).toFixed(1));
-          } else if (item.unit === '%') {
-            updatedPct = val;
+  // Atualiza referências de Hb/Hct quando sexo/gestação mudam
+  useEffect(() => {
+    const template = DEFAULT_HEMOGRAM_PARAMETERS(
+      clinicalContext.biologicalSex,
+      clinicalContext.isPregnant
+    );
+    const tplById = new Map(template.map((t) => [t.id, t]));
+    setParameters((prev) =>
+      prev.map((item) => {
+        if (item.id === 'hgb' || item.id === 'hct' || item.id === 'eritr') {
+          const refTpl = tplById.get(item.id);
+          if (refTpl && !metadata.extractedByOcr) {
+            return {
+              ...item,
+              refMin: refTpl.refMin,
+              refMax: refTpl.refMax,
+              funcMin: refTpl.funcMin,
+              funcMax: refTpl.funcMax
+            };
           }
-          return { ...item, result: val, percentResult: updatedPct };
-        }
-        if (id === 'leuc' && item.category === 'branca' && item.id !== 'leuc' && val > 0) {
-          return { ...item, percentResult: Number(((item.result / val) * 100).toFixed(1)) };
         }
         return item;
-      });
-    });
-  };
+      })
+    );
+  }, [clinicalContext.biologicalSex, clinicalContext.isPregnant, metadata.extractedByOcr]);
 
-  const handlePercentResultChange = (id: string, pctVal: number) => {
-    setHemogramItems(prev => {
-      const leucTotalItem = prev.find(i => i.id === 'leuc');
-      const leucTotal = leucTotalItem?.result || 6800;
+  const previousRecord = useMemo(() => {
+    if (savedRecords.length === 0) return null;
+    return savedRecords[0];
+  }, [savedRecords]);
 
-      return prev.map(item => {
-        if (item.id === id) {
-          let updatedAbs = item.result;
-          if (item.category === 'branca' && item.id !== 'leuc' && leucTotal > 0) {
-            updatedAbs = Math.round((pctVal / 100) * leucTotal);
-          } else if (item.unit === '%') {
-            updatedAbs = pctVal;
+  const evaluation = useMemo(
+    () =>
+      evaluateCompleteHemogram({
+        parameters,
+        complementaryLabs,
+        context: clinicalContext,
+        previousRecord,
+        currentDate: metadata.collectionDate
+      }),
+    [parameters, complementaryLabs, clinicalContext, previousRecord, metadata.collectionDate]
+  );
+
+  const outputById = useMemo(
+    () => new Map(evaluation.parameterOutputs.map((o) => [o.id, o])),
+    [evaluation.parameterOutputs]
+  );
+
+  const updateAnyParameter = (
+    id: string,
+    field: 'value' | 'percentValue' | 'refMin' | 'refMax' | 'extractionStatus',
+    nextValue: number | ExtractionValueStatus | null
+  ) => {
+    const updater = (list: HemoParameterEntry[]) =>
+      list.map((item) => {
+        if (item.id !== id) return item;
+        const next: HemoParameterEntry = { ...item, [field]: nextValue } as HemoParameterEntry;
+        if (field === 'value' || field === 'percentValue') {
+          if (nextValue !== null) {
+            next.extractionStatus = 'confirmed';
           }
-          return { ...item, result: updatedAbs, percentResult: pctVal };
         }
-        return item;
+        return next;
       });
+
+    if (parameters.some((p) => p.id === id)) {
+      setParameters((prev) => updater(prev));
+    } else {
+      setComplementaryLabs((prev) => updater(prev));
+    }
+  };
+
+  const handleApplyExtractedData = (
+    nextMetadata: HemoDocumentMetadata,
+    nextParams: HemoParameterEntry[],
+    nextComplementary: HemoParameterEntry[],
+    requiresConfirmation: boolean
+  ) => {
+    setMetadata(nextMetadata);
+    setParameters(nextParams);
+    setComplementaryLabs(nextComplementary);
+    setOcrConfirmed(!requiresConfirmation);
+    setAiReport(null);
+  };
+
+  const handleConfirmOcrReview = () => {
+    setParameters((prev) =>
+      prev.map((p) => ({
+        ...p,
+        extractionStatus:
+          p.value !== null || p.percentValue != null
+            ? 'confirmed'
+            : p.extractionStatus === 'extracted'
+              ? 'missing'
+              : p.extractionStatus
+      }))
+    );
+    setComplementaryLabs((prev) =>
+      prev.map((p) => ({
+        ...p,
+        extractionStatus:
+          p.value !== null
+            ? 'confirmed'
+            : p.extractionStatus === 'extracted'
+              ? 'missing'
+              : p.extractionStatus
+      }))
+    );
+    setOcrConfirmed(true);
+    setActiveTab('series');
+  };
+
+  const handleResetTemplate = () => {
+    setParameters(DEFAULT_HEMOGRAM_PARAMETERS(clinicalContext.biologicalSex, clinicalContext.isPregnant));
+    setComplementaryLabs(DEFAULT_COMPLEMENTARY_LABS());
+    setMetadata({
+      laboratoryName: 'Não informado',
+      collectionDate: new Date().toISOString().slice(0, 10),
+      examType: 'Hemograma Completo',
+      extractedByOcr: false,
+      ocrWarnings: []
     });
+    setOcrConfirmed(true);
+    setAiReport(null);
+    setAiError(null);
   };
 
-  // Helper para obter a porcentagem formatada de qualquer analito
-  const getItemPercentFormatted = (item: HemogramItem): string => {
-    if (item.unit === '%') return `${item.result}%`;
-    if (item.id === 'leuc') return '100%';
-    if (item.category === 'branca') {
-      if (item.percentResult !== undefined) return `${item.percentResult}%`;
-      const leucTotal = hemogramItems.find(i => i.id === 'leuc')?.result || 6800;
-      return leucTotal > 0 ? `${((item.result / leucTotal) * 100).toFixed(1)}%` : '0%';
+  const handleSaveRecord = async () => {
+    setIsSavingRecord(true);
+    setSaveFeedback(null);
+    try {
+      const saved = await apiClient.saveHemoRecord({
+        patientId: currentPatient.id,
+        metadata,
+        parameters,
+        complementaryLabs,
+        clinicalContextSnapshot: clinicalContext,
+        mebScore: evaluation.meb.score,
+        aiReport
+      });
+      setSavedRecords((prev) => [saved, ...prev.filter((r) => r.id !== saved.id)]);
+      setSaveFeedback('Hemograma salvo no prontuário com sucesso.');
+    } catch (err: any) {
+      setSaveFeedback(err?.message || 'Erro ao salvar exame.');
+    } finally {
+      setIsSavingRecord(false);
     }
-    return '-';
   };
 
-  // Cálculos Automáticos de Índices Hematimétricos (VCM, HCM, CHCM)
-  const hctItem = hemogramItems.find(i => i.id === 'hct')?.result || 39.5;
-  const hgbItem = hemogramItems.find(i => i.id === 'hgb')?.result || 13.2;
-  const eritItem = hemogramItems.find(i => i.id === 'eritr')?.result || 4.65;
-
-  const calculatedVCM = eritItem > 0 ? Number(((hctItem * 10) / eritItem).toFixed(1)) : 84.9;
-  const calculatedHCM = eritItem > 0 ? Number(((hgbItem * 10) / eritItem).toFixed(1)) : 28.4;
-  const calculatedCHCM = hctItem > 0 ? Number(((hgbItem * 100) / hctItem).toFixed(1)) : 33.4;
-
-  // Classificação automática dos Índices conforme o Prompt V1.0
-  const getVcmInterpretation = (vcm: number) => {
-    if (vcm < 80) return 'Microcítica';
-    if (vcm > 100) return 'Macrocítica';
-    return 'Normocítica';
+  const handleDeleteRecord = async (recordId: string) => {
+    try {
+      await apiClient.deleteHemoRecord(currentPatient.id, recordId);
+      setSavedRecords((prev) => prev.filter((r) => r.id !== recordId));
+    } catch (err: any) {
+      setSaveFeedback(err?.message || 'Erro ao excluir registro.');
+    }
   };
 
-  const getHcmInterpretation = (hcm: number) => {
-    if (hcm < 27) return 'Hipocrômica';
-    if (hcm > 34) return 'Hipercromia (Considerar limitações analíticas)';
-    return 'Normocrômica';
+  const handleLoadRecordIntoEditor = (record: SavedHemogramRecord) => {
+    setMetadata(record.metadata);
+    setParameters(record.parameters);
+    if (record.complementaryLabs && record.complementaryLabs.length > 0) {
+      setComplementaryLabs(record.complementaryLabs);
+    }
+    if (record.clinicalContextSnapshot?.patientId) {
+      setClinicalContext(record.clinicalContextSnapshot);
+    }
+    setAiReport(record.aiReport ?? null);
+    setOcrConfirmed(true);
+    setActiveTab('series');
   };
 
-  // Contexto Profissional
-  const professionalContext: ProfessionalContext = useMemo(() => {
-    return {
-      id: professional?.id || 'prof-01',
-      name: professional?.name || 'Dra. Gabriela Santos',
-      crn: professional?.registrationCode || 'CRN-3 48910',
-      specialty: professional?.specialty || 'Nutrição Clínica Avançada & Funcional',
-      clinicName: 'Clínica de Nutrição Avançada & Longevidade',
-      unit: professional?.unit || 'São Paulo - Jardins',
-      address: 'Av. Brigadeiro Faria Lima, 2500 - Jardins, São Paulo - SP',
-      phone: professional?.phone || '(11) 99988-7766',
-      email: professional?.email || 'contato@nutricaoavancada.com.br',
-      cpfCnpj: professional?.cpf || '111.222.333-44'
-    };
-  }, [professional]);
-
-  // Cálculos Automáticos de Índices Inflamatórios (RNL, RPL, RML, SII, AISI, SIRI)
-  const calculatedIndexes = useMemo(() => {
-    const neut = hemogramItems.find(i => i.id === 'neut')?.result || 4100;
-    const linf = hemogramItems.find(i => i.id === 'linf')?.result || 2100;
-    const plt = hemogramItems.find(i => i.id === 'plt')?.result || 265000;
-    const mono = hemogramItems.find(i => i.id === 'mono')?.result || 480;
-
-    const nlr = linf > 0 ? Number((neut / linf).toFixed(2)) : 0;
-    const plr = linf > 0 ? Number((plt / linf).toFixed(1)) : 0;
-    const mlr = linf > 0 ? Number((mono / linf).toFixed(2)) : 0;
-    const sii = linf > 0 ? Number(((plt * neut) / linf).toFixed(0)) : 0;
-    const aisi = linf > 0 ? Number(((neut * mono * plt) / linf).toFixed(0)) : 0;
-    const siri = linf > 0 ? Number(((neut * mono) / linf).toFixed(2)) : 0;
-
-    return { nlr, plr, mlr, sii, aisi, siri };
-  }, [hemogramItems]);
-
-  // Classificação detalhada exigida pelo Prompt V1.0:
-  // Muito Baixo, Baixo, Ideal, Dentro da referência, Elevado, Muito Elevado, Crítico
-  const evaluateItemStatus = (item: HemogramItem) => {
-    const val = item.result;
-    const { refMin, refMax, funcMin, funcMax } = item;
-
-    if (val < refMin * 0.75) {
-      return { status: 'critico_baixo', label: 'Crítico (Muito Baixo)', color: 'text-red-700', bg: 'bg-red-100', border: 'border-red-300', dot: 'bg-red-700' };
-    }
-    if (val < refMin) {
-      return { status: 'baixo', label: 'Baixo', color: 'text-amber-700', bg: 'bg-amber-100', border: 'border-amber-300', dot: 'bg-amber-600' };
-    }
-    if (val >= funcMin && val <= funcMax) {
-      return { status: 'ideal', label: 'Ideal (Preventiva)', color: 'text-[#16A34A]', bg: 'bg-[#16A34A]/10', border: 'border-[#16A34A]/30', dot: 'bg-[#16A34A]' };
-    }
-    if (val >= refMin && val <= refMax) {
-      return { status: 'referencia', label: 'Dentro da Referência', color: 'text-amber-600', bg: 'bg-amber-50', border: 'border-amber-200', dot: 'bg-amber-500' };
-    }
-    if (val > refMax * 1.25) {
-      return { status: 'critico_alto', label: 'Crítico (Muito Elevado)', color: 'text-red-700', bg: 'bg-red-100', border: 'border-red-300', dot: 'bg-red-700' };
-    }
-    return { status: 'elevado', label: 'Elevado', color: 'text-red-600', bg: 'bg-red-50', border: 'border-red-200', dot: 'bg-red-600' };
-  };
-
-  // Acionar Análise com Gemini API (Prompt V1.0 Completo)
   const handleRunAiAnalysis = async () => {
+    if (!ocrConfirmed) {
+      setAiError('Confirme os valores extraídos pelo OCR antes de gerar o parecer clínico.');
+      setActiveTab('prontuario_ocr');
+      return;
+    }
     setIsAnalyzing(true);
-    setErrorMessage(null);
+    setAiError(null);
     try {
-      const activeConditions = Object.entries(specialConditions)
-        .filter(([_, active]) => active)
-        .map(([key]) => key);
-
-      const res = await fetch('/api/gemini/analyze-hemogram', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          patient: { ...currentPatient, sex, age },
-          profile: { sex, age, conditions: activeConditions },
-          items: hemogramItems,
-          calculatedIndexes,
-          hemoterm: { vcm: calculatedVCM, hcm: calculatedHCM, chcm: calculatedCHCM }
-        })
+      const report = await apiClient.analyzeHemogramWithAI({
+        clinicalContext,
+        metadata,
+        parameterOutputs: evaluation.parameterOutputs,
+        redSeries: evaluation.redSeries,
+        whiteSeries: evaluation.whiteSeries,
+        platelets: evaluation.platelets,
+        meb: evaluation.meb,
+        indexes: evaluation.indexes,
+        complementaryLabs: complementaryLabs.filter((c) => c.value !== null),
+        longitudinalDeltas: evaluation.longitudinalDeltas
       });
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        console.error('Analyze Hemogram API Error Response:', res.status, errorText);
-        throw new Error(`Servidor respondeu com código ${res.status}`);
-      }
-
-      const data = await res.json();
-      setAiResult(data);
-    } catch (err) {
-      console.error('Failed to run AI hemogram analysis:', err);
-      setAiResult({
-        executiveSummary: "Análise hematológica concluída. Os parâmetros foram correlacionados com faixas funcionais clínicas preventivas.",
-        priorityAlerts: [
-          {
-            parameter: "Índices Eritrocitários",
-            priority: "moderada",
-            severity: "moderado",
-            title: "Otimização Funcional de Cofatores Hematopoiéticos",
-            description: "Contagem de eritrócitos e dosagem de hemoglobina em níveis normais. Recomenda-se avaliação preventiva de ferro sérico, ferritina e cobalamina.",
-            recommendation: "Prescrever ou monitorar ingestão de cofatores da eritropoiese (B12, Folato Ativo, Ferro Heme)."
-          }
-        ],
-        suggestedComplementaryExams: ["Ferritina Sérica", "Vitamina B12", "Homocisteína", "PCR Ultrassensível"]
-      });
+      setAiReport(report);
+      setActiveTab('evolucao_ia');
+    } catch (err: any) {
+      setAiError(
+        err?.message || 'Falha ao gerar parecer clínico por IA. Tente novamente em instantes.'
+      );
+      setActiveTab('evolucao_ia');
     } finally {
       setIsAnalyzing(false);
     }
   };
 
-  const authHash = generateDocumentHash(`hemo-pro-v1-${currentPatient.id}`);
+  const professionalContext: ProfessionalContext = useMemo(
+    () => ({
+      id: professional?.id || 'prof-01',
+      name: professional?.name || 'Dra. Gabriela Santos',
+      crn: professional?.registrationCode || 'CRN-3 48910',
+      specialty: professional?.specialty || 'Nutrição Clínica Avançada',
+      clinicName: 'Clínica de Nutrição Avançada',
+      unit: professional?.unit || currentPatient.unit || 'Matriz',
+      address: 'Unidade Clínica Integrada',
+      phone: professional?.phone || '(11) 99988-7766',
+      email: professional?.email || 'contato@clinica.com.br',
+      cpfCnpj: professional?.cpf || '111.222.333-44'
+    }),
+    [professional, currentPatient.unit]
+  );
+
+  const authHash = useMemo(
+    () => generateDocumentHash(`hemo-pro-${currentPatient.id}-${metadata.collectionDate}`),
+    [currentPatient.id, metadata.collectionDate]
+  );
+
+  const redItems = parameters.filter((p) => p.category === 'vermelha');
+  const whiteItems = parameters.filter((p) => p.category === 'branca');
+  const plateletItems = parameters.filter((p) => p.category === 'plaquetas');
+
+  const renderStandardSeriesTable = (
+    title: string,
+    items: HemoParameterEntry[],
+    includePercentColumn = false
+  ) => (
+    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+      <div className="px-4 py-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-slate-900">{title}</h3>
+        <span className="text-[11px] text-slate-500 tabular-nums">{items.length} parâmetros</span>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-xs border-collapse">
+          <thead className="bg-slate-50/70 text-slate-600 border-b border-slate-200">
+            <tr>
+              <th className="py-2.5 px-3 font-semibold">Parâmetro</th>
+              <th className="py-2.5 px-3 font-semibold text-right">
+                {includePercentColumn ? 'Absoluto (/µL)' : 'Resultado'}
+              </th>
+              {includePercentColumn && (
+                <th className="py-2.5 px-3 font-semibold text-right">Percentual (%)</th>
+              )}
+              <th className="py-2.5 px-3 font-semibold text-right">Ref. Laboratório</th>
+              <th className="py-2.5 px-3 font-semibold text-right">Faixa Funcional</th>
+              <th className="py-2.5 px-3 font-semibold">Classificação & Significado</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-200">
+            {items.map((item) => {
+              const out = outputById.get(item.id);
+              const badge = getStatusBadgeVisual(out?.classification || 'nao_informado');
+              const Icon = badge.Icon;
+              return (
+                <tr key={item.id} className="hover:bg-slate-50/60 align-top">
+                  <td className="py-2.5 px-3">
+                    <div className="font-medium text-slate-900">{item.name}</div>
+                    <div className="text-[11px] text-slate-500">{item.unit}</div>
+                  </td>
+                  <td className="py-2.5 px-3 text-right">
+                    <input
+                      type="number"
+                      step="any"
+                      placeholder="N/I"
+                      value={item.value ?? ''}
+                      onChange={(e) =>
+                        updateAnyParameter(item.id, 'value', parseNullableNumber(e.target.value))
+                      }
+                      className="w-24 border border-slate-300 rounded px-2 py-1 text-right font-mono tabular-nums font-semibold text-slate-900 focus:border-[#4A6B5D] focus:outline-none"
+                    />
+                  </td>
+                  {includePercentColumn && (
+                    <td className="py-2.5 px-3 text-right">
+                      {item.percentValue !== undefined ? (
+                        <input
+                          type="number"
+                          step="0.1"
+                          placeholder="N/I"
+                          value={item.percentValue ?? ''}
+                          onChange={(e) =>
+                            updateAnyParameter(
+                              item.id,
+                              'percentValue',
+                              parseNullableNumber(e.target.value)
+                            )
+                          }
+                          className="w-20 border border-slate-300 rounded px-2 py-1 text-right font-mono tabular-nums text-slate-900 focus:border-[#4A6B5D] focus:outline-none"
+                        />
+                      ) : (
+                        <span className="text-slate-400">—</span>
+                      )}
+                    </td>
+                  )}
+                  <td className="py-2.5 px-3 text-right font-mono tabular-nums text-slate-600 whitespace-nowrap">
+                    {out?.refRangeDisplay || 'Não informado'}
+                  </td>
+                  <td className="py-2.5 px-3 text-right font-mono tabular-nums text-slate-600 whitespace-nowrap">
+                    {out?.funcRangeDisplay || '—'}
+                  </td>
+                  <td className="py-2.5 px-3 space-y-1">
+                    <div className={`inline-flex items-center gap-1.5 font-semibold ${badge.textClass}`}>
+                      <Icon className="w-3.5 h-3.5 shrink-0" />
+                      <span>{out?.classificationLabel || 'Não informado'}</span>
+                    </div>
+                    {out && (
+                      <p className="text-[11px] text-slate-600 leading-snug">
+                        {out.physiologicalMeaning}
+                        {out.needsComplementaryInvestigation && out.investigationNote
+                          ? ` Atenção: ${out.investigationNote}`
+                          : ''}
+                      </p>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-12">
-      {/* Top Banner & Perfil do Paciente Obrigatório (Prompt V1.0) */}
-      <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-xs space-y-4">
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-xl bg-[#4A6B5D] text-white flex items-center justify-center font-bold font-serif text-lg shadow-xs">
-              HP
+    <div className="space-y-5 max-w-7xl mx-auto pb-12">
+      {/* Top Bar Clínica (Seleção de Paciente + Metadados Limpos + Ação Primária) */}
+      <header className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2.5">
+              <Droplet className="w-5 h-5 text-[#4A6B5D] shrink-0" />
+              <h2 className="text-xl font-bold text-slate-900 tracking-tight">
+                HEMO INTELLIGENCE PRO
+              </h2>
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-lg font-bold text-slate-900 tracking-tight">
-                  HEMO INTELLIGENCE PRO — Módulo Inteligente de Interpretação do Hemograma
-                </h1>
-                <span className="bg-emerald-100 text-emerald-800 text-[11px] font-semibold px-2.5 py-0.5 rounded-full border border-emerald-300">
-                  Versão 1.0 (Integrativo & Clínico)
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Hematologia Clínica, Medicina Laboratorial, Nutrição Clínica, Nutrologia e Medicina Integrativa (Diretrizes OMS, ICSH, ASH, EHA).
-              </p>
+            <div className="flex flex-wrap items-center gap-2 text-xs text-slate-600">
+              <span>{currentPatient.name}</span>
+              <span aria-hidden="true">·</span>
+              <span className="font-mono tabular-nums">
+                {currentPatient.recordNumber || 'Sem prontuário'}
+              </span>
+              <span aria-hidden="true">·</span>
+              <span>{clinicalContext.biologicalSex === 'female' ? 'Feminino' : 'Masculino'}</span>
+              <span aria-hidden="true">·</span>
+              <span className="font-mono tabular-nums">{clinicalContext.age} anos</span>
+              <span aria-hidden="true">·</span>
+              <span className="font-mono tabular-nums">Coleta: {metadata.collectionDate}</span>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5 w-full lg:w-auto">
-            {/* Botão de Upload de Laudo / PDF / Imagem */}
-            <label className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 shadow-xs transition-colors cursor-pointer">
-              {isTranscribing ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin text-[#4A6B5D]" />
-                  Transcrevendo...
-                </>
-              ) : (
-                <>
-                  <Upload className="w-4 h-4 text-[#4A6B5D]" />
-                  Carregar Laudo (PDF/Imagem)
-                </>
-              )}
-              <input
-                type="file"
-                accept=".pdf,.png,.jpg,.jpeg,.webp,.txt"
-                onChange={handleFileUpload}
-                disabled={isTranscribing}
-                className="hidden"
-              />
-            </label>
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5">
+              <User className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+              <select
+                value={currentPatient.id}
+                onChange={(e) => {
+                  const found = patients.find((p) => p.id === e.target.value);
+                  if (found) onSelectPatient(found);
+                }}
+                aria-label="Selecionar paciente ativo"
+                className="bg-transparent text-xs font-medium text-slate-800 focus:outline-none"
+              >
+                {patients.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-            {/* Botão de Colar Texto */}
             <button
-              onClick={() => setShowTextModal(true)}
-              disabled={isTranscribing}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 shadow-xs transition-colors disabled:opacity-50"
+              type="button"
+              onClick={handleResetTemplate}
+              className="px-3 py-2 rounded-lg text-xs font-medium border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 flex items-center gap-1.5 whitespace-nowrap shrink-0"
             >
-              <Clipboard className="w-4 h-4 text-[#4A6B5D]" />
-              Colar Texto
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>Limpar / Padrão</span>
             </button>
 
             <button
+              type="button"
+              onClick={handleSaveRecord}
+              disabled={isSavingRecord}
+              className="px-3 py-2 rounded-lg text-xs font-medium border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 flex items-center gap-1.5 whitespace-nowrap shrink-0"
+            >
+              <Save className="w-3.5 h-3.5" />
+              <span>{isSavingRecord ? 'Salvando...' : 'Salvar Exame'}</span>
+            </button>
+
+            <button
+              type="button"
               onClick={handleRunAiAnalysis}
-              disabled={isAnalyzing || isTranscribing}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold bg-emerald-700 hover:bg-emerald-800 text-white shadow-xs transition-colors disabled:opacity-50"
+              disabled={isAnalyzing}
+              className="px-3.5 py-2 rounded-lg text-xs font-semibold border border-[#4A6B5D] text-[#4A6B5D] hover:bg-[#4A6B5D]/5 flex items-center gap-1.5 whitespace-nowrap shrink-0 disabled:opacity-60"
             >
               {isAnalyzing ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Processando Análise IA...
-                </>
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
               ) : (
-                <>
-                  <Sparkles className="w-4 h-4 text-emerald-300" />
-                  Executar Análise Completa
-                </>
+                <Sparkles className="w-3.5 h-3.5" />
               )}
+              <span>{isAnalyzing ? 'Analisando...' : 'Parecer IA'}</span>
             </button>
 
             <button
+              type="button"
               onClick={() => setIsPreviewOpen(true)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-bold bg-[#4A6B5D] hover:bg-[#3d594c] text-white shadow-xs transition-colors"
+              className="px-4 py-2 rounded-lg text-xs font-semibold bg-[#4A6B5D] hover:bg-[#3d594c] text-white flex items-center gap-1.5 whitespace-nowrap shrink-0"
             >
-              <FileText className="w-4 h-4" />
-              Relatório Final PDF
+              <Printer className="w-3.5 h-3.5" />
+              <span>Laudo / PDF</span>
             </button>
           </div>
         </div>
 
-        {/* Banner de Confirmação de Transcrição OCR */}
-        {transcriptionInfo && (
-          <div className="bg-emerald-50 border border-emerald-300 rounded-xl p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-emerald-700 text-white flex items-center justify-center shrink-0">
-                <FileCheck className="w-4 h-4" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-emerald-950">Hemograma Transcrito com Sucesso</span>
-                  <span className="text-[10px] bg-emerald-200 text-emerald-900 font-bold px-2 py-0.5 rounded-full">
-                    OCR + IA Inteligente
-                  </span>
-                </div>
-                <p className="text-emerald-800 text-[11px] mt-0.5">
-                  Laboratório: <strong>{transcriptionInfo.laboratorio}</strong> | Coleta: <strong>{transcriptionInfo.dataColeta}</strong> | Atualizado às {transcriptionInfo.timestamp} ({transcriptionInfo.fileName})
-                </p>
-              </div>
+        {/* Barra de Navegação entre Etapas Clínicas */}
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-slate-200">
+          <div className="flex flex-wrap items-center gap-1 p-1 bg-slate-100 rounded-lg">
+            {(
+              [
+                { id: 'prontuario_ocr', label: '1. Prontuário & OCR' },
+                { id: 'series', label: '2. Séries & Complementares' },
+                { id: 'meb_indices', label: '3. Teste MEB & Índices' },
+                { id: 'evolucao_ia', label: '4. Evolução & Parecer IA' }
+              ] as const
+            ).map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-3.5 py-1.5 rounded-md text-xs font-medium transition-colors whitespace-nowrap shrink-0 ${
+                  activeTab === tab.id
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="text-xs text-slate-600 font-mono tabular-nums">
+            MEB:{' '}
+            <strong>
+              {evaluation.meb.calculable && evaluation.meb.score !== null
+                ? evaluation.meb.score.toFixed(1).replace('.', ',')
+                : 'N/I'}
+            </strong>{' '}
+            · VCM:{' '}
+            <strong>
+              {evaluation.redSeries.calculatedVCM !== null
+                ? `${evaluation.redSeries.calculatedVCM} fL`
+                : 'N/I'}
+            </strong>{' '}
+            · Hist.: <strong>{savedRecords.length}</strong>
+          </div>
+        </div>
+
+        {!ocrConfirmed && (
+          <div className="bg-amber-50 border border-amber-300 rounded-lg px-4 py-2.5 text-xs text-amber-950 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-amber-700 shrink-0" />
+              <span>
+                Dados importados via OCR aguardam conferência profissional na aba{' '}
+                <strong>1. Prontuário &amp; OCR</strong> antes da emissão do parecer IA.
+              </span>
             </div>
             <button
-              onClick={() => setTranscriptionInfo(null)}
-              className="text-emerald-700 hover:text-emerald-900 text-xs font-semibold px-2 py-1 rounded hover:bg-emerald-100 shrink-0"
+              type="button"
+              onClick={handleConfirmOcrReview}
+              className="px-3 py-1 rounded bg-amber-800 text-white text-xs font-medium whitespace-nowrap shrink-0"
             >
-              Fechar
+              Confirmar Agora
             </button>
           </div>
         )}
 
-        {/* Alerta de Erro */}
-        {errorMessage && (
-          <div className="bg-red-50 border border-red-200 text-red-800 rounded-xl p-3 flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
-              <span>{errorMessage}</span>
-            </div>
-            <button onClick={() => setErrorMessage(null)} className="text-red-600 hover:text-red-900 font-bold text-xs">
-              <X className="w-4 h-4" />
-            </button>
+        {saveFeedback && (
+          <div className="bg-slate-50 border border-slate-200 rounded-lg px-4 py-2 text-xs text-slate-800">
+            {saveFeedback}
           </div>
         )}
+      </header>
 
-        {/* Configuração do Perfil do Paciente (Prompt V1.0) */}
-        <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-              <User className="w-4 h-4 text-[#4A6B5D]" />
-              Configuração Obrigatória do Perfil & Condições Especiais do Paciente
-            </h2>
-            <span className="text-[11px] text-slate-500">
-              Valores de referência ajustados automaticamente conforme as variáveis selecionadas.
-            </span>
-          </div>
+      {/* ABA 1: PRONTUÁRIO & UPLOAD OCR */}
+      {activeTab === 'prontuario_ocr' && (
+        <div className="space-y-5">
+          <HemoDocumentUploadPanel
+            metadata={metadata}
+            parameters={parameters}
+            complementaryLabs={complementaryLabs}
+            ocrConfirmed={ocrConfirmed}
+            onUpdateMetadata={setMetadata}
+            onApplyExtractedData={handleApplyExtractedData}
+            onUpdateParameterValue={updateAnyParameter}
+            onConfirmReview={handleConfirmOcrReview}
+          />
+          <HemoEmrContextPanel
+            context={clinicalContext}
+            missingEssentialContext={evaluation.missingEssentialContext}
+            onChangeContext={setClinicalContext}
+          />
+        </div>
+      )}
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-2">
-            <div>
-              <label className="text-[11px] font-semibold text-slate-600 block mb-1">Sexo Biológico:</label>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setSex('masculino')}
-                  className={`flex-1 py-1.5 px-3 rounded text-xs font-bold border transition-colors ${
-                    sex === 'masculino' ? 'bg-[#4A6B5D] text-white border-[#4A6B5D]' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
-                  }`}
-                >
-                  Masculino
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSex('feminino')}
-                  className={`flex-1 py-1.5 px-3 rounded text-xs font-bold border transition-colors ${
-                    sex === 'feminino' ? 'bg-[#4A6B5D] text-white border-[#4A6B5D]' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
-                  }`}
-                >
-                  Feminino
-                </button>
-              </div>
+      {/* ABA 2: SÉRIES HEMATOLÓGICAS & EXAMES COMPLEMENTARES */}
+      {activeTab === 'series' && (
+        <div className="space-y-5">
+          {/* Resumo Índices Hematimétricos & Padrões da Série Vermelha */}
+          <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
+              <h3 className="text-sm font-semibold text-slate-900">
+                Índices Hematimétricos &amp; Padrões da Série Vermelha
+              </h3>
+              <span className="text-xs text-slate-500">
+                Suporte não diagnóstico — requer correlação bioquímica
+              </span>
             </div>
-
-            <div>
-              <label className="text-[11px] font-semibold text-slate-600 block mb-1">Idade (Anos):</label>
-              <input
-                type="number"
-                value={age}
-                onChange={(e) => setAge(Number(e.target.value) || 0)}
-                className="w-full bg-white border border-slate-200 rounded py-1.5 px-3 text-xs font-mono font-bold text-slate-800"
-              />
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="text-[11px] font-semibold text-slate-600 block mb-1">Legenda das 3 Faixas Visuais de Exibição:</label>
-              <div className="flex flex-wrap items-center gap-3 pt-1 text-[11px]">
-                <span className="inline-flex items-center gap-1 font-medium text-amber-800 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
-                  <span className="w-2 h-2 rounded-full bg-amber-500"></span> 🟨 Ref. Laboratorial
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+              <div className="border border-slate-200 rounded-lg p-3.5">
+                <span className="text-slate-500 block">VCM</span>
+                <span className="text-2xl font-bold font-mono tabular-nums text-slate-900">
+                  {evaluation.redSeries.calculatedVCM ?? 'N/I'}{' '}
+                  <span className="text-xs font-normal text-slate-500">fL</span>
                 </span>
-                <span className="inline-flex items-center gap-1 font-medium text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded border border-emerald-300">
-                  <span className="w-2 h-2 rounded-full bg-[#16A34A]"></span> 🟩 Ideal Preventiva
-                </span>
-                <span className="inline-flex items-center gap-1 font-medium text-red-800 bg-red-100 px-2 py-0.5 rounded border border-red-300">
-                  <span className="w-2 h-2 rounded-full bg-red-600"></span> 🟥 Risco / Crítico
+                <span className="block text-slate-700 mt-1">
+                  {evaluation.redSeries.vcmClassification}
                 </span>
               </div>
+              <div className="border border-slate-200 rounded-lg p-3.5">
+                <span className="text-slate-500 block">HCM</span>
+                <span className="text-2xl font-bold font-mono tabular-nums text-slate-900">
+                  {evaluation.redSeries.calculatedHCM ?? 'N/I'}{' '}
+                  <span className="text-xs font-normal text-slate-500">pg</span>
+                </span>
+                <span className="block text-slate-700 mt-1">
+                  {evaluation.redSeries.hcmClassification}
+                </span>
+              </div>
+              <div className="border border-slate-200 rounded-lg p-3.5">
+                <span className="text-slate-500 block">CHCM</span>
+                <span className="text-2xl font-bold font-mono tabular-nums text-slate-900">
+                  {evaluation.redSeries.calculatedCHCM ?? 'N/I'}{' '}
+                  <span className="text-xs font-normal text-slate-500">g/dL</span>
+                </span>
+                <span className="block text-slate-700 mt-1">
+                  {evaluation.redSeries.chcmClassification}
+                </span>
+              </div>
+            </div>
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-3.5 text-xs space-y-1.5">
+              <div className="font-semibold text-slate-900">Padrões morfológicos identificados:</div>
+              <ul className="list-disc pl-5 text-slate-700 space-y-1">
+                {evaluation.redSeries.compatiblePatterns.map((p, idx) => (
+                  <li key={idx}>{p}</li>
+                ))}
+              </ul>
+              <p className="text-[11px] text-slate-500 pt-1">
+                {evaluation.redSeries.corroborationRequirements.join(' ')}
+              </p>
             </div>
           </div>
 
-          {/* Checklist de Condições Especiais */}
-          <div className="pt-2 border-t border-slate-200">
-            <span className="text-[11px] font-semibold text-slate-700 block mb-2">Condições Clínicas Especiais Associadas:</span>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 text-[11px]">
-              {[
-                { key: 'gestante', label: 'Gestante' },
-                { key: 'lactante', label: 'Lactante' },
-                { key: 'crianca', label: 'Criança' },
-                { key: 'adolescente', label: 'Adolescente' },
-                { key: 'adulto', label: 'Adulto' },
-                { key: 'idoso', label: 'Idoso(a)' },
-                { key: 'atleta', label: 'Atleta' },
-                { key: 'obesidade', label: 'Obesidade' },
-                { key: 'diabetes', label: 'Diabetes' },
-                { key: 'hipertensao', label: 'Hipertensão' },
-                { key: 'doencaRenal', label: 'Doença Renal' },
-                { key: 'doencaHepatica', label: 'Doença Hepática' },
-                { key: 'oncologico', label: 'Oncológico' },
-                { key: 'autoimune', label: 'Autoimune' },
-                { key: 'posOperatorio', label: 'Pós-operatório' },
-                { key: 'usoMedicamentos', label: 'Uso de Medicamentos' },
-                { key: 'tabagismo', label: 'Tabagismo' },
-                { key: 'etilismo', label: 'Etilismo' }
-              ].map(cond => {
-                const isActive = !!specialConditions[cond.key];
-                return (
-                  <button
-                    key={cond.key}
-                    type="button"
-                    onClick={() => setSpecialConditions(prev => ({ ...prev, [cond.key]: !isActive }))}
-                    className={`flex items-center gap-1.5 p-1.5 rounded border text-left transition-colors ${
-                      isActive ? 'bg-emerald-50 text-emerald-900 border-emerald-300 font-bold' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100 font-normal'
-                    }`}
-                  >
-                    {isActive ? <CheckSquare className="w-3.5 h-3.5 text-emerald-700 shrink-0" /> : <Square className="w-3.5 h-3.5 text-slate-400 shrink-0" />}
-                    <span className="truncate">{cond.label}</span>
-                  </button>
-                );
-              })}
+          {renderStandardSeriesTable('Série Vermelha (Eritrograma)', redItems, false)}
+
+          <div className="space-y-3">
+            {renderStandardSeriesTable(
+              'Série Branca (Leucograma — Absoluto /µL e Percentual %)',
+              whiteItems,
+              true
+            )}
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-3.5 text-xs space-y-1">
+              <div className="font-semibold text-slate-900">Leitura contextual da Série Branca:</div>
+              <ul className="list-disc pl-5 text-slate-700 space-y-0.5">
+                {evaluation.whiteSeries.compatiblePatterns.map((p, idx) => (
+                  <li key={idx}>{p}</li>
+                ))}
+              </ul>
+              <p className="text-[11px] text-slate-500 pt-1">{evaluation.whiteSeries.cautionNote}</p>
             </div>
+          </div>
+
+          <div className="space-y-3">
+            {renderStandardSeriesTable('Série Plaquetária (Plaquetograma)', plateletItems, false)}
+            <div className="bg-slate-50 border border-slate-200 rounded-lg p-3.5 text-xs space-y-1">
+              <div className="font-semibold text-slate-900">Leitura contextual de Plaquetas:</div>
+              <ul className="list-disc pl-5 text-slate-700 space-y-0.5">
+                {evaluation.platelets.compatiblePatterns.map((p, idx) => (
+                  <li key={idx}>{p}</li>
+                ))}
+              </ul>
+              <p className="text-[11px] text-slate-500 pt-1">{evaluation.platelets.cautionNote}</p>
+            </div>
+          </div>
+
+          {/* Exames Bioquímicos & Nutricionais Complementares */}
+          <div className="space-y-3">
+            {renderStandardSeriesTable(
+              'Exames Bioquímicos e Nutricionais Complementares (Correlação Cruzada)',
+              complementaryLabs,
+              false
+            )}
+            {evaluation.complementaryCorrelations.length > 0 && (
+              <div className="bg-white border border-slate-200 rounded-xl p-4 text-xs space-y-1.5">
+                <div className="font-semibold text-slate-900">
+                  Correlações Cruzadas Automáticas (Hemograma × Bioquímica):
+                </div>
+                <ul className="list-disc pl-5 text-slate-700 space-y-1">
+                  {evaluation.complementaryCorrelations.map((c, idx) => (
+                    <li key={idx}>{c}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Grid Principal: Tabela de Exames & Análise Gemini */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Tabela de Exames (7 Colunas) */}
-        <div className="lg:col-span-7 bg-white border border-slate-200 rounded-xl p-5 shadow-xs space-y-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
-            <div>
-              <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Droplet className="w-4 h-4 text-red-600" />
-                Séries Hematológicas & Índices Automáticos (VCM, HCM, CHCM)
-              </h2>
-              <p className="text-xs text-slate-500">
-                Insira os resultados laboratoriais. VCM, HCM e CHCM são calculados automaticamente por fórmulas padrão.
+      {/* ABA 3: TESTE MEB (8 PARTES) & ÍNDICES HEMATOLÓGICOS */}
+      {activeTab === 'meb_indices' && (
+        <div className="space-y-5">
+          <MebCalculatorCard
+            parameters={parameters}
+            selectedSymptoms={clinicalContext.giAndAllergicSymptoms}
+            onUpdateWhiteDifferential={(id, field, nextVal) =>
+              updateAnyParameter(id, field, nextVal)
+            }
+            onUpdateSymptoms={(symptoms) =>
+              setClinicalContext((prev) => ({ ...prev, giAndAllergicSymptoms: symptoms }))
+            }
+          />
+
+          <section className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
+            <div className="border-b border-slate-200 pb-3">
+              <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
+                <Activity className="w-4 h-4 text-[#4A6B5D] shrink-0" />
+                Índices Hematológicos Automáticos (Contagens Absolutas)
+              </h3>
+              <p className="text-xs text-slate-600 mt-0.5">
+                Marcadores complementares inespecíficos calculados exclusivamente com valores absolutos (/µL). Não possuem ponto de corte diagnóstico universal.
               </p>
             </div>
 
-            <div className="relative w-full sm:w-auto">
-              <Search className="w-3.5 h-3.5 absolute left-2.5 top-2.5 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Filtrar analito..."
-                value={searchFilter}
-                onChange={(e) => setSearchFilter(e.target.value)}
-                className="w-full sm:w-44 pl-8 bg-slate-50 border border-slate-200 rounded px-2.5 py-1.5 text-xs text-slate-800"
-              />
-            </div>
-          </div>
-
-          {/* Tabela de Analitos */}
-          <div className="border border-slate-200 rounded-lg overflow-hidden text-xs max-h-[500px] overflow-y-auto">
-            <table className="w-full text-left border-collapse">
-              <thead className="sticky top-0 bg-slate-100 text-[10px] text-slate-600 uppercase font-bold border-b border-slate-200">
-                <tr>
-                  <th className="py-2 px-3">Parâmetro</th>
-                  <th className="py-2 px-3 text-center">Absoluto</th>
-                  <th className="py-2 px-3 text-center">Relativo (%)</th>
-                  <th className="py-2 px-3 text-center">🟨 Ref. Lab</th>
-                  <th className="py-2 px-3 text-center">🟩 Ideal Prev.</th>
-                  <th className="py-2 px-3 text-right">Classificação</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {hemogramItems
-                  .filter(item => !searchFilter || item.name.toLowerCase().includes(searchFilter.toLowerCase()))
-                  .map((item) => {
-                    const evalStatus = evaluateItemStatus(item);
-                    const isLeucocyteChild = item.category === 'branca' && item.id !== 'leuc';
-                    const isPercentageNative = item.unit === '%';
-
-                    return (
-                      <tr key={item.id} className="hover:bg-slate-50/50 transition-colors">
-                        <td className="py-2.5 px-3">
-                          <span className="font-semibold text-slate-900 block">{item.name}</span>
-                          <span className="text-[10px] text-slate-500">{item.description} ({item.unit})</span>
-                        </td>
-
-                        {/* Valor Absoluto */}
-                        <td className="py-2.5 px-3 text-center font-mono font-bold text-slate-800">
-                          <input
-                            type="number"
-                            step="0.01"
-                            value={item.result}
-                            onChange={(e) => {
-                              const val = parseFloat(e.target.value) || 0;
-                              handleAbsoluteResultChange(item.id, val);
-                            }}
-                            className="w-20 text-center bg-slate-50 border border-slate-200 rounded py-1 px-1 font-mono text-xs font-bold text-slate-900 focus:bg-white"
-                          />
-                        </td>
-
-                        {/* Valor Percentual (%) */}
-                        <td className="py-2.5 px-3 text-center font-mono font-bold">
-                          {isLeucocyteChild ? (
-                            <div className="flex flex-col items-center">
-                              <div className="relative inline-flex items-center">
-                                <input
-                                  type="number"
-                                  step="0.1"
-                                  value={item.percentResult !== undefined ? item.percentResult : 0}
-                                  onChange={(e) => {
-                                    const pctVal = parseFloat(e.target.value) || 0;
-                                    handlePercentResultChange(item.id, pctVal);
-                                  }}
-                                  className="w-16 text-center bg-emerald-50/50 border border-emerald-200 rounded py-1 px-1 font-mono text-xs font-bold text-emerald-950 focus:bg-white"
-                                />
-                                <span className="text-[10px] font-bold text-emerald-800 ml-1">%</span>
-                              </div>
-                              {item.refPercentMin !== undefined && (
-                                <span className="text-[9px] text-slate-400 font-sans mt-0.5">
-                                  ({item.refPercentMin}% - {item.refPercentMax}%)
-                                </span>
-                              )}
-                            </div>
-                          ) : item.id === 'leuc' ? (
-                            <span className="inline-block bg-slate-100 text-slate-800 text-[11px] font-mono font-bold px-2 py-0.5 rounded border border-slate-200">
-                              100.0%
-                            </span>
-                          ) : isPercentageNative ? (
-                            <span className="inline-block bg-emerald-100/60 text-emerald-900 text-[11px] font-mono font-bold px-2 py-0.5 rounded border border-emerald-300">
-                              {item.result}%
-                            </span>
-                          ) : (
-                            <span className="text-slate-400 text-[10px]">-</span>
-                          )}
-                        </td>
-
-                        {/* Referência Laboratorial */}
-                        <td className="py-2.5 px-3 text-center font-mono text-amber-700 font-medium">
-                          <div>{item.refMin} - {item.refMax}</div>
-                          {item.refPercentMin !== undefined && (
-                            <div className="text-[9.5px] text-amber-600 font-sans">({item.refPercentMin}% - {item.refPercentMax}%)</div>
-                          )}
-                        </td>
-
-                        {/* Referência Preventiva / Ideal */}
-                        <td className="py-2.5 px-3 text-center font-mono text-[#16A34A] font-semibold">
-                          <div>{item.funcMin} - {item.funcMax}</div>
-                          {item.funcPercentMin !== undefined && (
-                            <div className="text-[9.5px] text-emerald-600 font-sans">({item.funcPercentMin}% - {item.funcPercentMax}%)</div>
-                          )}
-                        </td>
-
-                        {/* Classificação */}
-                        <td className="py-2.5 px-3 text-right">
-                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${evalStatus.bg} ${evalStatus.color} border ${evalStatus.border}`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${evalStatus.dot}`}></span>
-                            {evalStatus.label}
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Índices Calculados Automaticamente */}
-          <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 space-y-2 text-xs">
-            <span className="font-bold text-slate-800 block uppercase text-[10px] tracking-wider">
-              Índices Hematimétricos Calculados Automaticamente (Prompt V1.0):
-            </span>
-            <div className="grid grid-cols-3 gap-3 text-center">
-              <div className="bg-white p-2 rounded border border-slate-200">
-                <span className="text-[10px] text-slate-400 block">VCM (fL)</span>
-                <span className="font-mono font-bold text-slate-900 text-sm">{calculatedVCM}</span>
-                <span className="text-[10px] text-emerald-700 font-semibold block">{getVcmInterpretation(calculatedVCM)}</span>
-              </div>
-              <div className="bg-white p-2 rounded border border-slate-200">
-                <span className="text-[10px] text-slate-400 block">HCM (pg)</span>
-                <span className="font-mono font-bold text-slate-900 text-sm">{calculatedHCM}</span>
-                <span className="text-[10px] text-emerald-700 font-semibold block">{getHcmInterpretation(calculatedHCM)}</span>
-              </div>
-              <div className="bg-white p-2 rounded border border-slate-200">
-                <span className="text-[10px] text-slate-400 block">CHCM (g/dL)</span>
-                <span className="font-mono font-bold text-slate-900 text-sm">{calculatedCHCM}</span>
-                <span className="text-[10px] text-emerald-700 font-semibold block">Normocrômica</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Painel Lateral: Resultado da Análise Gemini & Índices Inflamatórios */}
-        <div className="lg:col-span-5 space-y-5">
-          {/* Alertas de Prioridade & Análise IA */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-xs font-bold text-[#4A6B5D] uppercase tracking-wider flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-emerald-600" />
-                Parecer Diagnóstico & Investigação Automática (Gemini AI)
-              </h3>
-              <span className="text-[10px] font-mono bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded border border-emerald-200 font-semibold">
-                Clinical AI Pro
-              </span>
-            </div>
-
-            {aiResult ? (
-              <div className="space-y-4 text-xs">
-                <div className="bg-emerald-50/60 border border-emerald-200 rounded-lg p-3 text-slate-800 leading-relaxed">
-                  <strong className="text-emerald-950 block mb-1">Resumo Executivo Integrativo:</strong>
-                  {aiResult.executiveSummary}
-                </div>
-
-                <div>
-                  <span className="font-bold text-slate-700 block uppercase text-[10px] tracking-wider mb-2">
-                    Alertas Críticos & Hipóteses Diferenciais:
-                  </span>
-                  <div className="space-y-2">
-                    {aiResult.priorityAlerts?.map((alert: any, idx: number) => (
-                      <div 
-                        key={idx}
-                        className={`p-3 rounded-lg border ${
-                          alert.priority === 'alta' ? 'bg-red-50 border-red-200 text-red-900' :
-                          alert.priority === 'moderada' ? 'bg-amber-50 border-amber-200 text-amber-900' :
-                          'bg-emerald-50 border-emerald-200 text-emerald-900'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between font-bold mb-1">
-                          <span>{alert.title}</span>
-                          <span className={`text-[10px] uppercase px-1.5 py-0.5 rounded ${
-                            alert.priority === 'alta' ? 'bg-red-200 text-red-800' : 'bg-amber-200 text-amber-800'
-                          }`}>
-                            {alert.severity || alert.priority}
-                          </span>
-                        </div>
-                        <p className="text-[11px] leading-relaxed mb-1">{alert.description}</p>
-                        <p className="text-[10px] font-semibold text-slate-700 mt-1">
-                          Conduta Recomendada: {alert.recommendation}
-                        </p>
-                      </div>
-                    ))}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {evaluation.indexes.map((idx) => (
+                <div
+                  key={idx.id}
+                  className="border border-slate-200 rounded-lg p-4 flex flex-col justify-between space-y-2.5"
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <span className="text-xs font-semibold text-slate-900">{idx.name}</span>
+                      <span className="text-xl font-bold font-mono tabular-nums text-slate-900 shrink-0">
+                        {idx.calculable && idx.result !== null
+                          ? idx.result.toLocaleString('pt-BR')
+                          : 'N/I'}
+                      </span>
+                    </div>
+                    <div className="text-[11px] font-mono text-slate-600">
+                      Fórmula: {idx.formula}
+                    </div>
+                    <div className="text-[11px] font-mono tabular-nums text-slate-500">
+                      Valores: {idx.valuesUsedDisplay}
+                    </div>
                   </div>
+                  {idx.unavailableReason ? (
+                    <p className="text-[11px] text-amber-800 bg-amber-50 border border-amber-200 rounded px-2.5 py-1.5">
+                      Bloqueado: {idx.unavailableReason}
+                    </p>
+                  ) : (
+                    <p className="text-[11px] text-slate-600 leading-snug">
+                      {idx.clinicalInterpretationNote}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      )}
+
+      {/* ABA 4: EVOLUÇÃO LONGITUDINAL & PARECER IA */}
+      {activeTab === 'evolucao_ia' && (
+        <div className="space-y-5">
+          {/* Parecer IA Estruturado */}
+          <section className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
+              <div>
+                <h3 className="text-base font-semibold text-slate-900 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-[#4A6B5D] shrink-0" />
+                  Síntese Clínica Assistida por IA (Suporte à Decisão)
+                </h3>
+                <p className="text-xs text-slate-600 mt-0.5">
+                  Correlação integrada anonimizada entre hemograma, bioquímica, MEB, índices e prontuário. Não substitui diagnóstico médico.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleRunAiAnalysis}
+                disabled={isAnalyzing}
+                className="px-4 py-2 rounded-lg text-xs font-semibold bg-[#4A6B5D] hover:bg-[#3d594c] text-white transition-colors flex items-center gap-2 disabled:opacity-60 whitespace-nowrap shrink-0"
+              >
+                {isAnalyzing ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Gerando Parecer...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4" />
+                    <span>{aiReport ? 'Atualizar Parecer IA' : 'Gerar Parecer Clínico IA'}</span>
+                  </>
+                )}
+              </button>
+            </div>
+
+            {aiError && (
+              <div className="p-3.5 rounded-lg border border-red-200 bg-red-50 text-xs text-red-900 flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 text-red-700 shrink-0 mt-0.5" />
+                <span>{aiError}</span>
+              </div>
+            )}
+
+            {!aiReport && !isAnalyzing && !aiError && (
+              <div className="border border-dashed border-slate-300 rounded-lg p-6 text-center space-y-2 text-xs text-slate-600">
+                <p className="font-medium text-slate-800">
+                  Nenhum parecer integrado gerado para os valores atuais.
+                </p>
+                <p>
+                  Clique em <strong>Gerar Parecer Clínico IA</strong> após confirmar os dados do hemograma para obter hipóteses não diagnósticas e correlações nutricionais.
+                </p>
+              </div>
+            )}
+
+            {aiReport && (
+              <div className="space-y-5 text-xs">
+                <div className="bg-slate-50 border border-slate-200 rounded-lg p-4 space-y-1.5">
+                  <div className="font-semibold text-slate-900">Síntese Executiva</div>
+                  <p className="text-slate-700 leading-relaxed">{aiReport.executiveSummary}</p>
                 </div>
 
-                {aiResult.suggestedComplementaryExams && (
-                  <div className="bg-slate-50 border border-slate-200 rounded p-2.5">
-                    <span className="font-bold text-slate-700 block text-[10px] uppercase mb-1">
-                      Exames Complementares Sugeridos (Ferro, B12, Perfil Lipídico, PCR, etc.):
-                    </span>
-                    <div className="flex flex-wrap gap-1">
-                      {aiResult.suggestedComplementaryExams.map((ex: string, eIdx: number) => (
-                        <span key={eIdx} className="bg-white border border-slate-200 rounded px-2 py-0.5 text-[11px] font-medium text-slate-700">
-                          {ex}
-                        </span>
+                {aiReport.nonDiagnosticHypotheses.length > 0 && (
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-slate-900">
+                      Hipóteses Clínicas Não Diagnósticas
+                    </h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {aiReport.nonDiagnosticHypotheses.map((hyp, idx) => (
+                        <div key={idx} className="border border-slate-200 rounded-lg p-3.5 space-y-1.5">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="font-semibold text-slate-900">{hyp.title}</span>
+                            <span className="text-[11px] font-medium text-slate-600 whitespace-nowrap">
+                              {hyp.series} · {hyp.priority}
+                            </span>
+                          </div>
+                          <p className="text-slate-700 leading-relaxed">{hyp.rationale}</p>
+                          {hyp.corroboratingMarkers.length > 0 && (
+                            <p className="text-[11px] text-slate-500">
+                              Marcadores: {hyp.corroboratingMarkers.join(', ')}
+                            </p>
+                          )}
+                        </div>
                       ))}
                     </div>
                   </div>
                 )}
-              </div>
-            ) : (
-              <div className="py-12 text-center text-slate-400 text-xs space-y-3">
-                <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center mx-auto text-slate-400">
-                  <Sparkles className="w-6 h-6" />
+
+                {aiReport.nutritionalCorrelations.length > 0 && (
+                  <div className="space-y-2">
+                    <h4 className="font-semibold text-slate-900">
+                      Correlações e Condutas Nutricionais Seguras
+                    </h4>
+                    <div className="overflow-x-auto border border-slate-200 rounded-lg">
+                      <table className="w-full text-left border-collapse">
+                        <thead className="bg-slate-50 text-slate-600 border-b border-slate-200">
+                          <tr>
+                            <th className="py-2 px-3 font-semibold">Nutriente / Eixo</th>
+                            <th className="py-2 px-3 font-semibold">Status</th>
+                            <th className="py-2 px-3 font-semibold">Racional & Orientação Dietética</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-200">
+                          {aiReport.nutritionalCorrelations.map((nc, idx) => (
+                            <tr key={idx} className="align-top">
+                              <td className="py-2.5 px-3 font-semibold text-slate-900 whitespace-nowrap">
+                                {nc.nutrientOrAxis}
+                              </td>
+                              <td className="py-2.5 px-3 text-slate-700 whitespace-nowrap">
+                                {nc.status}
+                              </td>
+                              <td className="py-2.5 px-3 text-slate-700 space-y-1">
+                                <p>{nc.clinicalRationale}</p>
+                                <p className="text-[#4A6B5D] font-medium">{nc.dietaryGuidance}</p>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="border border-slate-200 rounded-lg p-3.5 space-y-1.5">
+                    <div className="font-semibold text-slate-900">
+                      Investigações Complementares Sugeridas
+                    </div>
+                    <ul className="list-disc pl-5 text-slate-700 space-y-1">
+                      {aiReport.suggestedInvestigations.map((item, idx) => (
+                        <li key={idx}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="border border-slate-200 rounded-lg p-3.5 space-y-1.5">
+                    <div className="font-semibold text-slate-900">
+                      Perguntas de Acompanhamento Clínico
+                    </div>
+                    <ul className="list-disc pl-5 text-slate-700 space-y-1">
+                      {aiReport.followUpQuestions.map((q, idx) => (
+                        <li key={idx}>{q}</li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
-                <p>Clique em <strong>"Executar Análise Completa"</strong> para gerar o relatório com base nas diretrizes do Prompt V1.0.</p>
+
+                <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-[11px] text-slate-600 flex items-start gap-2">
+                  <Info className="w-4 h-4 text-[#4A6B5D] shrink-0 mt-0.5" />
+                  <span>{aiReport.clinicalSafetyDisclaimer}</span>
+                </div>
               </div>
             )}
-          </div>
+          </section>
 
-          {/* Índices Imunoinflamatórios (RNL, RPL, RML, SII, AISI, SIRI) */}
-          <div className="bg-white border border-slate-200 rounded-xl p-5 shadow-xs space-y-3">
-            <h3 className="text-xs font-bold text-[#4A6B5D] uppercase tracking-wider flex items-center gap-1.5 border-b border-[#4A6B5D]/20 pb-2">
-              <BarChart3 className="w-4 h-4 text-[#4A6B5D]" />
-              Índices Imunoinflamatórios & Estresse Sistêmico
-            </h3>
-
-            <div className="grid grid-cols-2 gap-3 text-xs">
-              <div className="bg-slate-50 border border-slate-200 rounded p-2.5 text-center">
-                <span className="text-[10px] text-slate-400 uppercase block font-medium">RNL (Neut./Linf.)</span>
-                <span className="text-base font-bold font-mono text-slate-800">{calculatedIndexes.nlr}</span>
-                <span className={`text-[10px] block mt-0.5 font-semibold ${calculatedIndexes.nlr > 3.0 ? 'text-amber-600' : 'text-[#16A34A]'}`}>
-                  {calculatedIndexes.nlr > 3.0 ? 'Alerta Inflamatório' : 'Ótimo (< 3.0)'}
-                </span>
-              </div>
-
-              <div className="bg-slate-50 border border-slate-200 rounded p-2.5 text-center">
-                <span className="text-[10px] text-slate-400 uppercase block font-medium">RPL (Plaq./Linf.)</span>
-                <span className="text-base font-bold font-mono text-slate-800">{calculatedIndexes.plr}</span>
-                <span className="text-[10px] text-[#16A34A] block mt-0.5 font-medium">Normal (&lt; 150)</span>
-              </div>
-
-              <div className="bg-slate-50 border border-slate-200 rounded p-2.5 text-center">
-                <span className="text-[10px] text-slate-400 uppercase block font-medium">SII (Plaq.×Neut.÷Linf.)</span>
-                <span className="text-base font-bold font-mono text-slate-800">{calculatedIndexes.sii}</span>
-                <span className="text-[10px] text-slate-500 block mt-0.5 font-medium">Imunotrombose</span>
-              </div>
-
-              <div className="bg-slate-50 border border-slate-200 rounded p-2.5 text-center">
-                <span className="text-[10px] text-slate-400 uppercase block font-medium">SIRI (Neut.×Mon.÷Linf.)</span>
-                <span className="text-base font-bold font-mono text-slate-800">{calculatedIndexes.siri}</span>
-                <span className="text-[10px] text-slate-500 block mt-0.5 font-medium">Estresse Sistêmico</span>
-              </div>
-            </div>
-          </div>
+          <HemoLongitudinalPanel
+            records={savedRecords}
+            longitudinalDeltas={evaluation.longitudinalDeltas}
+            isLoading={isLoadingHistory}
+            isSaving={isSavingRecord}
+            onSaveCurrentRecord={handleSaveRecord}
+            onLoadRecordIntoEditor={handleLoadRecordIntoEditor}
+            onDeleteRecord={handleDeleteRecord}
+          />
         </div>
-      </div>
+      )}
 
-      {/* Módulo do Índice MEB & Biomarcadores Intestinais Sincronizado */}
-      <div className="mt-6">
-        {(() => {
-          const leucTotalForMeb = hemogramItems.find(i => i.id === 'leuc')?.result || 6800;
-          const monoItemForMeb = hemogramItems.find(i => i.id === 'mono');
-          const eosItemForMeb = hemogramItems.find(i => i.id === 'eos');
-          const basoItemForMeb = hemogramItems.find(i => i.id === 'baso');
-
-          const liveMonocytesPercent = monoItemForMeb?.percentResult !== undefined
-            ? monoItemForMeb.percentResult
-            : (leucTotalForMeb > 0 ? Number((((monoItemForMeb?.result || 480) / leucTotalForMeb) * 100).toFixed(1)) : 7.1);
-
-          const liveEosinophilsPercent = eosItemForMeb?.percentResult !== undefined
-            ? eosItemForMeb.percentResult
-            : (leucTotalForMeb > 0 ? Number((((eosItemForMeb?.result || 180) / leucTotalForMeb) * 100).toFixed(1)) : 2.6);
-
-          const liveBasophilsPercent = basoItemForMeb?.percentResult !== undefined
-            ? basoItemForMeb.percentResult
-            : (leucTotalForMeb > 0 ? Number((((basoItemForMeb?.result || 40) / leucTotalForMeb) * 100).toFixed(1)) : 0.6);
-
-          return (
-            <MebCalculatorCard 
-              monocytesPercent={liveMonocytesPercent} 
-              eosinophilsPercent={liveEosinophilsPercent} 
-              basophilsPercent={liveBasophilsPercent} 
-              patientName={currentPatient.name} 
-            />
-          );
-        })()}
-      </div>
-
-      {/* Modal de Pré-visualização do Relatório Oficial (Prompt V1.0) */}
+      {/* Modal de Pré-visualização / Exportação PDF */}
       <DocumentPreviewModal
         isOpen={isPreviewOpen}
         onClose={() => setIsPreviewOpen(false)}
-        documentTitle="Hemo Intelligence Pro — Laudo Clínico Oficial do Hemograma"
+        documentTitle="Hemo Intelligence Pro — Relatório Técnico Hematológico & Índice MEB"
         patient={{
           id: currentPatient.id,
           name: currentPatient.name,
-          cpf: currentPatient.cpf || '123.456.789-00',
-          birthDate: currentPatient.birthDate || '1995-04-12',
-          age: age,
-          sex: sex === 'masculino' ? 'male' : 'female',
-          phone: currentPatient.phone || '(11) 98765-4321',
-          email: currentPatient.email || 'paciente@email.com',
-          heightCm: currentPatient.heightCm || 178,
-          currentWeightKg: currentPatient.currentWeightKg || 82.5,
-          recordNumber: currentPatient.recordNumber || 'PRONT-001',
-          unit: currentPatient.unit || 'São Paulo - Jardins'
+          cpf: currentPatient.cpf || 'Não informado',
+          birthDate: currentPatient.birthDate || 'Não informado',
+          age: clinicalContext.age,
+          sex: clinicalContext.biologicalSex,
+          phone: currentPatient.phone || 'Não informado',
+          email: currentPatient.email || 'Não informado',
+          heightCm: clinicalContext.heightCm || 0,
+          currentWeightKg: clinicalContext.weightKg || 0,
+          recordNumber: clinicalContext.recordNumber,
+          unit: currentPatient.unit || 'Matriz'
         }}
       >
         <div className="bg-white text-slate-800 p-8 max-w-[210mm] mx-auto min-h-[297mm] flex flex-col justify-between font-sans leading-relaxed">
-          <div>
+          <div className="space-y-5">
             <DocumentHeader
               professional={professionalContext}
               patient={{
                 id: currentPatient.id,
                 name: currentPatient.name,
-                cpf: currentPatient.cpf || '123.456.789-00',
-                birthDate: currentPatient.birthDate || '1995-04-12',
-                age: age,
-                sex: sex === 'masculino' ? 'male' : 'female',
-                phone: currentPatient.phone || '(11) 98765-4321',
-                email: currentPatient.email || 'paciente@email.com',
-                heightCm: currentPatient.heightCm || 178,
-                currentWeightKg: currentPatient.currentWeightKg || 82.5,
-                recordNumber: currentPatient.recordNumber || 'PRONT-001',
-                unit: currentPatient.unit || 'São Paulo - Jardins'
+                cpf: currentPatient.cpf || 'Não informado',
+                birthDate: currentPatient.birthDate || 'Não informado',
+                age: clinicalContext.age,
+                sex: clinicalContext.biologicalSex,
+                phone: currentPatient.phone || 'Não informado',
+                email: currentPatient.email || 'Não informado',
+                heightCm: clinicalContext.heightCm || 0,
+                currentWeightKg: clinicalContext.weightKg || 0,
+                recordNumber: clinicalContext.recordNumber,
+                unit: currentPatient.unit || 'Matriz'
               }}
-              documentTitle="Relatório Oficial de Interpretação Avançada do Hemograma (Hemo Intelligence Pro v1.0)"
-              documentSubtitle={`Perfil: ${sex.toUpperCase()}, ${age} anos | Condições: ${Object.entries(specialConditions).filter(([_,v])=>v).map(([k])=>k).join(', ')}`}
+              documentTitle="Relatório Técnico de Interpretação Hematológica & Teste MEB"
+              documentSubtitle={`Laboratório: ${metadata.laboratoryName} · Coleta: ${metadata.collectionDate} · Sexo biológico: ${clinicalContext.biologicalSex === 'female' ? 'Feminino' : 'Masculino'}, ${clinicalContext.age} anos`}
             />
 
-            <div className="mb-6 bg-slate-50 border border-slate-200 rounded-md p-4 text-xs space-y-2">
-              <span className="font-bold text-[#4A6B5D] block uppercase text-[10px] tracking-wider">
-                Resumo Executivo & Classificação de Risco Clínico:
-              </span>
-              <p className="text-slate-700 leading-relaxed">
-                {aiResult?.executiveSummary || 'Análise hematológica detalhada com base em intervalos funcionais e diretrizes da OMS, ICSH e ASH.'}
+            <div className="bg-slate-50 border border-slate-200 rounded-md p-3.5 text-xs space-y-1.5">
+              <div className="font-semibold text-slate-900">Síntese Clínica Integrada</div>
+              <p className="text-slate-700">
+                {aiReport?.executiveSummary ||
+                  'Avaliação hematológica estruturada com análise das séries vermelha, branca e plaquetária, cálculo percentual do índice MEB e razões hematológicas absolutas para suporte à decisão clínica.'}
               </p>
             </div>
 
-            <div className="mb-6">
+            <div>
               <h3 className="text-xs font-bold text-[#4A6B5D] uppercase tracking-wider mb-2 border-b border-[#4A6B5D]/20 pb-1">
-                Tabela Consolidada de Séries Hematológicas & Índices
+                Parâmetros Hematológicos &amp; Complementares
               </h3>
-              <div className="border border-slate-200 rounded-md overflow-hidden text-xs">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-slate-100 text-[10px] text-slate-600 uppercase font-bold border-b border-slate-200">
-                      <th className="py-1.5 px-3">Parâmetro</th>
-                      <th className="py-1.5 px-3 text-center">Resultado Absoluto</th>
-                      <th className="py-1.5 px-3 text-center">Relativo (%)</th>
-                      <th className="py-1.5 px-3 text-center">🟨 Ref. Lab</th>
-                      <th className="py-1.5 px-3 text-center">🟩 Ideal Prev.</th>
-                      <th className="py-1.5 px-3 text-right">Classificação</th>
+              <table className="w-full text-left border-collapse text-[11px] border border-slate-200">
+                <thead>
+                  <tr className="bg-slate-100 text-slate-700 border-b border-slate-200">
+                    <th className="py-1.5 px-2.5">Parâmetro</th>
+                    <th className="py-1.5 px-2.5 text-right">Resultado</th>
+                    <th className="py-1.5 px-2.5 text-right">%</th>
+                    <th className="py-1.5 px-2.5 text-right">Ref. Lab.</th>
+                    <th className="py-1.5 px-2.5 text-right">Classificação</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                  {evaluation.parameterOutputs.map((out) => (
+                    <tr key={out.id}>
+                      <td className="py-1.5 px-2.5 font-medium text-slate-900">{out.name}</td>
+                      <td className="py-1.5 px-2.5 text-right font-mono tabular-nums">
+                        {out.value !== null ? `${out.value.toLocaleString('pt-BR')} ${out.unit}` : 'Não informado'}
+                      </td>
+                      <td className="py-1.5 px-2.5 text-right font-mono tabular-nums">
+                        {out.percentValue != null ? `${out.percentValue.toFixed(1).replace('.', ',')}%` : '—'}
+                      </td>
+                      <td className="py-1.5 px-2.5 text-right font-mono tabular-nums text-slate-600">
+                        {out.refRangeDisplay}
+                      </td>
+                      <td className="py-1.5 px-2.5 text-right text-slate-800">{out.classificationLabel}</td>
                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {hemogramItems.map((item, idx) => {
-                      const st = evaluateItemStatus(item);
-                      const pctFormatted = getItemPercentFormatted(item);
-
-                      return (
-                        <tr key={idx} className="hover:bg-slate-50">
-                          <td className="py-1.5 px-3 font-medium text-slate-900">{item.name}</td>
-                          <td className="py-1.5 px-3 text-center font-mono font-bold">{item.result} {item.unit}</td>
-                          <td className="py-1.5 px-3 text-center font-mono font-semibold text-emerald-900">{pctFormatted}</td>
-                          <td className="py-1.5 px-3 text-center font-mono text-slate-500">
-                            {item.refMin} - {item.refMax}
-                            {item.refPercentMin !== undefined && ` (${item.refPercentMin}% - ${item.refPercentMax}%)`}
-                          </td>
-                          <td className="py-1.5 px-3 text-center font-mono text-[#16A34A]">
-                            {item.funcMin} - {item.funcMax}
-                            {item.funcPercentMin !== undefined && ` (${item.funcPercentMin}% - ${item.funcPercentMax}%)`}
-                          </td>
-                          <td className="py-1.5 px-3 text-right font-semibold text-emerald-700">{st.label}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
             </div>
 
-            {aiResult?.priorityAlerts && (
-              <div className="mb-6 space-y-2">
-                <h3 className="text-xs font-bold text-[#4A6B5D] uppercase tracking-wider mb-2 border-b border-[#4A6B5D]/20 pb-1">
-                  Condutas Médicas & Nutricionais Baseadas em Evidências
-                </h3>
-                {aiResult.priorityAlerts.map((alert: any, aIdx: number) => (
-                  <div key={aIdx} className="bg-slate-50 border border-slate-200 rounded p-3 text-xs space-y-1">
-                    <div className="font-bold text-slate-900 flex items-center justify-between">
-                      <span>{alert.title}</span>
-                      <span className="text-[10px] text-emerald-700 uppercase font-bold">{alert.severity}</span>
-                    </div>
-                    <p className="text-slate-700">{alert.description}</p>
-                    <p className="text-[11px] font-semibold text-[#4A6B5D]">Conduta: {alert.recommendation}</p>
-                  </div>
-                ))}
+            <div className="grid grid-cols-2 gap-4 text-[11px]">
+              <div className="border border-slate-200 rounded-md p-3 space-y-1">
+                <div className="font-bold text-slate-900">Teste MEB (Protocolo Operacional)</div>
+                <div className="font-mono tabular-nums">{evaluation.meb.formulaDisplay}</div>
+                <div>{evaluation.meb.classificationLabel}</div>
+                <div>Componente predominante: {evaluation.meb.predominantComponentLabel}</div>
               </div>
-            )}
+              <div className="border border-slate-200 rounded-md p-3 space-y-1">
+                <div className="font-bold text-slate-900">Índices Hematológicos Absolutos</div>
+                <div className="grid grid-cols-2 gap-x-2 font-mono tabular-nums">
+                  {evaluation.indexes.map((idx) => (
+                    <span key={idx.id}>
+                      {idx.id}: {idx.calculable && idx.result !== null ? idx.result.toLocaleString('pt-BR') : 'N/I'}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
 
           <DocumentFooter
             professional={professionalContext}
             authHash={authHash}
-            customDisclaimer="Laudo emitido por Hemo Intelligence Pro v1.0. Suporte à decisão clínica baseado em diretrizes OMS, ICSH, ASH e EHA. Não substitui o julgamento médico definitivo."
+            customDisclaimer="Documento técnico de suporte à decisão clínica (HEMO INTELLIGENCE PRO). Não substitui diagnóstico médico, julgamento clínico presencial ou prescrição médica."
           />
         </div>
       </DocumentPreviewModal>
-
-      {/* Modal para Colar Texto do Laudo */}
-      {showTextModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl max-w-lg w-full p-5 space-y-4 shadow-xl border border-slate-200 animate-in fade-in zoom-in duration-150">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
-                <Clipboard className="w-4 h-4 text-[#4A6B5D]" />
-                Colar Texto do Laudo do Hemograma
-              </h3>
-              <button onClick={() => setShowTextModal(false)} className="text-slate-400 hover:text-slate-600 p-1 rounded-md">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Copie e cole aqui o texto bruto do PDF ou laudo do laboratório (ex: Fleury, Hermes Pardini, Dasa). A Inteligência Artificial irá extrair todos os analitos automaticamente.
-            </p>
-
-            <textarea
-              rows={8}
-              value={pastedText}
-              onChange={(e) => setPastedText(e.target.value)}
-              placeholder="Cole o texto do laudo aqui (ex: Hemácias: 4,65 milhões/uL, Hemoglobina: 13,2 g/dL, Hematócrito: 39,5%, Leucócitos: 6800/uL, Plaquetas: 265000/uL...)"
-              className="w-full bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs text-slate-800 font-mono focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-[#4A6B5D]"
-            />
-
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-              <button
-                onClick={() => setShowTextModal(false)}
-                className="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-100"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handlePasteTextSubmit}
-                disabled={isTranscribing || !pastedText.trim()}
-                className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-xs font-bold bg-[#4A6B5D] hover:bg-[#3d594c] text-white shadow-xs disabled:opacity-50"
-              >
-                {isTranscribing ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    Transcrevendo...
-                  </>
-                ) : (
-                  <>
-                    <Zap className="w-3.5 h-3.5" />
-                    Transcrever & Preencher
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

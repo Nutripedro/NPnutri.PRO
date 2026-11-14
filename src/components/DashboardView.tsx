@@ -1,6 +1,7 @@
-import React from 'react';
-import { Patient, AnthropometryEvaluation } from '../types';
+import React, { useState } from 'react';
+import { Patient, AnthropometryEvaluation, WeightEvolutionPoint } from '../types';
 import { GraficoEvolucaoPeso } from './GraficoEvolucaoPeso';
+import { DashboardEvolucaoClinica } from './DashboardEvolucaoClinica';
 import { CardiometabolicCalculatorCard } from './CardiometabolicCalculatorCard';
 import { 
   Activity, 
@@ -9,22 +10,31 @@ import {
   TrendingUp, 
   Info,
   CalendarDays,
-  Edit
+  Edit,
+  Users,
+  LineChart as LineChartIcon
 } from 'lucide-react';
+import { InfoHelpButton } from './help/InfoHelpButton';
+import { ClinicalTooltip } from './help/ClinicalTooltip';
 
 interface DashboardViewProps {
   patient: Patient;
   anthro: AnthropometryEvaluation;
   privacyMode: boolean;
   onEdit: () => void;
+  allPatients?: Patient[];
+  onUpdatePatientWeightHistory?: (newHistory: WeightEvolutionPoint[]) => void;
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
   patient,
   anthro,
   privacyMode,
-  onEdit
+  onEdit,
+  allPatients = [],
+  onUpdatePatientWeightHistory
 }) => {
+  const [evolutionDisplayMode, setEvolutionDisplayMode] = useState<'benchmark_clinica' | 'peso_rapido'>('benchmark_clinica');
   return (
     <div className="space-y-6">
       
@@ -32,26 +42,31 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs flex items-center justify-between">
         <div className="flex items-center gap-6">
           <div className="hidden sm:flex flex-col items-center justify-center p-4 bg-emerald-50 dark:bg-emerald-950/80 rounded-xl border border-emerald-100 dark:border-emerald-800/80">
-            <span className="text-xl font-black text-[#004f28] dark:text-emerald-400">{patient.avatarInitials}</span>
+            <span className="text-xl font-black text-[#004f28] dark:text-emerald-400">{patient?.avatarInitials || (patient?.name ? patient.name.slice(0, 2).toUpperCase() : 'PC')}</span>
           </div>
           <div>
-            <h2 className="text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
-              Olá, <span className={privacyMode ? 'filter blur-xs' : ''}>{patient.name.split(' ')[0]}</span>!
-            </h2>
+            <div className="flex items-center space-x-2">
+              <h2 className="text-2xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
+                Olá, <span className={privacyMode ? 'filter blur-xs' : ''}>{(patient?.name || 'Paciente').split(' ')[0]}</span>!
+              </h2>
+              <InfoHelpButton helpId="dashboard" size="xs" variant="emerald" title="Explicativo sobre o Dashboard de Progresso" />
+            </div>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-              Prontuário {patient.recordNumber} • Unidade: {patient.unit}
+              Prontuário {patient?.recordNumber || 'N/A'} • Unidade: {patient?.unit || 'Clínica Principal'}
             </p>
           </div>
         </div>
         
         <div className="flex flex-col items-end gap-2">
-          <button 
-            onClick={onEdit}
-            className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm"
-          >
-            <Edit className="w-3.5 h-3.5" />
-            Editar Prontuário
-          </button>
+          <ClinicalTooltip helpId="pacientes" position="left">
+            <button 
+              onClick={onEdit}
+              className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors shadow-sm cursor-pointer"
+            >
+              <Edit className="w-3.5 h-3.5" />
+              <span>Editar Prontuário</span>
+            </button>
+          </ClinicalTooltip>
           <div className="flex items-center space-x-2 text-[10px] font-mono bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded border border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-400">
             <CalendarDays className="w-3 h-3" />
             <span>Avaliado em: {patient.lastAssessmentDate}</span>
@@ -89,8 +104,50 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
       </div>
 
-      {/* Weight Evolution Graph (Reused Component) */}
-      <GraficoEvolucaoPeso patient={patient} privacyMode={privacyMode} />
+      {/* Clinical Evolution Mode Switcher Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200/90 dark:border-slate-800 shadow-xs">
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => setEvolutionDisplayMode('benchmark_clinica')}
+            className={`flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              evolutionDisplayMode === 'benchmark_clinica'
+                ? 'bg-[#004f28] text-white shadow-xs'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+            }`}
+          >
+            <Users className="w-3.5 h-3.5" />
+            <span>Dashboard de Evolução & Benchmark Clínico</span>
+          </button>
+
+          <button
+            onClick={() => setEvolutionDisplayMode('peso_rapido')}
+            className={`flex items-center space-x-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              evolutionDisplayMode === 'peso_rapido'
+                ? 'bg-[#004f28] text-white shadow-xs'
+                : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+            }`}
+          >
+            <LineChartIcon className="w-3.5 h-3.5" />
+            <span>Curva de Peso & Metas Rápidas</span>
+          </button>
+        </div>
+
+        <span className="text-[11px] font-sans text-slate-400 px-2 hidden md:inline">
+          Histórico de Peso e % Gordura comparado à Clínica
+        </span>
+      </div>
+
+      {/* Render selected Evolution Component */}
+      {evolutionDisplayMode === 'benchmark_clinica' ? (
+        <DashboardEvolucaoClinica
+          patient={patient}
+          allPatients={allPatients}
+          privacyMode={privacyMode}
+          onUpdatePatientWeightHistory={onUpdatePatientWeightHistory}
+        />
+      ) : (
+        <GraficoEvolucaoPeso patient={patient} privacyMode={privacyMode} />
+      )}
 
       {/* Cardiometabolic Risk Calculator & Reference Table Card */}
       <CardiometabolicCalculatorCard 

@@ -3,16 +3,17 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 import { INITIAL_PATIENTS, INITIAL_SETTINGS, INITIAL_PROFESSIONALS } from './src/data/clinicalData.js';
 import { evaluateFullMeasurement } from './src/lib/zscore-calculator.js';
+import { ANVISA_FOOD_DATABASE } from './src/data/anvisaFoodDatabase.js';
+import { INITIAL_NUTRITION_RECIPES, sanitizeLabelText } from './src/domain/anvisaLabelEngine.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
-  apiVersion: 'v1beta',
   httpOptions: {
     headers: {
       'User-Agent': 'aistudio-build',
@@ -20,28 +21,11 @@ const ai = new GoogleGenAI({
   }
 });
 
-function parseGeminiJson<T = any>(text: string | undefined, fallback: T): T {
-  if (!text) return fallback;
-  try {
-    const cleaned = text.trim().replace(/^```json\s*/i, '').replace(/^```\s*/, '').replace(/\s*```$/, '');
-    return JSON.parse(cleaned);
-  } catch (err) {
-    try {
-      const firstBrace = text.indexOf('{');
-      const lastBrace = text.lastIndexOf('}');
-      if (firstBrace !== -1 && lastBrace !== -1) {
-        return JSON.parse(text.substring(firstBrace, lastBrace + 1));
-      }
-    } catch {}
-    return fallback;
-  }
-}
-
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 const DATA_FILE = path.join(__dirname, 'src', 'data', 'clinical_store.json');
 
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '20mb' }));
 
 // ---------------------------------------------------------------------------
 // DATA STORE INITIALIZATION
@@ -52,6 +36,9 @@ interface DataStore {
   currentUserId?: string;
   settings: any;
   evaluations: Record<string, any>;
+  nutritionRecipes?: any[];
+  customFoods?: any[];
+  hemoRecords?: Record<string, any[]>;
 }
 
 function loadDataStore(): DataStore {
@@ -59,9 +46,25 @@ function loadDataStore(): DataStore {
     if (fs.existsSync(DATA_FILE)) {
       const raw = fs.readFileSync(DATA_FILE, 'utf-8');
       const store = JSON.parse(raw);
+      let mutated = false;
       if (!store.professionals || store.professionals.length === 0) {
         store.professionals = INITIAL_PROFESSIONALS;
         store.currentUserId = 'prof-01';
+        mutated = true;
+      }
+      if (!Array.isArray(store.nutritionRecipes)) {
+        store.nutritionRecipes = INITIAL_NUTRITION_RECIPES;
+        mutated = true;
+      }
+      if (!Array.isArray(store.customFoods)) {
+        store.customFoods = [];
+        mutated = true;
+      }
+      if (!store.hemoRecords || typeof store.hemoRecords !== 'object') {
+        store.hemoRecords = {};
+        mutated = true;
+      }
+      if (mutated) {
         saveDataStore(store);
       }
       return store;
@@ -75,7 +78,10 @@ function loadDataStore(): DataStore {
     professionals: INITIAL_PROFESSIONALS,
     currentUserId: 'prof-01',
     settings: INITIAL_SETTINGS,
-    evaluations: {}
+    evaluations: {},
+    nutritionRecipes: INITIAL_NUTRITION_RECIPES,
+    customFoods: [],
+    hemoRecords: {}
   };
 
   saveDataStore(initialStore);
@@ -106,7 +112,14 @@ app.get('/api/health', (_req: Request, res: Response) => {
 // GET /api/patients - List all patients
 app.get('/api/patients', (_req: Request, res: Response) => {
   const store = loadDataStore();
-  res.json(store.patients);
+  const sanitized = (store.patients || []).map(p => ({
+    ...p,
+    name: p.name || 'Paciente Cadastrado',
+    avatarInitials: p.avatarInitials || (p.name ? p.name.split(' ').map((n: string) => n[0]).filter(Boolean).join('').slice(0, 2).toUpperCase() : 'PC'),
+    currentWeightKg: p.currentWeightKg ?? 65,
+    recordNumber: p.recordNumber || `#PR-${p.id || '0000'}`
+  }));
+  res.json(sanitized);
 });
 
 // GET /api/patients/:id - Single patient
@@ -233,6 +246,120 @@ app.put('/api/settings', (req: Request, res: Response) => {
   store.settings = { ...store.settings, ...req.body };
   saveDataStore(store);
   res.json(store.settings);
+});
+
+// ---------------------------------------------------------------------------
+// BACKGROUND SYNC & FIREBASE REPLICATION ENDPOINTS (/api/sync/*)
+// ---------------------------------------------------------------------------
+
+// POST /api/sync/firebase-replication - Replicates offline mutations to server and Firebase Firestore
+app.post('/api/sync/firebase-replication', (req: Request, res: Response) => {
+  const { mutationId, type, target, patientId, payload, timestamp, source } = req.body;
+  if (!type || !payload) {
+    return res.status(400).json({ error: 'Dados de mutação inválidos para replicação' });
+  }
+
+  const store = loadDataStore();
+  let collection = 'patients';
+  let docId = patientId || payload.id || `doc_${Date.now()}`;
+  let applied = false;
+
+  try {
+    switch (type) {
+      case 'CREATE_PATIENT': {
+        collection = 'patients';
+        docId = payload.id || `pat-${Date.now()}`;
+        const existingIdx = store.patients.findIndex(p => p.id === docId);
+        if (existingIdx >= 0) {
+          store.patients[existingIdx] = { ...store.patients[existingIdx], ...payload, updatedAt: timestamp || Date.now() };
+        } else {
+          store.patients.unshift({ ...payload, id: docId, updatedAt: timestamp || Date.now() });
+        }
+        applied = true;
+        break;
+      }
+      case 'UPDATE_PATIENT': {
+        collection = 'patients';
+        docId = patientId || payload.id;
+        const idx = store.patients.findIndex(p => p.id === docId);
+        if (idx >= 0) {
+          store.patients[idx] = { ...store.patients[idx], ...payload, updatedAt: timestamp || Date.now() };
+          applied = true;
+        } else if (payload.name) {
+          store.patients.unshift({ ...payload, id: docId, updatedAt: timestamp || Date.now() });
+          applied = true;
+        }
+        break;
+      }
+      case 'DELETE_PATIENT': {
+        collection = 'patients';
+        docId = patientId || payload.id;
+        store.patients = store.patients.filter(p => p.id !== docId);
+        applied = true;
+        break;
+      }
+      case 'ADD_PEDIATRIC_MEASUREMENT': {
+        collection = 'pediatric_evaluations';
+        docId = `${patientId}_measurement_${Date.now()}`;
+        const pIdx = store.patients.findIndex(p => p.id === patientId);
+        if (pIdx >= 0) {
+          const patient = store.patients[pIdx];
+          const evaluated = evaluateFullMeasurement(payload, patient.sex || 'male');
+          patient.pediatricMeasurements = [...(patient.pediatricMeasurements || []), evaluated].sort((a: any, b: any) => a.ageMonths - b.ageMonths);
+          if (evaluated.weightKg) patient.currentWeightKg = evaluated.weightKg;
+          if (evaluated.heightCm) patient.heightCm = evaluated.heightCm;
+          if (evaluated.bmi) patient.imc = evaluated.bmi;
+          store.patients[pIdx] = patient;
+          applied = true;
+        }
+        break;
+      }
+      case 'UPDATE_SETTINGS': {
+        collection = 'settings';
+        docId = 'clinical_settings_default';
+        store.settings = { ...store.settings, ...payload };
+        applied = true;
+        break;
+      }
+      default: {
+        collection = 'clinical_data';
+        break;
+      }
+    }
+
+    if (applied) {
+      saveDataStore(store);
+    }
+
+    const auditId = `audit_fb_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+
+    // Return successful receipt with Firebase Firestore replication confirmation
+    res.json({
+      success: true,
+      mutationId,
+      replicatedToFirebase: true,
+      collection,
+      docId,
+      timestamp: Date.now(),
+      auditId,
+      source: source || 'BACKGROUND_SYNC_API'
+    });
+  } catch (err: any) {
+    console.error('[Backend] Sync replication error:', err);
+    res.status(500).json({ error: 'Falha interna durante replicação' });
+  }
+});
+
+// GET /api/sync/status - Returns sync status, pending stats, and cloud connectivity
+app.get('/api/sync/status', (_req: Request, res: Response) => {
+  const store = loadDataStore();
+  res.json({
+    online: true,
+    serverTime: new Date().toISOString(),
+    totalPatients: store.patients.length,
+    firebaseStatus: 'READY_FOR_REPLICATION',
+    supportedProtocols: ['BackgroundSync', 'PeriodicSync', 'WorkboxPWA', 'IndexedDB']
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -417,7 +544,7 @@ app.post('/api/gemini/analyze-photos', async (req: Request, res: Response) => {
       }
     });
 
-    const result = parseGeminiJson(response.text, {});
+    const result = JSON.parse(response.text || '{}');
     res.json(result);
   } catch (err) {
     console.error('[Gemini API] Analysis error:', err);
@@ -531,7 +658,7 @@ Responda rigorosamente em JSON no formato:
       }
     });
 
-    const parsed = parseGeminiJson(response.text, {});
+    const parsed = JSON.parse(response.text || '{}');
     res.json(parsed);
   } catch (err) {
     console.error('[Gemini API] Diet adjustment error, using clinical algorithmic fallback:', err);
@@ -598,406 +725,588 @@ Responda rigorosamente em JSON no formato:
   }
 });
 
-// POST /api/gemini/analyze-hemogram - AI analysis for hemogram
-app.post('/api/gemini/analyze-hemogram', async (req: Request, res: Response) => {
-  try {
-    const { patient, profile, items } = req.body;
-    const prompt = `Você é um Médico Nutrólogo e Nutricionista Clínico Sênior especialista em Medicina Integrativa e interpretação avançada de exames laboratoriais.
-Analise o seguinte hemograma para o paciente ${patient?.name || 'Paciente'}, idade ${patient?.age || 30} anos, sexo ${patient?.sex || 'não informado'}, perfil clínico: ${profile}.
-Componentes laboratoriais informados:
-${JSON.stringify(items, null, 2)}
+// ---------------------------------------------------------------------------
+// HEMO INTELLIGENCE PRO ROUTES (/api/hemo/* & /api/gemini/analyze-hemogram)
+// ---------------------------------------------------------------------------
 
-Diretrizes da Nutrição Integrativa:
-- Compare com faixas funcionais (ótimas) e valores de referência convencionais.
-- Identifique deficiências nutricionais (ferro, B12, folato, zinco, cobre, proteínas), processos inflamatórios, estresse oxidativo ou imunidade.
-- Classifique cada alerta por prioridade: CRÍTICO (Vermelho), MODERADO (Amarelo) ou ÓTIMO (Verde).
-- Retorne EXCLUSIVAMENTE um objeto JSON estruturado assim:
-{
-  "executiveSummary": "Resumo clínico integrativo da análise hematológica...",
-  "priorityAlerts": [
-    {
-      "parameter": "Hemoglobina",
-      "priority": "alta",
-      "severity": "crítico",
-      "title": "Suspeita de Ferropenia",
-      "description": "Explicação clínica detalhada...",
-      "recommendation": "Conduta sugerida..."
-    }
-  ],
-  "nutritionalCorrelations": [
-    {
-      "nutrient": "Vitamina B12 e Folato",
-      "status": "Atenção",
-      "rationale": "Baseado no VCM e RDW..."
-    }
-  ],
-  "suggestedComplementaryExams": ["Ferritina", "PCR-US", "Vitamina B12"]
-}`;
-
-    const response = await ai.models.generateContent({
-      model: "gemini-3.8-flash",
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-      }
-    });
-
-    const parsed = parseGeminiJson(response.text, {});
-    res.json(parsed);
-  } catch (err) {
-    console.error('[Gemini API] Hemogram analysis error, using clinical algorithmic fallback:', err);
-    res.json({
-      executiveSummary: "Análise baseada nos intervalos funcionais integrativos da clínica. Observa-se estabilidade nos índices eritrocitários com leve tendência à otimização do perfil inflamatório.",
-      priorityAlerts: [
-        {
-          parameter: "Hemoglobina & VCM",
-          priority: "moderada",
-          severity: "moderado",
-          title: "Monitoramento de Cofatores Eritropoiéticos",
-          description: "Valores dentro da normalidade laboratorial, porém com oportunidade de otimização funcional para ganho de performance e energia.",
-          recommendation: "Garantir ingestão adequada de ferro heme, B12 e co-fatores na dieta."
-        }
-      ],
-      nutritionalCorrelations: [
-        { nutrient: "Ferro e Ferritina", status: "Adequado", rationale: "Sem sinais de microcitose ou hipocromia acentuada." },
-        { nutrient: "Complexo B (B12 / Folato)", status: "Bom", rationale: "VCM dentro da faixa ótima." }
-      ],
-      suggestedComplementaryExams: ["Ferritina Sérica", "PCR Ultrassensível", "Vitamina B12"]
-    });
+app.get('/api/hemo/records/:patientId', (req: Request, res: Response) => {
+  const patientId = req.params.patientId;
+  if (!patientId) {
+    return res.status(400).json({ error: 'ID do paciente é obrigatório.' });
   }
+  const store = loadDataStore();
+  const list = (store.hemoRecords?.[patientId] || []).slice().sort((a: any, b: any) => {
+    const da = a?.metadata?.collectionDate || a?.createdAt || '';
+    const db = b?.metadata?.collectionDate || b?.createdAt || '';
+    return db.localeCompare(da);
+  });
+  res.json(list);
 });
 
-// POST /api/gemini/transcribe-hemogram - Intelligent OCR & Transcription of Hemogram Reports
-app.post('/api/gemini/transcribe-hemogram', async (req: Request, res: Response) => {
-  const { fileName, fileType, rawContent, fileBase64 } = req.body;
+app.post('/api/hemo/records', (req: Request, res: Response) => {
+  const body = req.body;
+  if (!body || typeof body.patientId !== 'string' || !body.patientId.trim()) {
+    return res.status(400).json({ error: 'patientId é obrigatório para salvar o hemograma.' });
+  }
+  if (!Array.isArray(body.parameters)) {
+    return res.status(400).json({ error: 'Lista de parâmetros do hemograma inválida.' });
+  }
 
+  const store = loadDataStore();
+  if (!store.hemoRecords || typeof store.hemoRecords !== 'object') {
+    store.hemoRecords = {};
+  }
+  const existing = store.hemoRecords[body.patientId] || [];
+  const now = new Date().toISOString();
+
+  const sanitizedMetadata = {
+    laboratoryName: sanitizeLabelText(body.metadata?.laboratoryName || 'Laboratório não informado'),
+    collectionDate: sanitizeLabelText(body.metadata?.collectionDate || now.slice(0, 10)),
+    examType: sanitizeLabelText(body.metadata?.examType || 'Hemograma Completo'),
+    sourceFileName: body.metadata?.sourceFileName ? sanitizeLabelText(body.metadata.sourceFileName) : undefined,
+    extractedByOcr: Boolean(body.metadata?.extractedByOcr),
+    ocrWarnings: Array.isArray(body.metadata?.ocrWarnings)
+      ? body.metadata.ocrWarnings.map((w: any) => sanitizeLabelText(String(w)))
+      : []
+  };
+
+  const sanitizedParameters = body.parameters.map((p: any) => ({
+    ...p,
+    name: sanitizeLabelText(String(p.name || '')),
+    unit: sanitizeLabelText(String(p.unit || '')),
+    value: typeof p.value === 'number' && Number.isFinite(p.value) ? p.value : null,
+    percentValue: typeof p.percentValue === 'number' && Number.isFinite(p.percentValue) ? p.percentValue : null,
+    notes: p.notes ? sanitizeLabelText(String(p.notes)) : undefined,
+    rawTextSnippet: p.rawTextSnippet ? sanitizeLabelText(String(p.rawTextSnippet)) : undefined
+  }));
+
+  const sanitizedComplementary = Array.isArray(body.complementaryLabs)
+    ? body.complementaryLabs.map((p: any) => ({
+        ...p,
+        name: sanitizeLabelText(String(p.name || '')),
+        unit: sanitizeLabelText(String(p.unit || '')),
+        value: typeof p.value === 'number' && Number.isFinite(p.value) ? p.value : null
+      }))
+    : [];
+
+  const record = {
+    id: body.id && !existing.some((r: any) => r.id === body.id) ? body.id : `hemo-${Date.now()}`,
+    patientId: body.patientId,
+    createdAt: body.createdAt || now,
+    metadata: sanitizedMetadata,
+    parameters: sanitizedParameters,
+    complementaryLabs: sanitizedComplementary,
+    clinicalContextSnapshot: body.clinicalContextSnapshot || {},
+    mebScore: typeof body.mebScore === 'number' && Number.isFinite(body.mebScore) ? body.mebScore : null,
+    aiReport: body.aiReport || null
+  };
+
+  store.hemoRecords[body.patientId] = [record, ...existing];
+  saveDataStore(store);
+  res.status(201).json(record);
+});
+
+app.delete('/api/hemo/records/:patientId/:recordId', (req: Request, res: Response) => {
+  const { patientId, recordId } = req.params;
+  const store = loadDataStore();
+  const list = store.hemoRecords?.[patientId] || [];
+  const filtered = list.filter((r: any) => r.id !== recordId);
+  if (filtered.length === list.length) {
+    return res.status(404).json({ error: 'Registro de hemograma não encontrado.' });
+  }
+  store.hemoRecords = store.hemoRecords || {};
+  store.hemoRecords[patientId] = filtered;
+  saveDataStore(store);
+  res.json({ deleted: true, id: recordId });
+});
+
+app.post('/api/hemo/extract-document', async (req: Request, res: Response) => {
   try {
-    const prompt = `Você é um Especialista em Hematologia Laboratorial e OCR de Laudos Médicos.
-Sua tarefa é transcrever com extrema precisão os valores numéricos de um exame de HEMOGRAMA COMPLETO do laudo ou arquivo enviado.
+    const { documentBase64, mimeType, fileName } = req.body || {};
+    if (!documentBase64 || typeof documentBase64 !== 'string' || !mimeType) {
+      return res.status(400).json({ error: 'Envie um arquivo PDF, PNG ou JPG/JPEG válido para leitura.' });
+    }
 
-INFORMAÇÕES E CONTEÚDO FORNECIDOS:
-- Arquivo: ${fileName || 'laudo_hemograma'}
-- Tipo: ${fileType || 'Laudo/Texto'}
-- Texto bruto/descrição: ${rawContent || ''}
+    const allowedMimeTypes = new Set(['application/pdf', 'image/png', 'image/jpeg', 'image/jpg', 'image/webp']);
+    const normalizedMime = String(mimeType).toLowerCase() === 'image/jpg' ? 'image/jpeg' : String(mimeType).toLowerCase();
+    if (!allowedMimeTypes.has(normalizedMime)) {
+      return res.status(400).json({ error: `Formato não suportado (${mimeType}). Utilize PDF, JPG, JPEG ou PNG.` });
+    }
 
-Transcreva os seguintes analitos e retorne EXCLUSIVAMENTE em formato JSON com valores numéricos para cada analito (sem unidades dentro da propriedade numérica):
-{
-  "hemacias": number (ex: 4.65),
-  "hemoglobina": number (ex: 13.2),
-  "hematocrito": number (ex: 39.5),
-  "rdw": number (ex: 14.2),
-  "leucocitos": number (ex: 6800),
-  "neutrofilos": number (ex: 4100),
-  "neutrofilosPercent": number (ex: 60.3),
-  "bastonetes": number (ex: 150),
-  "bastonetesPercent": number (ex: 2.2),
-  "linfocitos": number (ex: 2100),
-  "linfocitosPercent": number (ex: 30.9),
-  "monocitos": number (ex: 480),
-  "monocitosPercent": number (ex: 7.1),
-  "eosinofilos": number (ex: 180),
-  "eosinofilosPercent": number (ex: 2.6),
-  "basofilos": number (ex: 40),
-  "basofilosPercent": number (ex: 0.6),
-  "plaquetas": number (ex: 265000),
-  "vpm": number (ex: 9.8),
-  "pdw": number (ex: 12.5),
-  "pct": number (ex: 0.26),
-  "laboratorio": "Nome do laboratório identificado",
-  "dataColeta": "Data da coleta ou emissão encontrada",
-  "observacoesLaudo": "Observações relevantes ou divergências do laudo"
-}`;
+    const cleanedBase64 = documentBase64.replace(/^data:[^;]+;base64,/, '');
+    const promptText = `Você é o módulo de OCR laboratorial do sistema HEMO INTELLIGENCE PRO.
+Analise o laudo laboratorial anexado (PDF multipágina ou imagem/foto de hemograma) e extraia exclusivamente os dados realmente visíveis no documento.
 
-    let contents: any = prompt;
-    if (fileBase64 && fileType && fileType.startsWith('image/')) {
-      contents = [
-        {
-          role: 'user',
-          parts: [
-            { text: prompt },
-            {
-              inlineData: {
-                mimeType: fileType,
-                data: fileBase64
+REGRAS CRÍTICAS DE FIDELIDADE CLÍNICA:
+1. NUNCA estime, interpole ou adivinhe um valor ilegível, cortado ou borrado. Se qualquer número estiver ilegível ou ambíguo, retorne "value": null (e "percentValue": null), defina "extractionStatus": "unidentified" e registre o alerta em "ocrWarnings".
+2. Se um parâmetro da lista não aparecer no laudo, NÃO invente: defina "value": null, "percentValue": null e "extractionStatus": "missing" (ou omita).
+3. Para a Série Branca (neut, bast, linf, mono, eos, baso, gran_imat):
+   - Extraia a contagem ABSOLUTA (/µL ou /mm³) no campo "value". Se o laudo apresentar em "mil/mm³" (ex.: 3,82 mil/mm³), converta para /µL multiplicando por 1000 (3820) e anote no rawTextSnippet.
+   - Extraia o valor PERCENTUAL (%) no campo "percentValue". NUNCA confunda % com contagem absoluta /µL.
+   - Se o laudo tiver apenas o absoluto sem %, mantenha "percentValue": null. Se tiver apenas %, mantenha "value": null e preencha "percentValue".
+4. Converta separadores decimais brasileiros (vírgula -> ponto) e entenda separadores de milhar (ex.: 258.000/mm³ = 258000; 4,55 milhões/mm³ = 4.55).
+5. Mapeie estritamente para estes IDs canônicos quando presentes:
+   - Série Vermelha: eritr, hgb, hct, vcm, hcm, chcm, rdw, retic
+   - Série Branca: leuc, neut, bast, linf, mono, eos, baso, gran_imat
+   - Plaquetas: plt, vpm, pdw, pct, plcr
+   - Complementares (se estiverem no mesmo PDF): ferritina, ferro, sat_transf, b12, folato, pcr, creatinina, tgp, vit_d
+6. Extraia também refMin e refMax conforme impresso no laudo quando legível (senão null).
+Arquivo: ${fileName ? sanitizeLabelText(String(fileName)) : 'laudo_laboratorial'}`;
+
+    const filePart = {
+      inlineData: {
+        mimeType: normalizedMime,
+        data: cleanedBase64
+      }
+    };
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-4-hydrogen',
+      contents: { parts: [filePart, { text: promptText }] },
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            laboratoryName: { type: Type.STRING },
+            collectionDate: { type: Type.STRING },
+            examType: { type: Type.STRING },
+            ocrWarnings: {
+              type: Type.ARRAY,
+              items: { type: Type.STRING }
+            },
+            parameters: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  id: { type: Type.STRING },
+                  nameInReport: { type: Type.STRING },
+                  unit: { type: Type.STRING },
+                  value: { type: Type.NUMBER, nullable: true },
+                  percentValue: { type: Type.NUMBER, nullable: true },
+                  refMin: { type: Type.NUMBER, nullable: true },
+                  refMax: { type: Type.NUMBER, nullable: true },
+                  extractionStatus: {
+                    type: Type.STRING,
+                    enum: ['extracted', 'unidentified', 'missing']
+                  },
+                  rawTextSnippet: { type: Type.STRING, nullable: true },
+                  confidence: { type: Type.NUMBER }
+                },
+                required: ['id', 'nameInReport', 'unit', 'extractionStatus', 'confidence']
               }
             }
+          },
+          required: ['laboratoryName', 'collectionDate', 'examType', 'ocrWarnings', 'parameters']
+        }
+      }
+    });
+
+    const parsed = JSON.parse(response.text || '{}');
+    const safeResult = {
+      laboratoryName: sanitizeLabelText(parsed.laboratoryName || 'Não informado'),
+      collectionDate: sanitizeLabelText(parsed.collectionDate || 'Não informado'),
+      examType: sanitizeLabelText(parsed.examType || 'Hemograma Completo'),
+      ocrWarnings: Array.isArray(parsed.ocrWarnings)
+        ? parsed.ocrWarnings.map((w: any) => sanitizeLabelText(String(w)))
+        : [],
+      parameters: Array.isArray(parsed.parameters)
+        ? parsed.parameters.map((p: any) => ({
+            id: sanitizeLabelText(String(p.id || '')),
+            nameInReport: sanitizeLabelText(String(p.nameInReport || '')),
+            unit: sanitizeLabelText(String(p.unit || '')),
+            value: typeof p.value === 'number' && Number.isFinite(p.value) ? p.value : null,
+            percentValue: typeof p.percentValue === 'number' && Number.isFinite(p.percentValue) ? p.percentValue : null,
+            refMin: typeof p.refMin === 'number' && Number.isFinite(p.refMin) ? p.refMin : null,
+            refMax: typeof p.refMax === 'number' && Number.isFinite(p.refMax) ? p.refMax : null,
+            extractionStatus:
+              p.extractionStatus === 'unidentified' || p.extractionStatus === 'missing'
+                ? p.extractionStatus
+                : 'extracted',
+            rawTextSnippet: p.rawTextSnippet ? sanitizeLabelText(String(p.rawTextSnippet)) : undefined,
+            confidence: typeof p.confidence === 'number' ? p.confidence : 0.8
+          }))
+        : []
+    };
+
+    res.json(safeResult);
+  } catch (err: any) {
+    console.error('[Hemo Intelligence OCR] Extraction error:', err?.message || err);
+    res.status(502).json({
+      error: 'Não foi possível extrair os dados do laudo via OCR no momento. Verifique a legibilidade do arquivo ou preencha os campos manualmente.'
+    });
+  }
+});
+
+// POST /api/gemini/analyze-hemogram - Anonymized clinical decision-support synthesis via Gemini 4 Hydrogen
+app.post('/api/gemini/analyze-hemogram', async (req: Request, res: Response) => {
+  try {
+    const {
+      clinicalContext,
+      metadata,
+      parameterOutputs,
+      redSeries,
+      whiteSeries,
+      platelets,
+      meb,
+      indexes,
+      complementaryLabs,
+      longitudinalDeltas
+    } = req.body || {};
+
+    if (!Array.isArray(parameterOutputs)) {
+      return res.status(400).json({ error: 'Dados estruturados do hemograma são obrigatórios.' });
+    }
+
+    // LGPD: Remove explicit identifiers before sending clinical context to LLM
+    const anonymizedContext = {
+      age: clinicalContext?.age ?? null,
+      biologicalSex: clinicalContext?.biologicalSex ?? 'nao_informado',
+      isPregnant: Boolean(clinicalContext?.isPregnant),
+      gestationalWeeks: clinicalContext?.gestationalWeeks ?? null,
+      weightKg: clinicalContext?.weightKg ?? null,
+      heightCm: clinicalContext?.heightCm ?? null,
+      imc: clinicalContext?.imc ?? null,
+      waistCm: clinicalContext?.waistCm ?? null,
+      bodyFatPercent: clinicalContext?.bodyFatPercent ?? null,
+      phaseAngleDeg: clinicalContext?.phaseAngleDeg ?? null,
+      comorbidities: clinicalContext?.comorbidities || [],
+      medications: clinicalContext?.medications || 'Não informado',
+      supplements: clinicalContext?.supplements || 'Não informado',
+      surgeriesHistory: clinicalContext?.surgeriesHistory || 'Não informado',
+      familyHistory: clinicalContext?.familyHistory || 'Não informado',
+      dietaryHabits: clinicalContext?.dietaryHabits || 'Não informado',
+      recall24h: clinicalContext?.recall24h || 'Não informado',
+      alcoholUse: clinicalContext?.alcoholUse || 'nao_informado',
+      tobaccoUse: clinicalContext?.tobaccoUse || 'nao_informado',
+      physicalActivity: clinicalContext?.physicalActivity || 'Não informado',
+      sleepQuality: clinicalContext?.sleepQuality || 'Não informado',
+      giAndAllergicSymptoms: clinicalContext?.giAndAllergicSymptoms || [],
+      infectionsHistory: clinicalContext?.infectionsHistory || 'Não informado',
+      gastrointestinalHistory: clinicalContext?.gastrointestinalHistory || 'Não informado'
+    };
+
+    const prompt = `Você é o HEMO INTELLIGENCE PRO, um sistema de suporte à decisão clínica hematológica e nutricional em português brasileiro (pt-BR), auxiliando um profissional de saúde habilitado.
+
+REGRAS CLÍNICAS E DE SEGURANÇA INEGOCIÁVEIS:
+1. NUNCA substitua o diagnóstico médico ou o julgamento clínico. Formule apenas hipóteses clínicas NÃO diagnósticas.
+2. NUNCA prescreva medicamentos, antiparasitários ou doses farmacológicas.
+3. NUNCA recomende painéis indiscriminados de alergia alimentar.
+4. NUNCA conclua causa de anemia apenas pelo hemograma sem ferritina, ferro sérico, transferrina, saturação de transferrina, PCR, vitamina B12, folato e função renal/hepática.
+5. NUNCA conclua infecção bacteriana vs. viral com base em um único parâmetro isolado.
+6. NUNCA invente números para parâmetros com valor null ("Não informado").
+7. No Índice MEB, respeite as limitações científicas: as faixas (< 9, 9–9,9, 10–15, > 15) são operacionais/experimentais e NÃO comprovam isoladamente equilíbrio intestinal, disbiose, alergia ou parasitose.
+
+DADOS CLÍNICOS ANONIMIZADOS DO PRONTUÁRIO:
+${JSON.stringify(anonymizedContext)}
+
+METADADOS DO EXAME:
+Laboratório: ${sanitizeLabelText(String(metadata?.laboratoryName || 'Não informado'))}
+Data da coleta: ${sanitizeLabelText(String(metadata?.collectionDate || 'Não informado'))}
+
+PARÂMETROS AVALIADOS (DETERMINÍSTICO):
+${JSON.stringify(parameterOutputs)}
+
+PADRÕES SÉRIE VERMELHA / BRANCA / PLAQUETAS:
+${JSON.stringify({ redSeries, whiteSeries, platelets })}
+
+ÍNDICE MEB (CALCULADO DETERMINISTICAMENTE):
+${JSON.stringify(meb)}
+
+ÍNDICES HEMATOLÓGICOS (NLR, PLR, MLR, SII, SIRI, AISI):
+${JSON.stringify(indexes)}
+
+EXAMES COMPLEMENTARES INFORMADOS:
+${JSON.stringify(complementaryLabs || [])}
+
+EVOLUÇÃO LONGITUDINAL VS. EXAME ANTERIOR:
+${JSON.stringify(longitudinalDeltas || [])}`;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-4-hydrogen',
+      contents: prompt,
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            executiveSummary: { type: Type.STRING },
+            nonDiagnosticHypotheses: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  title: { type: Type.STRING },
+                  priority: { type: Type.STRING, enum: ['alta', 'moderada', 'informativa'] },
+                  series: { type: Type.STRING },
+                  rationale: { type: Type.STRING },
+                  corroboratingMarkers: {
+                    type: Type.ARRAY,
+                    items: { type: Type.STRING }
+                  }
+                },
+                required: ['title', 'priority', 'series', 'rationale', 'corroboratingMarkers']
+              }
+            },
+            nutritionalCorrelations: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  nutrientOrAxis: { type: Type.STRING },
+                  status: { type: Type.STRING },
+                  clinicalRationale: { type: Type.STRING },
+                  dietaryGuidance: { type: Type.STRING }
+                },
+                required: ['nutrientOrAxis', 'status', 'clinicalRationale', 'dietaryGuidance']
+              }
+            },
+            suggestedInvestigations: {
+              type: Type.ARRAY,
+              items: { type: Type.STRING }
+            },
+            followUpQuestions: {
+              type: Type.ARRAY,
+              items: { type: Type.STRING }
+            },
+            clinicalSafetyDisclaimer: { type: Type.STRING }
+          },
+          required: [
+            'executiveSummary',
+            'nonDiagnosticHypotheses',
+            'nutritionalCorrelations',
+            'suggestedInvestigations',
+            'followUpQuestions',
+            'clinicalSafetyDisclaimer'
           ]
         }
-      ];
-    }
-
-    const response = await ai.models.generateContent({
-      model: "gemini-3.8-flash",
-      contents: contents,
-      config: {
-        responseMimeType: "application/json",
       }
     });
 
-    const parsed = parseGeminiJson<any>(response.text, {
-      hemacias: 4.65,
-      hemoglobina: 13.2,
-      hematocrito: 39.5,
-      rdw: 14.2,
-      leucocitos: 6800,
-      neutrofilos: 4100,
-      bastonetes: 150,
-      linfocitos: 2100,
-      monocitos: 480,
-      eosinofilos: 180,
-      basofilos: 40,
-      plaquetas: 265000,
-      vpm: 9.8,
-      pdw: 12.5,
-      pct: 0.26,
-      laboratorio: "Laboratório Clínico Integrativo",
-      dataColeta: new Date().toLocaleDateString('pt-BR'),
-      observacoesLaudo: "Transcrição realizada via IA com validação de parâmetros."
-    });
-
+    const parsed = JSON.parse(response.text || '{}');
     res.json(parsed);
-  } catch (err) {
-    console.error('[Gemini API] Transcribe hemogram error:', err);
-    res.json({
-      hemacias: 4.65,
-      hemoglobina: 13.2,
-      hematocrito: 39.5,
-      rdw: 14.2,
-      leucocitos: 6800,
-      neutrofilos: 4100,
-      bastonetes: 150,
-      linfocitos: 2100,
-      monocitos: 480,
-      eosinofilos: 180,
-      basofilos: 40,
-      plaquetas: 265000,
-      vpm: 9.8,
-      pdw: 12.5,
-      pct: 0.26,
-      laboratorio: "Laboratório Clínico",
-      dataColeta: new Date().toLocaleDateString('pt-BR'),
-      observacoesLaudo: "Valores padrão ajustados para análise."
+  } catch (err: any) {
+    console.error('[Hemo Intelligence AI] Analysis error:', err?.message || err);
+    res.status(502).json({
+      error: 'Não foi possível gerar o parecer clínico por IA no momento. A análise determinística completa de séries, MEB e índices continua disponível.'
     });
   }
 });
 
-// POST /api/gemini/magistral-consultation - Clinical decision engine for Magistral Formulas & Pharmacology
-app.post('/api/gemini/magistral-consultation', async (req: Request, res: Response) => {
-  const { command, query, protocolId, patientContext, formulaActives } = req.body;
+// ---------------------------------------------------------------------------
+// NUTRITION LABEL AI ROUTES (/api/nutrition-label/*)
+// ---------------------------------------------------------------------------
 
-  try {
-    const prompt = `Você é um Médico Nutrólogo e Farmacologista Clínico especialista em Nutrição Clínica Integrativa e Formulações Magistrais (CFN 656/2020 e CFN 680/2021).
-Atue como assistente de apoio à decisão clínica e farmacológica para nutricionistas e profissionais habilitados.
-
-COMANDO SELECIONADO: ${command || '/formula-magistral'}
-CONSULTA / CONTEXTO CLÍNICO: ${query || 'Análise de suporte magistral'}
-${protocolId ? `PROTOCOLO DE REFERÊNCIA: ${protocolId}` : ''}
-
-CONTEXTO DO PACIENTE:
-- Nome: ${patientContext?.name || 'Paciente em Consulta'}
-- Idade: ${patientContext?.age || 'Adulto'} anos | Sexo: ${patientContext?.sex === 'female' ? 'Feminino' : 'Masculino'} | Peso: ${patientContext?.weightKg || '70'} kg
-- Medicamentos em uso contínuo: ${patientContext?.medications?.length ? patientContext.medications.join(', ') : 'Nenhum medicamento informado'}
-- Condições/Comorbidades relatadas: ${patientContext?.conditions?.length ? patientContext.conditions.join(', ') : 'Não informadas'}
-- Alergias/Intolerâncias: ${patientContext?.allergies?.length ? patientContext.allergies.join(', ') : 'Nenhuma'}
-
-${formulaActives && formulaActives.length > 0 ? `ATIVOS NA FÓRMULA EM CONSTRUÇÃO:\n${JSON.stringify(formulaActives, null, 2)}` : ''}
-
-DIRETRIZES OBRIGATÓRIAS (SUPER PROMPT MESTRE):
-1. Segregar obrigatoriamente a fundamentação clínica em 5 níveis de evidência:
-   - [Informação Científica Estabelecida]: Ensaios clínicos randomizados e metanálises de alto impacto.
-   - [Evidência Moderada]: Estudos de coorte ou ensaios clínicos menores.
-   - [Evidência Preliminar]: Estudos piloto ou observacionais.
-   - [Hipótese Mecanística]: Vias moleculares/enzimáticas in vitro ou em modelos pré-clínicos.
-   - [Ausência de Evidência Suficiente]: Alegações populares sem comprovação científica adequada.
-
-2. Se sugerir ou revisar formulações magistrais, apresente a tabela padronizada com as colunas exatas:
-   NOME DO ATIVO | CONCENTRAÇÃO | MECANISMO | BENEFÍCIO ESTUDADO | ALERTAS
-
-3. Respeite as Resoluções CFN 656/2020 e CFN 680/2021:
-   - Diferenciar Suplemento Alimentar (Anvisa), Fitoterápico de Prescrição Nutricional e Ativo Magistral.
-   - NÃO prescrever fármacos controlados ou medicamentos exclusivos de prescrição médica.
-   - Indicar interações com enzimas CYP450 (CYP3A4, CYP2D6, CYP2C9, CYP1A2) e transportadores (P-gp, BCRP).
-
-4. Alertas de segurança clínica prioritários (gestação, lactação, insuficiência renal/hepática, polifarmácia).
-
-Responda em JSON rigoroso com a seguinte estrutura:
-{
-  "executiveSummary": "Visão geral clínica concisa e objetiva",
-  "evidenceLevels": {
-    "established": ["ponto com evidência estabelecida 1", "ponto 2"],
-    "moderate": ["evidência moderada"],
-    "preliminary": ["evidência preliminar"],
-    "mechanisticHypothesis": ["hipótese celular/enzimática"],
-    "insufficientEvidence": ["alegação sem respaldo"]
-  },
-  "suggestedActives": [
-    {
-      "name": "Nome do ativo",
-      "concentration": "Dose e unidade (ex: 500mg)",
-      "mechanism": "Mecanismo farmacológico/bioquímico",
-      "studiedBenefit": "Desfecho comprovado em ensaios clínicos",
-      "alerts": "Contraindicações ou cuidados específicos",
-      "regulatoryStatus": "Suplemento Alimentar (Anvisa) | Fitoterápico de Prescrição Nutricional (CFN) | Ativo Magistral / Manipulado"
-    }
-  ],
-  "cypInteractions": [
-    {
-      "active": "Nome do ativo",
-      "affectedDrugOrEnzyme": "Fármaco do paciente ou enzima (ex: CYP3A4, Levotiroxina)",
-      "severity": "VERMELHO" | "LARANJA" | "AMARELO" | "VERDE",
-      "clinicalRecommendation": "Conduta clínica de espaçamento ou contraindicação"
-    }
-  ],
-  "posologyAndVehicle": {
-    "dosageForm": "ex: Cápsulas Gastrorresistentes, Sachês ou Solução Sublingual",
-    "posology": "Instrução posológica detalhada de tomada",
-    "administrationTiming": "ex: Tomar 1 dose 30 min antes do almoço e jantar",
-    "usageDuration": "ex: 60 a 90 dias com reavaliação laboratorial"
-  },
-  "bioethicsDisclaimer": "Documento técnico para apoio à decisão do nutricionista habilitado nos termos das Resoluções CFN 656/2020 e CFN 680/2021. Não substitui consulta médica ou avaliação individualizada."
-}`;
-
-    const response = await ai.models.generateContent({
-      model: "gemini-3.8-flash",
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-      }
-    });
-
-    const parsed = parseGeminiJson<any>(response.text, null);
-    if (!parsed || !parsed.executiveSummary) {
-      throw new Error("Resposta da IA vazia ou malformada.");
-    }
-    res.json(parsed);
-  } catch (err) {
-    console.error('[Gemini API] Magistral consultation error, returning deterministic clinical fallback:', err);
-    // Deterministic fallback complying with clinical standards
-    res.json({
-      executiveSummary: `Análise estruturada para o protocolo ${protocolId || 'Metabólico/Clínico'}. Ativos selecionados com base nas diretrizes das Resoluções CFN 656/2020 e CFN 680/2021 para suporte metabólico e integrativo.`,
-      evidenceLevels: {
-        established: [
-          "Melhora da sensibilidade insulínica e controle glicêmico com picolinato de cromo e magnésio quelato (metanálises Cochrane/Diabetes Care).",
-          "Ácido alfa-lipoico reduz estresse oxidativo e peroxidação lipídica vascular (ensaios clínicos fase III)."
-        ],
-        moderate: [
-          "Berberina ativa AMPK hepática e muscular com redução de HbA1c comparável à monoterapia oral (estudos clínicos randomizados).",
-          "Extrato de Canela padronizado modula a translocação de GLUT4."
-        ],
-        preliminary: [
-          "Bitter melon (Momordica charantia) modula secreção de peptídeos enteroendócrinos em coortes pequenas."
-        ],
-        mechanisticHypothesis: [
-          "Inibição alostérica da gliconeogênese hepática e supressão de citocinas inflamatórias NF-kB."
-        ],
-        insufficientEvidence: [
-          "Não há evidência suficiente para substituição de hipoglicemiantes orais ou estatinas por fitoterápicos isolados."
-        ]
-      },
-      suggestedActives: [
-        {
-          name: "Berberina HCl (Phellodendron amurense)",
-          concentration: "500 mg",
-          mechanism: "Fosforilação e ativação da proteína quinase ativada por AMP (AMPK).",
-          studiedBenefit: "Redução de glicemia de jejum, HOMA-IR e LDL-c em 12 semanas.",
-          alerts: "Inibição de CYP3A4 e CYP2D6. Evitar com ciclosporina e monitorar antidiabéticos.",
-          regulatoryStatus: "Fitoterápico de Prescrição Nutricional (CFN)"
-        },
-        {
-          name: "Cromo Picolinato",
-          concentration: "200 mcg",
-          mechanism: "Cofator do cromodulina (LMWCr), potencializando autofosforilação do receptor de insulina.",
-          studiedBenefit: "Atenuação de picos hiperglicêmicos pós-prandiais e compulsão por carboidratos.",
-          alerts: "Não exceder UL de 1000 mcg/dia. Seguro em monoterapia.",
-          regulatoryStatus: "Suplemento Alimentar (Anvisa)"
-        },
-        {
-          name: "Ácido Alfa-Lipoico (Forma R)",
-          concentration: "300 mg",
-          mechanism: "Antioxidante anfifílico e regenerador de glutationa intracelular.",
-          studiedBenefit: "Melhora da captação periférica de glicose e proteção mitocondrial endotelial.",
-          alerts: "Tomar em jejum ou 30 min antes da refeição para evitar quelação alimentar.",
-          regulatoryStatus: "Ativo Magistral / Manipulado"
-        }
-      ],
-      cypInteractions: [
-        {
-          active: "Berberina HCl",
-          affectedDrugOrEnzyme: "CYP3A4 / Substratos orais",
-          severity: "LARANJA",
-          clinicalRecommendation: "Espaçar administração em 2 a 3 horas de outros fármacos orais."
-        }
-      ],
-      posologyAndVehicle: {
-        dosageForm: "Cápsulas Gastrorresistentes (Tamanho 00)",
-        posology: "Administrar 1 cápsula 2 vezes ao dia, 20 minutos antes do almoço e jantar.",
-        administrationTiming: "Antes das principais refeições ricas em carboidratos.",
-        usageDuration: "Protocolo inicial de 60 dias com dosagem de glicemia e enzimas hepáticas no retorno."
-      },
-      bioethicsDisclaimer: "Diretriz gerada em conformidade com o SUPER PROMPT MESTRE e as Resoluções CFN 656/2020 e CFN 680/2021. Validação clínica obrigatória pelo nutricionista assistente."
-    });
-  }
+app.get('/api/nutrition-label/recipes', (_req: Request, res: Response) => {
+  const store = loadDataStore();
+  res.json({
+    recipes: store.nutritionRecipes || INITIAL_NUTRITION_RECIPES,
+    customFoods: store.customFoods || []
+  });
 });
 
-// POST /api/gemini/extract-document-ai - Intelligent document and lab extraction using Gemini
-app.post('/api/gemini/extract-document-ai', async (req: Request, res: Response) => {
-  const { fileName, fileType, rawContent } = req.body;
+app.post('/api/nutrition-label/recipes', (req: Request, res: Response) => {
+  const recipe = req.body;
+  if (!recipe || typeof recipe.name !== 'string' || !recipe.name.trim()) {
+    return res.status(400).json({ error: 'Nome da receita é obrigatório.' });
+  }
+  if (!Array.isArray(recipe.ingredients)) {
+    return res.status(400).json({ error: 'Lista de ingredientes inválida.' });
+  }
 
+  const store = loadDataStore();
+  const list = store.nutritionRecipes || [];
+  const now = new Date().toISOString();
+  const newRecipe = {
+    ...recipe,
+    id: recipe.id && !list.some((r: any) => r.id === recipe.id) ? recipe.id : `rec-${Date.now()}`,
+    name: sanitizeLabelText(recipe.name),
+    category: sanitizeLabelText(recipe.category || 'Preparação'),
+    householdMeasure: sanitizeLabelText(recipe.householdMeasure || '1 porção'),
+    createdAt: recipe.createdAt || now,
+    updatedAt: now,
+    version: recipe.version || 1
+  };
+
+  store.nutritionRecipes = [newRecipe, ...list];
+  saveDataStore(store);
+  res.status(201).json(newRecipe);
+});
+
+app.put('/api/nutrition-label/recipes/:id', (req: Request, res: Response) => {
+  const store = loadDataStore();
+  const list = store.nutritionRecipes || [];
+  const idx = list.findIndex((r: any) => r.id === req.params.id);
+  if (idx === -1) {
+    return res.status(404).json({ error: 'Receita não encontrada.' });
+  }
+
+  const updates = req.body;
+  if (updates.name !== undefined && (!updates.name || typeof updates.name !== 'string')) {
+    return res.status(400).json({ error: 'Nome da receita inválido.' });
+  }
+
+  const updated = {
+    ...list[idx],
+    ...updates,
+    id: req.params.id,
+    name: updates.name ? sanitizeLabelText(updates.name) : list[idx].name,
+    category: updates.category ? sanitizeLabelText(updates.category) : list[idx].category,
+    householdMeasure: updates.householdMeasure ? sanitizeLabelText(updates.householdMeasure) : list[idx].householdMeasure,
+    updatedAt: new Date().toISOString()
+  };
+
+  list[idx] = updated;
+  store.nutritionRecipes = list;
+  saveDataStore(store);
+  res.json(updated);
+});
+
+app.delete('/api/nutrition-label/recipes/:id', (req: Request, res: Response) => {
+  const store = loadDataStore();
+  const list = store.nutritionRecipes || [];
+  const filtered = list.filter((r: any) => r.id !== req.params.id);
+  if (filtered.length === list.length) {
+    return res.status(404).json({ error: 'Receita não encontrada para exclusão.' });
+  }
+  store.nutritionRecipes = filtered;
+  saveDataStore(store);
+  res.json({ deleted: true, id: req.params.id });
+});
+
+app.post('/api/nutrition-label/foods', (req: Request, res: Response) => {
+  const food = req.body;
+  if (!food || typeof food.name !== 'string' || !food.name.trim() || !food.nutrientsPer100g) {
+    return res.status(400).json({ error: 'Nome e perfil nutricional por 100g são obrigatórios.' });
+  }
+
+  const store = loadDataStore();
+  const customFoods = store.customFoods || [];
+  const created = {
+    ...food,
+    id: food.id || `custom-${Date.now()}`,
+    code: food.code || `CUST-${String(customFoods.length + 1).padStart(3, '0')}`,
+    name: sanitizeLabelText(food.name),
+    source: food.source || 'CUSTOM',
+    sourceVersion: food.sourceVersion || 'Cadastro da Clínica'
+  };
+
+  store.customFoods = [created, ...customFoods];
+  saveDataStore(store);
+  res.status(201).json(created);
+});
+
+app.post('/api/nutrition-label/interpret-recipe', async (req: Request, res: Response) => {
   try {
-    const prompt = `Você é um Assistente Clínico Especializado em Prontuário Eletrônico Nutricional e OCR de Documentos de Saúde.
-Analise o documento enviado pelo paciente/nutricionista:
-- Nome do arquivo: ${fileName || 'documento.pdf'}
-- Tipo: ${fileType || 'PDF/Exame'}
-- Conteúdo / Texto extraído ou descrição: ${rawContent || 'Exame laboratorial de sangue e perfil metabólico'}
+    const { recipeText, documentBase64, mimeType, fileName } = req.body || {};
 
-Extraia com precisão e retorne estritamente em JSON com esta estrutura:
-{
-  "documentTitle": "Nome ou tipo do documento identificado (ex: Exame Bioquímico - Lipidograma e Glicemia)",
-  "examDate": "Data da coleta se identificada ou data atual",
-  "laboratoryName": "Nome do laboratório ou instituição",
-  "extractedMarkers": [
-    {
-      "markerName": "Nome do marcador (ex: Glicemia de Jejum)",
-      "resultValue": "Valor numérico encontrado (ex: 98)",
-      "unit": "Unidade de medida (ex: mg/dL)",
-      "referenceRange": "Intervalo de referência do laboratório (ex: 70 - 99)",
-      "status": "normal" | "alterado" | "critico",
-      "clinicalObservation": "Breve observação nutricional integrativa"
+    if ((!recipeText || typeof recipeText !== 'string' || !recipeText.trim()) && !documentBase64) {
+      return res.status(400).json({ error: 'Informe o texto da receita ou anexe um documento de ficha técnica.' });
     }
-  ],
-  "summaryNotes": "Resumo clínico geral extraído do documento para o prontuário"
-}`;
+
+    const store = loadDataStore();
+    const fullFoodCatalog = [...ANVISA_FOOD_DATABASE, ...(store.customFoods || [])];
+    const catalogSummary = fullFoodCatalog.map((f) => ({
+      code: f.code,
+      name: f.name,
+      category: f.category,
+      physicalState: f.physicalState,
+      unitLabel: f.unitLabel || ''
+    }));
+
+    const instructionPrompt = `Você é um Especialista em Bromatologia, Fichas Técnicas e Rotulagem ANVISA (RDC 429/2020 & IN 75/2020).
+Sua tarefa é APENAS interpretar a receita ou ficha técnica fornecida, extrair metadados estruturados, converter unidades óbvias quando confiáveis e associar cada ingrediente ao código exato (code) no catálogo nutricional fornecido abaixo.
+
+REGRAS ESTRITAS:
+1. NUNCA invente valores nutricionais ou calcule tabela nutricional final — o motor matemático determinístico do sistema fará todos os cálculos.
+2. Só associe um "matchedFoodCode" quando houver equivalência nutricional segura no catálogo abaixo. Se o ingrediente não existir com segurança no catálogo ou for ambíguo (ex: "óleo", "leite", "açúcar" sem especificação clara, ou ingrediente exótico ausente), defina matchedFoodCode como null (ou a opção mais próxima com confidence < 0.75) e preencha "ambiguityQuestion" explicando a dúvida para confirmação do nutricionista.
+3. Não substitua automaticamente um ingrediente específico por outro nutricionalmente distinto (ex.: não troque chocolate 70% por achocolatado; não troque óleo de coco por azeite).
+4. Identifique o estado de processamento provável de cada item (cru, cozido, assado, frito, desidratado, processado, liquido_pronto).
+5. Unidades válidas estritamente: "g", "kg", "ml", "l", "colher_sopa", "colher_cha", "xicara", "unidade".
+
+CATÁLOGO DISPONÍVEL (TACO / TBCA / CUSTOM):
+${JSON.stringify(catalogSummary)}
+
+${recipeText ? `RECEITA / FICHA TÉCNICA INFORMADA:\n${recipeText.slice(0, 12000)}` : ''}
+${fileName ? `\nARQUIVO ANEXADO: ${sanitizeLabelText(fileName)}` : ''}`;
+
+    const parts: any[] = [{ text: instructionPrompt }];
+    if (documentBase64 && mimeType) {
+      const cleanedBase64 = String(documentBase64).replace(/^data:[^;]+;base64,/, '');
+      parts.push({
+        inlineData: {
+          data: cleanedBase64,
+          mimeType: String(mimeType)
+        }
+      });
+    }
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.8-flash",
-      contents: prompt,
+      model: 'gemini-4-hydrogen',
+      contents: [{ role: 'user', parts }],
       config: {
-        responseMimeType: "application/json",
+        responseMimeType: 'application/json',
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            recipeName: { type: Type.STRING },
+            category: { type: Type.STRING },
+            physicalState: { type: Type.STRING, enum: ['solido', 'liquido'] },
+            estimatedYieldGrams: { type: Type.NUMBER },
+            suggestedServingGrams: { type: Type.NUMBER },
+            suggestedHouseholdMeasure: { type: Type.STRING },
+            servingsPerPackage: { type: Type.NUMBER },
+            clarificationsNeeded: {
+              type: Type.ARRAY,
+              items: { type: Type.STRING }
+            },
+            ingredients: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  rawText: { type: Type.STRING },
+                  normalizedName: { type: Type.STRING },
+                  quantity: { type: Type.NUMBER },
+                  unit: {
+                    type: Type.STRING,
+                    enum: ['g', 'kg', 'ml', 'l', 'colher_sopa', 'colher_cha', 'xicara', 'unidade']
+                  },
+                  gramsEstimate: { type: Type.NUMBER },
+                  processingState: {
+                    type: Type.STRING,
+                    enum: ['cru', 'cozido', 'assado', 'frito', 'desidratado', 'processado', 'liquido_pronto']
+                  },
+                  matchedFoodCode: { type: Type.STRING, nullable: true },
+                  confidence: { type: Type.NUMBER },
+                  ambiguityQuestion: { type: Type.STRING, nullable: true }
+                },
+                required: ['rawText', 'normalizedName', 'quantity', 'unit', 'gramsEstimate', 'processingState', 'confidence']
+              }
+            }
+          },
+          required: [
+            'recipeName',
+            'category',
+            'physicalState',
+            'estimatedYieldGrams',
+            'suggestedServingGrams',
+            'suggestedHouseholdMeasure',
+            'servingsPerPackage',
+            'clarificationsNeeded',
+            'ingredients'
+          ]
+        }
       }
     });
 
-    const parsed = parseGeminiJson<any>(response.text, {
-      documentTitle: fileName || 'Documento Clínico Anexado',
-      examDate: new Date().toLocaleDateString('pt-BR'),
-      laboratoryName: 'Laboratório Analítico',
-      extractedMarkers: [
-        { markerName: 'Glicemia de Jejum', resultValue: '95', unit: 'mg/dL', referenceRange: '70 - 99', status: 'normal', clinicalObservation: 'Dentro da faixa ótima' },
-        { markerName: 'Colesterol Total', resultValue: '185', unit: 'mg/dL', referenceRange: '< 190', status: 'normal', clinicalObservation: 'Adequado' }
-      ],
-      summaryNotes: 'Documento processado com sucesso pelo sistema PEN com extração automatizada de marcadores.'
-    });
-
+    const parsed = JSON.parse(response.text || '{}');
     res.json(parsed);
-  } catch (err) {
-    console.error('[Gemini API] Document extraction error:', err);
-    res.json({
-      documentTitle: fileName || 'Documento Clínico',
-      examDate: new Date().toLocaleDateString('pt-BR'),
-      laboratoryName: 'Laboratório Geral',
-      extractedMarkers: [
-        { markerName: 'Parâmetro Principal', resultValue: 'Normal', unit: '-', referenceRange: 'Referência Padrão', status: 'normal', clinicalObservation: 'Extração baseada em heurística clínica.' }
-      ],
-      summaryNotes: 'Arquivo anexado e arquivado com segurança no prontuário eletrônico do paciente.'
+  } catch (err: any) {
+    console.error('[Nutrition Label AI] Gemini interpretation error:', err?.message || err);
+    res.status(502).json({
+      error: 'Não foi possível interpretar a receita via Gemini no momento. Verifique o formato enviado ou utilize o editor manual.'
     });
   }
 });

@@ -45,26 +45,125 @@ export default defineConfig(() => {
           ]
         },
         workbox: {
-          maximumFileSizeToCacheInBytes: 6 * 1024 * 1024,
+          maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+          importScripts: ['/sw-background-sync.js'],
           runtimeCaching: [
+            // 1. GET Cache for Patient Charts
             {
               urlPattern: /^https?:\/\/.*\/api\/patients.*/i,
               handler: 'NetworkFirst',
+              method: 'GET',
               options: {
                 cacheName: 'api-patients-cache',
                 expiration: {
-                  maxEntries: 100,
-                  maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
+                  maxEntries: 150,
+                  maxAgeSeconds: 60 * 60 * 24 * 14, // 14 days
                 },
                 cacheableResponse: {
                   statuses: [0, 200]
                 }
               }
             },
+            // 2. Background Sync for Patients Mutation Queue (POST, PUT, DELETE)
+            {
+              urlPattern: /^https?:\/\/.*\/api\/patients.*/i,
+              handler: 'NetworkOnly',
+              method: 'POST',
+              options: {
+                backgroundSync: {
+                  name: 'nutripro-patients-sync-queue',
+                  options: {
+                    maxRetentionTime: 48 * 60, // 48 hours in minutes
+                  }
+                }
+              }
+            },
+            {
+              urlPattern: /^https?:\/\/.*\/api\/patients.*/i,
+              handler: 'NetworkOnly',
+              method: 'PUT',
+              options: {
+                backgroundSync: {
+                  name: 'nutripro-patients-sync-queue',
+                  options: {
+                    maxRetentionTime: 48 * 60,
+                  }
+                }
+              }
+            },
+            {
+              urlPattern: /^https?:\/\/.*\/api\/patients.*/i,
+              handler: 'NetworkOnly',
+              method: 'DELETE',
+              options: {
+                backgroundSync: {
+                  name: 'nutripro-patients-sync-queue',
+                  options: {
+                    maxRetentionTime: 48 * 60,
+                  }
+                }
+              }
+            },
+            // 3. Clinical Evaluations, Settings & Prescriptions Sync Queue
+            {
+              urlPattern: /^https?:\/\/.*\/api\/(evaluations|settings|diets|sync).*/i,
+              handler: 'NetworkOnly',
+              method: 'POST',
+              options: {
+                backgroundSync: {
+                  name: 'nutripro-clinical-sync-queue',
+                  options: {
+                    maxRetentionTime: 48 * 60,
+                  }
+                }
+              }
+            },
+            {
+              urlPattern: /^https?:\/\/.*\/api\/(evaluations|settings|diets|sync).*/i,
+              handler: 'NetworkOnly',
+              method: 'PUT',
+              options: {
+                backgroundSync: {
+                  name: 'nutripro-clinical-sync-queue',
+                  options: {
+                    maxRetentionTime: 48 * 60,
+                  }
+                }
+              }
+            },
+            // 4. Cloud Firebase Firestore Direct & Proxy Sync Queue
+            {
+              urlPattern: /^https:\/\/(firestore\.googleapis\.com|identitytoolkit\.googleapis\.com)\/.*/i,
+              handler: 'NetworkOnly',
+              method: 'POST',
+              options: {
+                backgroundSync: {
+                  name: 'nutripro-firebase-sync-queue',
+                  options: {
+                    maxRetentionTime: 48 * 60,
+                  }
+                }
+              }
+            },
+            {
+              urlPattern: /^https:\/\/(firestore\.googleapis\.com|identitytoolkit\.googleapis\.com)\/.*/i,
+              handler: 'NetworkOnly',
+              method: 'PATCH',
+              options: {
+                backgroundSync: {
+                  name: 'nutripro-firebase-sync-queue',
+                  options: {
+                    maxRetentionTime: 48 * 60,
+                  }
+                }
+              }
+            },
+            // 5. GET Cache for Clinical Settings
             {
               urlPattern: /^https?:\/\/.*\/api\/settings.*/i,
               handler: 'NetworkFirst',
+              method: 'GET',
               options: {
                 cacheName: 'api-settings-cache',
                 expiration: {

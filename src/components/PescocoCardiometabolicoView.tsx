@@ -12,6 +12,8 @@ import {
   CheckCircle2,
   Info
 } from 'lucide-react';
+import { InfoHelpButton } from './help/InfoHelpButton';
+import { ClinicalTooltip } from './help/ClinicalTooltip';
 
 interface PescocoCardiometabolicoViewProps {
   patient: Patient;
@@ -47,6 +49,7 @@ export const PescocoCardiometabolicoView: React.FC<PescocoCardiometabolicoViewPr
                 Estratificação Avançada de Risco
               </span>
               <span className="text-xs text-slate-400 font-mono">Consenso SBD / Framingham</span>
+              <InfoHelpButton helpId="pescoco" size="xs" variant="emerald" title="Explicativo sobre Circunferência do Pescoço e Risco Cardiometabólico" />
             </div>
             <h2 className="text-xl font-bold text-slate-900 mt-1">
               Circunferência do Pescoço & Risco Cardiometabólico
